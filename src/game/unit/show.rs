@@ -50,6 +50,7 @@ impl Unit {
         txt += &remove0(self.thrust());
         txt += &remove0(self.downforce());
         txt += &remove0(self.tie_power());
+        txt += &remove0(self.tie_spd());
 
         // Denense
         txt += &remove0(self.evd_body());
@@ -77,11 +78,11 @@ impl Unit {
     }
 
     pub fn title_1() -> &'static str {
-        "┌─Offense──┐┌───Defense───┐┌─Unbound──┐┌Self┐┌──Basic───┐"
+        "┌───Offense───┐┌───Defense───┐┌─Unbound──┐┌Self┐┌──Basic───┐"
     }
 
     pub fn title_2() -> &'static str {
-        "AccPshHldTieEvdPshHld┌Tie─┐┌Str─┐DexSpdSpd ↑ StrDexAgiInj"
+        "AccPshHldTieSpdEvdPshHld┌Tie─┐┌Str─┐DexSpdSpd ↑ StrDexAgiInj"
     }
 
 }

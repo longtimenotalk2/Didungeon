@@ -1,23 +1,16 @@
 use super::Board;
 use super::super::unit::Bound;
 
-// fn to_hit(h : i32) -> i32 {
-//     h.max(0).min(100)
-// }
+fn to_hit(h : i32) -> i32 {
+    h.max(0).min(100)
+}
 
-// fn to_dmg(d : i32) -> i32 {
-//     d.max(1)
-// }
+fn get_is_hit(hit : i32, hit_dice : i32) -> bool {
+    return hit >= hit_dice
+}
 
-// fn txt_skill(skill : &str, name1 : &str, name2 : Option<&str>) -> String {
-//     match name2 {
-//         Some(name) => format!("<{skill}> {name1} => {name}\n"),
-//         None => format!("<{skill}> {name1}\n"),
-//     }
-// }
-
-fn txt_hit(txt : &str, hit : i32, hit_dice : i32, is_hit : bool, success : &str) -> String {
-    format!("  {txt} : {hit} -> d100 = {hit_dice} -> {}\n", if is_hit {success} else {"miss"})
+fn txt_hit(target : &str, hit : i32, hit_dice : i32, is_hit : bool, success : &str) -> String {
+    format!("  {target} : {hit} -> d100 = {hit_dice} -> {}\n", if is_hit {success} else {"miss"})
 }
 
 enum UnboundType {
@@ -29,11 +22,11 @@ enum UnboundType {
 impl Board {
     fn unbound_helper(&mut self, ia : i32, bd : &Bound, ubd_type : &UnboundType, txt : &mut String) {
         let a = self.index(ia);
-        let hit = match ubd_type {
+        let hit = to_hit(match ubd_type {
             UnboundType::ForceUpper => a.unbound_force_upper() * 5,
             UnboundType::ForceLower => a.unbound_force_lower() * 5,
             UnboundType::Hand => a.unbound_hand_dex() * 5,
-        };
+        });
         let hit_dice = self.dice.d(100);
         let is_hit = hit >= hit_dice;
         if is_hit {
@@ -68,6 +61,11 @@ impl Board {
             *txt += &format!("                 {}\n", a.txt_attr())
         }
     }
+
+    pub fn can_unbound(&self, ia : i32) -> bool {
+        let a = self.index(ia);
+        a.next_force_upper().is_some() || a.next_force_lower().is_some() || a.next_hand().is_some()
+    }
     
     pub fn unbound(&mut self, ia : i32) {
         
@@ -88,14 +86,12 @@ impl Board {
 
             let agi = a.unbound_hand_agi();
             let times = agi / 5;
-            println!("agi={agi}, times={times}");
             let hit = (agi - times * 5) * 20;
             let hit_dice = self.dice.d(100);
             let is_hit = hit >= hit_dice;
 
             let new_times = if is_hit {times + 1}else{times};
             
-            println!("agi={agi}, times={times}");
             txt += &format!("<unbound with hand x {times} + {hit}% -> d100 = {hit_dice} -> hand x {} >\n", new_times);
 
             
@@ -108,7 +104,64 @@ impl Board {
             }
         }
         print!("{}", txt);
+    }
 
-        
+    pub fn can_tie(&self, ia : i32, ib : i32) -> bool {
+        let a = self.index(ia);
+        let b = self.index(ib);
+
+        !a.bound_wrist && b.next_tie().is_some()
+    }
+
+    pub fn tie(&mut self, ia : i32, ib : i32) {
+        let b = self.index(ib);
+        if let Some(_) = b.next_tie() {
+            let a = self.index(ia);
+            println!("<tie>");
+            let agi = a.tie_spd();
+            let times = agi / 5;
+            let hit = (agi - times * 5) * 20;
+            let hit_dice = self.dice.d(100);
+            let is_hit = hit >= hit_dice;
+
+            let new_times = if is_hit {times + 1}else{times};
+
+            
+            println!("<tie x {times} + {hit}% -> d100 = {hit_dice} -> tie x {} >", new_times);
+            
+            for _ in 0..times {
+                let a = self.index(ia);
+                let b = self.index(ib);
+                if let Some((bd, to_tie)) = b.next_tie() {
+                    let acc = a.tie_power();
+                    let evd = match bd.is_upper() {
+                        true => b.anti_tie_upper(),
+                        false => b.anti_tie_lower(),
+                    };
+                    let hit = to_hit((acc - evd) * 5);
+                    let hit_dice = self.dice.d(100);
+                    let is_hit = get_is_hit(hit, hit_dice);
+                    if is_hit {
+                        let b = self.index_mut(ib);
+                        match bd {
+                            Bound::Neck => b.bound_neck = to_tie,
+                            Bound::Arm => b.bound_arm = to_tie,
+                            Bound::Hang => b.bound_hang = to_tie,
+                            Bound::Wrist => b.bound_wrist = to_tie,
+                            Bound::Joint => b.bound_joint = to_tie,
+                            Bound::Thigh => b.bound_thigh = to_tie,
+                            Bound::Calve => b.bound_calve = to_tie,
+                            Bound::Ankle => b.bound_ankle = to_tie,
+                            Bound::Long => b.bound_long = to_tie,
+                        }
+                    }
+                    let to_tie_txt = if to_tie {"tie"} else {"untie"};
+                    let target = format!("{to_tie_txt} {}", bd.txt());
+                    print!("{}", txt_hit(&target, hit, hit_dice, is_hit, &self.index(ib).txt_bound()));
+                    let b = self.index(ib);
+                    println!("                 {}", b.txt_attr());
+                }
+            }  
+        }
     }
 }

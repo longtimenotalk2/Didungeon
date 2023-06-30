@@ -29,6 +29,20 @@ impl Bound {
             
         }
     }
+
+    pub fn is_upper(&self) -> bool {
+        match self {
+            Bound::Neck => true,
+            Bound::Arm => true,
+            Bound::Hang => true,
+            Bound::Wrist => true,
+            Bound::Joint => false,
+            Bound::Thigh => false,
+            Bound::Calve => false,
+            Bound::Ankle => false,
+            Bound::Long => false,
+        }
+    }
 }
 
 pub struct Unit {
