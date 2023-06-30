@@ -278,44 +278,24 @@ impl Unit {
         }
     }
 
-    pub fn next_tie(&self) -> Option<(Bound, bool)> {
-        let first_hang = self.bound_neck && self.bound_wrist && !self.bound_hang && !self.bound_joint;
+    pub fn next_can_tie_choices(&self) -> Vec<(Bound, bool)> {
+        let mut list = vec!();
+
+        if !self.bound_wrist {list.push((Bound::Wrist, true));}
+        if !self.bound_ankle {list.push((Bound::Ankle, true));}
+        if !self.bound_hang && !self.bound_joint {
+            list.push((Bound::Hang, true));
+            list.push((Bound::Joint, true));
+        }
+        if !self.bound_neck {list.push((Bound::Neck, true));}
+        if !self.bound_arm {list.push((Bound::Arm, true));}
+        if !self.bound_calve {list.push((Bound::Calve, true));}
+        if !self.bound_thigh {list.push((Bound::Thigh, true));}
+        if !self.bound_long {list.push((Bound::Long, true));}
 
         let should_release_joint = self.bound_neck && self.bound_arm && !self.bound_hang && self.bound_wrist && self.bound_joint && self.bound_thigh && self.bound_calve && self.bound_ankle && self.bound_long;
-
-        let change_to_hang = self.bound_neck && self.bound_arm && !self.bound_hang && self.bound_wrist && !self.bound_joint && self.bound_thigh && self.bound_calve && self.bound_ankle && self.bound_long;
-
-        let finish = self.bound_neck && self.bound_arm && self.bound_hang && self.bound_wrist && !self.bound_joint && self.bound_thigh && self.bound_calve && self.bound_ankle && self.bound_long;
-
-        if first_hang {
-            Some((Bound::Hang, true))
-        } else if should_release_joint {
-            Some((Bound::Joint, false))
-        } else if change_to_hang {
-            Some((Bound::Hang, true))
-        } else if finish {
-            None
-        }else{
-            if !self.bound_wrist {
-                Some((Bound::Wrist, true))
-            }else if !self.bound_ankle {
-                Some((Bound::Ankle, true))
-            }else if !self.bound_joint && !self.bound_hang{
-                Some((Bound::Joint, true))
-            }else if !self.bound_neck {
-                Some((Bound::Neck, true))
-            }else if !self.bound_arm {
-                Some((Bound::Arm, true))
-            }else if !self.bound_calve {
-                Some((Bound::Calve, true))
-            }else if !self.bound_thigh {
-                Some((Bound::Thigh, true))
-            }else if !self.bound_long {
-                Some((Bound::Long, true))
-            }else{
-                unreachable!();
-            }
-        }
+        if should_release_joint {list.push((Bound::Joint, false));}
+        list
     }
 
     pub fn is_defeated(&self) -> bool {

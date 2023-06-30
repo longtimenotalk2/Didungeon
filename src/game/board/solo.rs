@@ -6,7 +6,7 @@ impl Board {
         if self.can_unbound(i){
             self.unbound(i);
         } else if self.can_tie(i, 1-i) {
-                self.tie(i, 1-i)
+                self.tie_with_choice(i, 1-i)
         }else{
             println!("<pass>")
         }
