@@ -13,77 +13,7 @@ impl Unit {
         (self.agi_max - self.inj / self.inj_decay_rate).max(0)
     }
 
-    // about bound
-
-    pub fn unbound_force_upper_rate(&self) -> i32 {
-        // 独立占比
-        // 五花  胳膊  悬挂
-        // 50%   25%  25%
-        // 如果joint，最终再除2
-        // 基础概率与力量系数为3
-        let mut r = 0;
-        if self.bound_neck {
-            r += 2;
-        }
-        if self.bound_arm {
-            r += 1;
-        }
-        if self.bound_hang {
-            r += 1;
-        }
-        let mut re = self.str() * 3 * (4 - r) / 4;
-        if self.bound_joint {re /= 2}
-        re.min(100)
-    }
-
-    pub fn unbound_force_lower_rate(&self) -> i32 {
-        // 对于解绑脚腕
-        // 独立占比
-        // 大腿  小腿
-        // 50%   50%
-        // 如果反弓，额外/4
-        // 对于解绑小腿
-        // 基础概率50%，如果大腿被绑再/2
-        // 基础概率与力量系数为3
-        if self.bound_ankle {
-            let mut m2 = 2;
-            if self.bound_thigh {m2 -= 1;}
-            if self.bound_calve {m2 -= 1;}
-            let mut r = self.str() * 3 * m2 / 2;
-            if self.bound_long || self.bound_joint {r /= 4;}
-            r
-        }else{
-            let mut r = self.str() * 3 / 2;
-            if self.bound_thigh {r /= 2;}
-            r
-        }
-    }
-
-    pub fn unbound_hand_rate(&self) -> i32 {
-        // 胳膊被绑就减半
-        if self.bound_wrist {return 0;}
-        let mut r = 1;
-        if self.bound_neck {
-            r *= 2;
-        }
-        let re = self.dex() * 3 / r;
-        re.min(100)
-    }
-
-    pub fn unbound_hand_times(&self) -> i32 {
-        // 胳膊被绑就减半
-        if self.bound_wrist {return 0;}
-        let mut r = 1;
-        if !self.bound_wrist {
-            if self.bound_neck {
-                r *= 2;
-            }
-        }
-        self.agi() / r / 5
-    }
-
-    // about movable
-
+    // helper
     fn stand_walk_decay(&self, attr : i32) -> i32 {
         // 倒地为0
         // 渐进
@@ -136,6 +66,97 @@ impl Unit {
         }
     }
 
+    // about bound
+
+    pub fn unbound_force_upper(&self) -> i32 {
+        // 独立占比
+        // 五花  胳膊  悬挂
+        // 50%   25%  25%
+        // 如果joint，最终再除2，如果wrist，最终再除2
+        
+        let mut r = 0;
+        if self.bound_neck {
+            r += 2;
+        }
+        if self.bound_arm {
+            r += 1;
+        }
+        if self.bound_hang {
+            r += 1;
+        }
+        let mut re = self.str() * (4 - r) / 4;
+        if self.bound_joint {re /= 2}
+        if self.bound_wrist {re /= 2}
+        re.min(100)
+    }
+
+    pub fn unbound_force_lower(&self) -> i32 {
+        // 对于解绑脚腕
+        // 基础概率50%
+        // 独立占比
+        // 大腿  小腿
+        // 50%   50%
+        // 如果反弓，额外/2
+        // 对于解绑小腿
+        // 基础概率50%，如果大腿被绑再/2
+        if self.bound_ankle {
+            let mut m2 = 2;
+            if self.bound_thigh {m2 -= 1;}
+            if self.bound_calve {m2 -= 1;}
+            let mut r = self.str() * m2 / 2 / 2;
+            if self.bound_long || self.bound_joint {r /= 2;}
+            r
+        }else if self.bound_calve{
+            let mut r = self.str() / 2;
+            if self.bound_thigh {r /= 2;}
+            r
+        }else if self.bound_thigh { 
+            self.str() / 2 
+        } else {
+            self.str()
+        }
+    }
+
+    pub fn unbound_hand_dex(&self) -> i32 {
+        // 胳膊被绑就减半
+        if self.bound_wrist {return 0;}
+        let mut r = 1;
+        if self.bound_neck {
+            r *= 2;
+        }
+        self.dex() / r
+    }
+
+    pub fn unbound_hand_agi(&self) -> i32 {
+        // 胳膊被绑就减半
+        if self.bound_wrist {return 0;}
+        let mut r = 1;
+        if !self.bound_wrist {
+            if self.bound_neck {
+                r *= 2;
+            }
+        }
+        self.agi() / r
+    }
+
+    pub fn tie_power(&self) -> i32 {
+        // 力量和灵巧各占一半的功效
+        if self.bound_wrist {return 0;}
+        let mut r = (self.str() + self.dex()) / 2;
+        if self.bound_neck {r /= 2};
+        r
+    }
+
+    pub fn anti_tie_upper(&self) -> i32 {
+        self.freedom_upper_decay(self.str())
+    }
+
+    pub fn anti_tie_lower(&self) -> i32 {
+        self.freedom_lower_decay(self.str())
+    }
+
+    // about movable
+
     pub fn acc_hand(&self) -> i32 {
         // 手腕被绑直接清零
         // 给一个站立移动的衰减
@@ -173,9 +194,11 @@ impl Unit {
 
     pub fn downforce(&self) -> i32 {
         // 压倒对手时，的下压力
+        // 倒地为0
         // 保底有50%的力量
         // 如果腿部完全自由，则加25%
         // 如果胳膊完全自由，再加25%
+        if self.fall {return 0;}
         let mut r = 4;
         if self.bound_ankle || self.bound_calve || self.bound_thigh {r -= 1;}
         if self.bound_wrist || self.bound_neck {r -= 1;}
@@ -190,12 +213,12 @@ impl Unit {
         (self.freedom_lower_decay(self.str()) + upper * self.str()) / 2
     }
 
-    pub fn stand_rate(&self) -> bool {
+    pub fn can_stand(&self) -> bool {
         // 必须上肢下肢有一边完全自由才行，可以100%起身
         // 否则只能杂技起身，暂时不考虑
         let upper = self.bound_ankle || self.bound_calve || self.bound_thigh;
         let lower = self.bound_wrist || self.bound_neck;
-        !(upper || lower)
+        !(upper && lower)
     }
 
     pub fn spd(&self) -> i32 {
@@ -203,6 +226,8 @@ impl Unit {
         (self.freedom_lower_decay(self.agi()) + 
         self.freedom_upper_decay(self.agi()) ) / 2
     }
+
+    // where to unbound
 
     pub fn next_force_upper(&self) -> Option<Bound> {
         if self.bound_wrist {

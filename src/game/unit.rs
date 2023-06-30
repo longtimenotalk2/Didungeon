@@ -48,7 +48,7 @@ pub struct Unit {
     pub bound_ankle : bool,
     pub bound_long : bool,
 
-    fall : bool,
+    pub fall : bool,
     
     pub action : bool,
 
