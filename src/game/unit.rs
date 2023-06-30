@@ -49,6 +49,7 @@ pub struct Unit {
     pub bound_long : bool,
 
     pub fall : bool,
+    pub hold : bool,
     
     pub action : bool,
 

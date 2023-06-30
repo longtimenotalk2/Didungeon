@@ -1,9 +1,12 @@
+use crate::game::unit::Unit;
+
 use super::Board;
+
 
 impl Board {
     pub fn print(&self, act : Option<i32>) {
-        println!("==========================================");
-        println!("T ={:2}             StrDexEvdPowAccEvdInj", self.turn);
+        println!("                 {}", Unit::title_1());
+        println!("T ={:2}            {}", self.turn, Unit::title_2());
         for (i, unit) in self.units.iter().enumerate() {
             let ac = match act {
                 None => " ",
@@ -12,6 +15,6 @@ impl Board {
             println!("{ac}{i} : {}{} {}", unit.txt_state(), unit.txt_bound(), unit.txt_attr());
         }
         
-        println!("-----------------------------------------");
+        println!("--------------------------------------------------------------------------");
     }
 }

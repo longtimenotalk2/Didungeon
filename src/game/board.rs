@@ -20,20 +20,20 @@ impl Board {
         }
     }
 
-    // fn index(&self, id : i32) -> &Unit {
-    //     let i : usize = id.try_into().unwrap();
-    //     self.units.get(i).unwrap()
-    // }
+    fn index(&self, id : i32) -> &Unit {
+        let i : usize = id.try_into().unwrap();
+        self.units.get(i).unwrap()
+    }
 
-    // fn index_mut(&mut self, id : i32) -> &mut Unit {
-    //     let i : usize = id.try_into().unwrap();
-    //     self.units.get_mut(i).unwrap()
-    // }
+    fn index_mut(&mut self, id : i32) -> &mut Unit {
+        let i : usize = id.try_into().unwrap();
+        self.units.get_mut(i).unwrap()
+    }
 
-    // fn turn_pass(&mut self) {
-    //     self.turn += 1;
-    //     for unit in &mut self.units {
-    //         unit.action = true;
-    //     }
-    // }
+    fn turn_pass(&mut self) {
+        self.turn += 1;
+        for unit in &mut self.units {
+            unit.action = true;
+        }
+    }
 }

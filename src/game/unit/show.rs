@@ -37,7 +37,7 @@ impl Unit {
     }
 
     pub fn txt_state(&self) -> String {
-        let fall = if self.fall {"F"} else {" "};
+        let fall = if self.fall {"F"} else if self.hold {"H"} else {" "};
         format!("{fall}")
     }
 
@@ -59,8 +59,9 @@ impl Unit {
         txt += &remove0(self.anti_tie_lower());
         txt += &remove0(self.unbound_force_upper());
         txt += &remove0(self.unbound_force_lower());
-        txt += &remove0(self.unbound_hand_agi());
         txt += &remove0(self.unbound_hand_dex());
+        txt += &remove0(self.unbound_hand_agi());
+        
 
         // Self
         txt += &remove0(self.spd());
@@ -80,7 +81,7 @@ impl Unit {
     }
 
     pub fn title_2() -> &'static str {
-        "AccPshHldTieEvdPshHld┌Tie─┐┌Str─┐DexEvdSpd ↑ StrDexAgiInj"
+        "AccPshHldTieEvdPshHld┌Tie─┐┌Str─┐DexSpdSpd ↑ StrDexAgiInj"
     }
 
 }

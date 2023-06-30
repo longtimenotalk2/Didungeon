@@ -118,23 +118,27 @@ impl Unit {
     }
 
     pub fn unbound_hand_dex(&self) -> i32 {
-        // 胳膊被绑就减半
+        // 胳膊被绑就减半，两层减至1/4
         if self.bound_wrist {return 0;}
         let mut r = 1;
         if self.bound_neck {
+            r *= 2;
+        }
+        if self.bound_arm {
             r *= 2;
         }
         self.dex() / r
     }
 
     pub fn unbound_hand_agi(&self) -> i32 {
-        // 胳膊被绑就减半
+        // 胳膊被绑就减半，两层减至1/4
         if self.bound_wrist {return 0;}
         let mut r = 1;
-        if !self.bound_wrist {
-            if self.bound_neck {
-                r *= 2;
-            }
+        if self.bound_neck {
+            r *= 2;
+        }
+        if self.bound_arm {
+            r *= 2;
         }
         self.agi() / r
     }
