@@ -1,6 +1,6 @@
 mod state;
 mod show;
-// mod test2;
+mod test;
 
 pub enum Bound {
     Neck,
@@ -49,9 +49,6 @@ pub struct Unit {
     pub bound_long : bool,
 
     fall : bool,
-    _wrestle : bool,
-    _press : bool,
-    _ctrl : bool,
     
     pub action : bool,
 

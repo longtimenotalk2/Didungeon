@@ -116,8 +116,8 @@ impl Unit {
         // 被驷马或者悬挂则为0
         // 手腕和五花独立除2
         if self.bound_joint || self.bound_hang {return 0};
-        if self.bound_wrist {attr / 2;}
-        if self.bound_neck {attr / 2;}
+        if self.bound_wrist {attr /= 2;}
+        if self.bound_neck {attr /= 2;}
         attr
     }
 
