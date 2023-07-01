@@ -144,9 +144,9 @@ impl Unit {
     }
 
     pub fn tie_power(&self) -> i32 {
-        // 力量和灵巧取平均
+        // 灵巧
         if self.bound_wrist {return 0;}
-        let mut r = (self.str() + self.dex())/2;
+        let mut r = self.dex();
         if self.bound_neck {r /= 2};
         r
     }
@@ -283,15 +283,17 @@ impl Unit {
 
         if !self.bound_wrist {list.push((Bound::Wrist, true));}
         if !self.bound_ankle {list.push((Bound::Ankle, true));}
-        if !self.bound_hang && !self.bound_joint {
+        if !self.bound_hang && !self.bound_joint && self.bound_neck && self.bound_wrist {
             list.push((Bound::Hang, true));
+        }
+        if !self.bound_hang && !self.bound_joint && self.bound_wrist && self.bound_ankle {
             list.push((Bound::Joint, true));
         }
         if !self.bound_neck {list.push((Bound::Neck, true));}
-        if !self.bound_arm {list.push((Bound::Arm, true));}
+        if !self.bound_arm && self.bound_neck {list.push((Bound::Arm, true));}
         if !self.bound_calve {list.push((Bound::Calve, true));}
         if !self.bound_thigh {list.push((Bound::Thigh, true));}
-        if !self.bound_long {list.push((Bound::Long, true));}
+        if !self.bound_long && self.bound_ankle && self.bound_wrist {list.push((Bound::Long, true));}
 
         let should_release_joint = self.bound_neck && self.bound_arm && !self.bound_hang && self.bound_wrist && self.bound_joint && self.bound_thigh && self.bound_calve && self.bound_ankle && self.bound_long;
         if should_release_joint {list.push((Bound::Joint, false));}

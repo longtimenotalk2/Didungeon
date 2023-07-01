@@ -37,8 +37,9 @@ impl Unit {
     }
 
     pub fn txt_state(&self) -> String {
-        let fall = if self.fall {"F"} else if self.hold {"H"} else {" "};
-        format!("{fall}")
+        let fall = if self.fall {"F"} else {" "};
+        let hold = if self.hold {"H"} else {" "};
+        format!("{fall}{hold}")
     }
 
     pub fn txt_attr(&self) -> String {
