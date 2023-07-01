@@ -180,11 +180,11 @@ impl Unit {
 
     pub fn evd_body(&self) -> i32 {
         // 敏捷的站立平衡系数和灵巧的1/4比最大值
-        // 胳膊被绑需要*3/4
+        // 上肢被绑需要*3/4
         // 倒地为0
         if self.fall {return 0;}
         let mut r = self.stand_balance_decay(self.agi()).max(self.dex() / 4);
-        if self.bound_neck {
+        if self.bound_neck || self.bound_wrist {
             r = r * 3 / 4;
         }
         r
@@ -203,11 +203,11 @@ impl Unit {
     pub fn anti_thrust(&self) -> i32 {
         // 反推力，用于计算推倒时使用
         // 力量的站立平衡系数和灵巧的1/4比最大值
-        // 胳膊被绑需要*3/4
+        // 上肢被绑需要*3/4
         // 倒地为0
         if self.fall {return 0;}
         let mut r = self.stand_balance_decay(self.str()).max(self.dex() / 4);
-        if self.bound_neck {
+        if self.bound_neck || self.bound_wrist {
             r = r * 3 / 4;
         }
         r
