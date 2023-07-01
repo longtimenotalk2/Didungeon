@@ -17,6 +17,7 @@ enum UnboundType {
     ForceUpper,
     ForceLower,
     Hand,
+    Cuter,
 }
 
 impl Board {
@@ -26,6 +27,7 @@ impl Board {
             UnboundType::ForceUpper => a.unbound_force_upper() * 5,
             UnboundType::ForceLower => a.unbound_force_lower() * 5,
             UnboundType::Hand => a.unbound_hand_dex() * 5,
+            UnboundType::Cuter => a.spd() * 5,
         });
         let hit_dice = self.dice.d(100);
         let is_hit = hit >= hit_dice;
@@ -84,6 +86,10 @@ impl Board {
                 hit_now = hit_now.max(hit);
             }
         }
+        if !a.fall && a.bound_hang {
+            let hit = to_hit(a.spd() * 5);
+            hit_now = hit_now.max(hit);
+        }
         
         hit_now
     }
@@ -91,6 +97,12 @@ impl Board {
     pub fn unbound(&mut self, ia : i32) {
         
         let mut txt = String::new();
+
+        let a = self.index(ia);
+        if !a.fall && a.bound_hang {
+            txt += &format!("<unbound hang with cuter>\n");
+            self.unbound_helper(ia, &Bound::Hang, &UnboundType::Cuter, &mut txt);
+        }
 
         if let Some(bd) = self.index(ia).next_force_upper() {
             txt += &format!("<unbound upper with force>\n");
@@ -146,7 +158,7 @@ impl Board {
             if b.hold {
                 evd = (evd - a.downforce()).max(0);
             }
-            let hit = to_hit(acc - evd) * 10;
+            let hit = to_hit((acc - evd) * 10);
             match choice {
                 Some((_, _, hit_)) => {
                     if hit > hit_ {
@@ -207,33 +219,52 @@ impl Board {
         true
     }
 
-    pub fn hit_holddown(&self, ia : i32, ib : i32) -> (i32, i32) {
+    pub fn hit_holddown(&self, ia : i32, ib : i32) -> (i32, i32, i32) {
         let a = self.index(ia);
         let b = self.index(ib);
         let acc1 = a.acc_hand();
         let evd1 = b.evd_body();
-        let hit1 = to_hit(50 + (acc1 - evd1) * 10);
+        let hit1 = to_hit(50 + (acc1 - evd1) * 5);
         let acc2 = a.thrust();
         let evd2 = b.anti_thrust();
-        let hit2 = to_hit(50 + (acc2 - evd2) * 10);
-        (hit1, hit2)
+        let hit2 = to_hit(50 + (acc2 - evd2) * 5);
+        let acc3 = b.thrust();
+        let evd3 = a.anti_thrust();
+        let hit3 = to_hit(50 + (acc3 - evd3) * 5    );
+        (hit1, hit2, hit3)
     }
 
     pub fn holddown(&mut self, ia : i32, ib : i32) {
-        let (hit1, hit2) = self.hit_holddown(ia, ib);
+        let (hit1, hit2, hit3) = self.hit_holddown(ia, ib);
         println!("<hold down>");
         let hit_dice = self.dice.d(100);
         let is_hit1 = hit1 >= hit_dice;
         print!("{}", txt_hit("attach", hit1, hit_dice, is_hit1, "success"));
         if is_hit1 {
-            let hit_dice = self.dice.d(100);
-            let is_hit2 = hit2 >= hit_dice;
-            if is_hit2 {
-                let mut b = self.index_mut(ib);
-                b.fall = true;
-                b.hold = true;
+            let b = self.index(ib);
+            if b.fall {
+                self.index_mut(ib).hold = true;
+                println!("  hold fallen opponent")
+            } else {
+                let hit_dice = self.dice.d(100);
+                let is_hit2 = hit2 >= hit_dice;
+                print!("{}", txt_hit("    push opponent", hit2, hit_dice, is_hit2, "success"));
+                if is_hit2 {
+                    let hit_dice = self.dice.d(100);
+                    let is_hit3 = hit3 >= hit_dice;
+                    
+                    print!("{}", txt_hit("    pushed by opponent", hit3, hit_dice, is_hit3, "success"));
+                    if is_hit3 {
+                        print!("  both fall\n");
+                        self.index_mut(ia).fall = true;
+                        self.index_mut(ib).fall = true;
+                    }else{
+                        print!("  hold opponent\n");
+                        self.index_mut(ib).fall = true;
+                        self.index_mut(ib).hold = true;
+                    }
+                }
             }
-            print!("{}", txt_hit("hold", hit1, hit_dice, is_hit1, "success"));
         }
     }
 
@@ -247,7 +278,7 @@ impl Board {
         let b = self.index(ib);
         let acc = a.anti_downforce();
         let evd = b.downforce();
-        to_hit(100 + (acc - evd) * 10)
+        to_hit(50 + (acc - evd) * 5)
     }
 
     pub fn struggle(&mut self, ia : i32, ib : i32) {
@@ -255,11 +286,33 @@ impl Board {
         println!("<struggle>");
         let hit_dice = self.dice.d(100);
         let is_hit = hit >= hit_dice;
-        print!("{}", txt_hit("attach", hit, hit_dice, is_hit, "success"));
+        print!("{}", txt_hit("struggle", hit, hit_dice, is_hit, "success"));
         if is_hit {
             let mut a = self.index_mut(ia);
             a.hold = false;
             a.fall = !a.can_stand();
         }
+    }
+
+    pub fn can_stand(&self, ia : i32) -> bool {
+        let a = self.index(ia);
+        a.fall && !a.hold
+    } 
+
+    pub fn hit_stand(&self, ia : i32) -> i32 {
+        let a = self.index(ia);
+        if a.can_stand() {
+            100
+        }else{
+            0
+        }
+    }
+
+    pub fn stand(&mut self, ia : i32) {
+        let a = self.index_mut(ia);
+        if a.can_stand() {
+            a.fall = false;
+        }
+        println!("<stant>\n")
     }
 }

@@ -5,7 +5,7 @@ pub mod wyrand;
 
 fn main() {
     println!("Hello, world!");
-    let mut board = Board::new_solo(114515);
+    let mut board = Board::new_solo(114514);
     board.solo_start(100);
 
 }

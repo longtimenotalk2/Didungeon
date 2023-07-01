@@ -5,6 +5,7 @@ enum Action {
     Tie,
     Holddowm,
     Struggle,
+    Stand,
 }
 
 impl Action {
@@ -14,6 +15,7 @@ impl Action {
             Self::Struggle,
             Self::Holddowm,
             Self::Tie,
+            Self::Stand,
         )
     }
 }
@@ -42,22 +44,24 @@ impl Board {
                     }
                 },
                 Action::Tie => {
-                    if let Some((_, _, hit)) = self.choice_tie(ia, ib) {
-                        txt += &format!("tie : {hit}, ");
-                        match choice {
-                            Some((_, hit_)) => {
-                                if hit > hit_ {
-                                    choice = Some((Action::Tie, hit));
-                                }
-                            },
-                            None => choice = Some((Action::Tie, hit)),
+                    if self.can_tie(ia, ib) {
+                        if let Some((_, _, hit)) = self.choice_tie(ia, ib) {
+                            txt += &format!("tie : {hit}, ");
+                            match choice {
+                                Some((_, hit_)) => {
+                                    if hit > hit_ {
+                                        choice = Some((Action::Tie, hit));
+                                    }
+                                },
+                                None => choice = Some((Action::Tie, hit)),
+                            }
                         }
                     }
                 },
                 Action::Holddowm => {
                     if self.can_holddown(ia, ib) {
-                        let (hit1, hit2) = self.hit_holddown(ia, ib);
-                        let hit = hit1 * hit2 / 100;
+                        let (hit1, hit2, hit3) = self.hit_holddown(ia, ib);
+                        let hit = hit1 * (hit2 * (100 - hit3)) / 10000;
                         txt += &format!("holddown : {hit}, ");
                         match choice {
                             Some((_, hit_)) => {
@@ -83,6 +87,21 @@ impl Board {
                         }
                     }
                 },
+                Action::Stand => {
+                    if self.can_stand(ia) {
+                        let hit = self.hit_stand(ia);
+                        txt += &format!("stand : {hit}, ");
+                        match choice {
+                            Some((_, hit_)) => {
+                                if hit > hit_ {
+                                    choice = Some((Action::Stand, hit));
+                                }
+                            },
+                            None => choice = Some((Action::Stand, hit)),
+                        }
+                    }
+                },
+                
             }
         }
         println!("Choices : {txt}");
@@ -103,6 +122,7 @@ impl Board {
                 Action::Tie => self.tie_with_most_hit(ia, ib),
                 Action::Holddowm => self.holddown(ia, ib),
                 Action::Struggle => self.struggle(ia, ib),
+                Action::Stand => self.stand(ia),
             },
             None => println!("<Pass>")
         }

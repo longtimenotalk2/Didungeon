@@ -180,9 +180,14 @@ impl Unit {
 
     pub fn evd_body(&self) -> i32 {
         // 敏捷的站立平衡系数和灵巧的1/4比最大值
+        // 胳膊被绑需要*3/4
         // 倒地为0
         if self.fall {return 0;}
-        self.stand_balance_decay(self.agi()).max(self.dex() / 4)
+        let mut r = self.stand_balance_decay(self.agi()).max(self.dex() / 4);
+        if self.bound_neck {
+            r = r * 3 / 4;
+        }
+        r
     }
 
     pub fn thrust(&self) -> i32 {
@@ -198,9 +203,14 @@ impl Unit {
     pub fn anti_thrust(&self) -> i32 {
         // 反推力，用于计算推倒时使用
         // 力量的站立平衡系数和灵巧的1/4比最大值
+        // 胳膊被绑需要*3/4
         // 倒地为0
         if self.fall {return 0;}
-        self.stand_balance_decay(self.str()).max(self.dex() / 4)
+        let mut r = self.stand_balance_decay(self.str()).max(self.dex() / 4);
+        if self.bound_neck {
+            r = r * 3 / 4;
+        }
+        r
     }
 
     pub fn downforce(&self) -> i32 {
@@ -291,9 +301,11 @@ impl Unit {
         }
         if !self.bound_neck {list.push((Bound::Neck, true));}
         if !self.bound_arm && self.bound_neck {list.push((Bound::Arm, true));}
+        if !self.bound_long && !self.bound_joint && self.bound_ankle && self.bound_wrist {list.push((Bound::Long, true));}
         if !self.bound_calve {list.push((Bound::Calve, true));}
         if !self.bound_thigh {list.push((Bound::Thigh, true));}
-        if !self.bound_long && self.bound_ankle && self.bound_wrist {list.push((Bound::Long, true));}
+        if !self.bound_long && self.bound_joint && self.bound_ankle && self.bound_wrist {list.push((Bound::Long, true));}
+        
 
         let should_release_joint = self.bound_neck && self.bound_arm && !self.bound_hang && self.bound_wrist && self.bound_joint && self.bound_thigh && self.bound_calve && self.bound_ankle && self.bound_long;
         if should_release_joint {list.push((Bound::Joint, false));}
@@ -303,5 +315,6 @@ impl Unit {
     pub fn is_defeated(&self) -> bool {
         self.bound_neck && self.bound_arm && self.bound_hang && self.bound_wrist && !self.bound_joint && self.bound_thigh && self.bound_calve && self.bound_ankle && self.bound_long
     }
+
 
 }
