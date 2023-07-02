@@ -154,11 +154,8 @@ impl Board {
         let acc = a.tie_power();
         for ch in choices {
             let (bd, is_tie) = ch;
-            let mut evd = if bd.is_upper() {b.anti_tie_upper()} else {b.anti_tie_lower()};
-            if b.hold {
-                evd = (evd - a.hold()).max(0);
-            }
-            let hit = to_hit((acc - evd) * 10);
+            let evd = if bd.is_upper() {b.anti_tie_upper()} else {b.anti_tie_lower()};
+            let hit = to_hit(50 + (acc - evd) * 5);
             match choice {
                 Some((_, _, hit_)) => {
                     if hit > hit_ {
@@ -227,9 +224,12 @@ impl Board {
         let hit1 = to_hit(50 + (acc1 - evd1) * 5);
         let acc2 = a.push();
         let evd2 = b.anti_push();
-        let hit2 = to_hit(50 + (acc2 - evd2) * 5);
-        let acc3 = b.push();
-        let evd3 = a.anti_push();
+        let mut hit2 = to_hit(50 + (acc2 - evd2) * 5);
+        if self.index(ib).fall {
+            hit2 = 100;
+        }
+        let acc3 = a.hold();
+        let evd3 = b.anti_hold();
         let hit3 = to_hit(50 + (acc3 - evd3) * 5    );
         (hit1, hit2, hit3)
     }
@@ -242,28 +242,24 @@ impl Board {
         print!("{}", txt_hit("attach", hit1, hit_dice, is_hit1, "success"));
         if is_hit1 {
             let b = self.index(ib);
-            if b.fall {
-                self.index_mut(ib).hold = true;
-                println!("  hold fallen opponent")
-            } else {
+            if !b.fall {
                 let hit_dice = self.dice.d(100);
                 let is_hit2 = hit2 >= hit_dice;
-                print!("{}", txt_hit("    push opponent", hit2, hit_dice, is_hit2, "success"));
                 if is_hit2 {
-                    let hit_dice = self.dice.d(100);
-                    let is_hit3 = hit3 >= hit_dice;
-                    
-                    print!("{}", txt_hit("    pushed by opponent", hit3, hit_dice, is_hit3, "success"));
-                    if is_hit3 {
-                        print!("  both fall\n");
-                        self.index_mut(ia).fall = true;
-                        self.index_mut(ib).fall = true;
-                    }else{
-                        print!("  hold opponent\n");
-                        self.index_mut(ib).fall = true;
-                        self.index_mut(ib).hold = true;
-                    }
+                    let mut b = self.index_mut(ib);
+                    b.fall = true;
                 }
+                print!("{}", txt_hit("    push opponent", hit2, hit_dice, is_hit2, "success"));
+            }
+            let b = self.index(ib);
+            if b.fall {
+                let hit_dice = self.dice.d(100);
+                let is_hit3 = hit3 >= hit_dice;
+                if is_hit3 {
+                    let mut b = self.index_mut(ib);
+                    b.hold = true;
+                }
+                print!("{}", txt_hit("    hold opponent", hit3, hit_dice, is_hit3, "success"));
             }
         }
     }
@@ -290,29 +286,32 @@ impl Board {
         if is_hit {
             let mut a = self.index_mut(ia);
             a.hold = false;
-            a.fall = !a.can_stand();
+            if a.can_stand() {
+                a.fall = false;
+                println!("<stand auto>")
+            }
         }
     }
 
-    pub fn can_stand(&self, ia : i32) -> bool {
+    pub fn can_auto_stand(&self, ia : i32) -> bool {
         let a = self.index(ia);
-        a.fall && !a.hold
+        a.fall && !a.hold && a.can_stand()
     } 
 
-    pub fn hit_stand(&self, ia : i32) -> i32 {
-        let a = self.index(ia);
-        if a.can_stand() {
-            100
-        }else{
-            0
-        }
-    }
+    // pub fn hit_stand(&self, ia : i32) -> i32 {
+    //     let a = self.index(ia);
+    //     if a.can_stand() {
+    //         100
+    //     }else{
+    //         0
+    //     }
+    // }
 
-    pub fn stand(&mut self, ia : i32) {
-        let a = self.index_mut(ia);
-        if a.can_stand() {
-            a.fall = false;
-        }
-        println!("<stant>\n")
-    }
+    // pub fn stand(&mut self, ia : i32) {
+    //     let a = self.index_mut(ia);
+    //     if a.can_stand() {
+    //         a.fall = false;
+    //     }
+    //     println!("<stant>\n")
+    // }
 }

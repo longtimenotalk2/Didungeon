@@ -23,21 +23,21 @@ impl Unit {
         #[allow(warnings)]
         let fall : bool = false;
 
-        let bound_neck : bool = true;
-        let bound_arm : bool = true;
+        // let bound_neck : bool = true;
+        // let bound_arm : bool = true;
         // let bound_hang : bool = true;
-        let bound_wrist : bool = true;
-        let bound_joint : bool = true;
+        // let bound_wrist : bool = true;
+        // let bound_joint : bool = true;
         // let bound_thigh : bool = true;
-        let bound_calve : bool = true;
-        let bound_ankle : bool = true;
-        let bound_long: bool = true;
-        let fall : bool = true;
+        // let bound_calve : bool = true;
+        // let bound_ankle : bool = true;
+        // let bound_long: bool = true;
+        // let fall : bool = true;
 
         Self {
-            str_max : 17,
-            dex_max : 13,
-            agi_max : 12,
+            str_max : 10,
+            dex_max : 10,
+            agi_max : 10,
             inj_coefficient : 5,
             inj : 0,
 
@@ -81,21 +81,21 @@ impl Unit {
         #[allow(warnings)]
         let fall : bool = false;
 
-        let bound_neck : bool = true;
-        let bound_arm : bool = true;
+        // let bound_neck : bool = true;
+        // let bound_arm : bool = true;
         // let bound_hang : bool = true;
-        let bound_wrist : bool = true;
-        let bound_joint : bool = true;
+        // let bound_wrist : bool = true;
+        // let bound_joint : bool = true;
         // let bound_thigh : bool = true;
-        let bound_calve : bool = true;
-        let bound_ankle : bool = true;
-        let bound_long: bool = true;
-        let fall : bool = true;
+        // let bound_calve : bool = true;
+        // let bound_ankle : bool = true;
+        // let bound_long: bool = true;
+        // let fall : bool = true;
 
         Self {
-            str_max : 14,
-            dex_max : 20,
-            agi_max : 18,
+            str_max : 10,
+            dex_max : 10,
+            agi_max : 10,
             inj_coefficient : 5,
             inj : 0,
 
