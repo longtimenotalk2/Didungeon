@@ -26,7 +26,7 @@ impl Board {
         let hit = to_hit(match ubd_type {
             UnboundType::ForceUpper => a.unbound_force_upper() * 5,
             UnboundType::ForceLower => a.unbound_force_lower() * 5,
-            UnboundType::Hand => a.unbound_hand_dex() * 5,
+            UnboundType::Hand => a.hand_dex() * 5,
             UnboundType::Cuter => a.spd() * 5,
         });
         let hit_dice = self.dice.d(100);
@@ -82,7 +82,7 @@ impl Board {
         };
         if !self.index(ia).hold {
             if let Some(_) = a.next_hand() {
-                let hit = to_hit(a.unbound_hand_dex() * 5);
+                let hit = to_hit(a.hand_dex() * 5);
                 hit_now = hit_now.max(hit);
             }
         }
@@ -118,7 +118,7 @@ impl Board {
             if let Some(_) = self.index(ia).next_hand() {
                 let a = self.index(ia);
     
-                let agi = a.unbound_hand_agi();
+                let agi = a.hand_agi();
                 let times = agi / 5;
                 let hit = (agi - times * 5) * 20;
                 let hit_dice = self.dice.d(100);
@@ -156,7 +156,7 @@ impl Board {
             let (bd, is_tie) = ch;
             let mut evd = if bd.is_upper() {b.anti_tie_upper()} else {b.anti_tie_lower()};
             if b.hold {
-                evd = (evd - a.downforce()).max(0);
+                evd = (evd - a.hold()).max(0);
             }
             let hit = to_hit((acc - evd) * 10);
             match choice {
@@ -173,7 +173,7 @@ impl Board {
 
     pub fn tie_with_most_hit(&mut self, ia : i32, ib : i32) {
         let a = self.index(ia);
-        let agi = a.tie_spd();
+        let agi = a.hand_agi();
         let times = agi / 5;
         let hit = (agi - times * 5) * 20;
         let hit_dice = self.dice.d(100);
@@ -222,14 +222,14 @@ impl Board {
     pub fn hit_holddown(&self, ia : i32, ib : i32) -> (i32, i32, i32) {
         let a = self.index(ia);
         let b = self.index(ib);
-        let acc1 = a.acc_hand();
-        let evd1 = b.evd_body();
+        let acc1 = a.acc_melee_hand();
+        let evd1 = b.evd();
         let hit1 = to_hit(50 + (acc1 - evd1) * 5);
-        let acc2 = a.thrust();
-        let evd2 = b.anti_thrust();
+        let acc2 = a.push();
+        let evd2 = b.anti_push();
         let hit2 = to_hit(50 + (acc2 - evd2) * 5);
-        let acc3 = b.thrust();
-        let evd3 = a.anti_thrust();
+        let acc3 = b.push();
+        let evd3 = a.anti_push();
         let hit3 = to_hit(50 + (acc3 - evd3) * 5    );
         (hit1, hit2, hit3)
     }
@@ -276,8 +276,8 @@ impl Board {
     pub fn hit_struggle(&self, ia : i32, ib : i32) -> i32 {
         let a = self.index(ia);
         let b = self.index(ib);
-        let acc = a.anti_downforce();
-        let evd = b.downforce();
+        let acc = a.anti_hold();
+        let evd = b.hold();
         to_hit(50 + (acc - evd) * 5)
     }
 

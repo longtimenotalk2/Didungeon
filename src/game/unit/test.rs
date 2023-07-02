@@ -38,7 +38,7 @@ impl Unit {
             str_max : 17,
             dex_max : 13,
             agi_max : 12,
-            inj_decay_rate : 5,
+            inj_coefficient : 5,
             inj : 0,
 
             bound_neck,
@@ -96,7 +96,7 @@ impl Unit {
             str_max : 14,
             dex_max : 20,
             agi_max : 18,
-            inj_decay_rate : 5,
+            inj_coefficient : 5,
             inj : 0,
 
             bound_neck,

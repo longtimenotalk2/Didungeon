@@ -47,27 +47,25 @@ impl Unit {
         
         let mut txt = String::new();
         // Offense
-        txt += &remove0(self.acc_hand());
-        txt += &remove0(self.thrust());
-        txt += &remove0(self.downforce());
+        txt += &remove0(self.acc_melee_hand());
+        txt += &remove0(self.push());
+        txt += &remove0(self.hold());
         txt += &remove0(self.tie_power());
-        txt += &remove0(self.tie_spd());
 
         // Denense
-        txt += &remove0(self.evd_body());
-        txt += &remove0(self.anti_thrust());
-        txt += &remove0(self.anti_downforce());
+        txt += &remove0(self.evd());
+        txt += &remove0(self.anti_push());
+        txt += &remove0(self.anti_hold());
         txt += &remove0(self.anti_tie_upper());
         txt += &remove0(self.anti_tie_lower());
-        txt += &remove0(self.unbound_force_upper());
-        txt += &remove0(self.unbound_force_lower());
-        txt += &remove0(self.unbound_hand_dex());
-        txt += &remove0(self.unbound_hand_agi());
         
-
         // Self
         txt += &remove0(self.spd());
         txt += can_stand;
+        txt += &remove0(self.hand_dex());
+        txt += &remove0(self.hand_agi());
+        txt += &remove0(self.unbound_force_upper());
+        txt += &remove0(self.unbound_force_lower());
         
         // Basic
         txt += &remove0(self.str()); 
@@ -79,11 +77,11 @@ impl Unit {
     }
 
     pub fn title_1() -> &'static str {
-        "┌───Offense───┐┌───Defense───┐┌─Unbound──┐┌Self┐┌──Basic───┐"
+        "┌─Offense──┐┌───Defense───┐┌─────Self───────┐┌──Basic───┐"
     }
 
     pub fn title_2() -> &'static str {
-        "AccPshHldTieSpdEvdPshHld┌Tie─┐┌Str─┐DexSpdSpd ↑ StrDexAgiInj"
+        "AccPshHldTieEvdPshHld┌Tie─┐Spd ↑ ┌Hand┐┌Unbd┐StrDexAgiInj"
     }
 
 }

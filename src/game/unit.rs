@@ -49,7 +49,7 @@ pub struct Unit {
     str_max : i32,
     dex_max : i32,
     agi_max : i32,
-    inj_decay_rate : i32,
+    inj_coefficient : i32,
     pub inj : i32,
 
     pub bound_neck : bool,
