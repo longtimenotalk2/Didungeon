@@ -150,6 +150,11 @@ impl Unit {
     pub fn next_can_tie_choices(&self) -> Vec<(Bound, bool)> {
         let mut list = vec!();
 
+        let should_tie_hang = self.bound_neck && self.bound_arm && !self.bound_hang && self.bound_wrist && !self.bound_joint && self.bound_thigh && self.bound_calve && self.bound_ankle && self.bound_long;
+        if should_tie_hang {
+            return vec!((Bound::Hang, true));
+        }
+
         if !self.bound_wrist {list.push((Bound::Wrist, true));}
         if !self.bound_ankle {list.push((Bound::Ankle, true));}
         if !self.bound_hang && !self.bound_joint && self.bound_neck && self.bound_wrist {
