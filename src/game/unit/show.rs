@@ -42,6 +42,12 @@ impl Unit {
         format!("{fall}{hold}")
     }
 
+    pub fn txt_state_time(&self) -> String {
+        let action = if self.action {"|"} else {" "};
+        let stun = if self.stun {"S"} else {" "};
+        format!("{action}{stun}")
+    }
+
     pub fn txt_attr(&self) -> String {
         let can_stand = if self.can_stand() {"ok "} else {"no "};
         

@@ -35,5 +35,10 @@ impl Board {
         for unit in &mut self.units {
             unit.action = true;
         }
+        let res0 = self.index(0).restore_amount();
+        let res1 = self.index(1).restore_amount();
+        println!("[End turn] 0 restore {res0}; 1 restore {res1}");
+        self.index_mut(0).auto_restore();
+        self.index_mut(1).auto_restore();
     }
 }

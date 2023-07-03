@@ -1,7 +1,7 @@
 use super::Unit;
 
 const INJ_COEFFICIENT : i32 = 5;
-const RESTORE_RATE : i32 = 10;
+const RESTORE_RATE : i32 = 25;
 
 impl Unit {
     pub fn test_new1() -> Self {
@@ -57,6 +57,7 @@ impl Unit {
             
             fall,
             hold : false,
+            stun : false,
             action : true,
             name : "a".to_string(),
             
@@ -98,7 +99,7 @@ impl Unit {
 
         Self {
             str_max : 15,
-            dex_max : 15,
+            dex_max : 20,
             agi_max : 20,
             inj_coefficient : INJ_COEFFICIENT,
             restore_rate : RESTORE_RATE,
@@ -116,6 +117,7 @@ impl Unit {
             
             fall,
             hold : false,
+            stun : false,
             action : true,
             name : "a".to_string(),
             

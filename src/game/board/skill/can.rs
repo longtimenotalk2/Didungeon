@@ -10,7 +10,7 @@ impl Board {
         let a = self.index(ia);
         let b = self.index(ib);
 
-        !a.bound_wrist && b.next_can_tie_choices().len() > 0 && b.hold
+        !a.bound_wrist && b.next_can_tie_choices().len() > 0 && (b.hold || b.stun)
     }
 
     pub fn can_holddown(&self, ia : i32, ib : i32) -> bool {
@@ -31,8 +31,9 @@ impl Board {
         a.fall && !a.hold && a.can_stand()
     } 
 
-    pub fn can_punch(&self, ia : i32) -> bool {
+    pub fn can_punch(&self, ia : i32, ib : i32) -> bool {
         let a = self.index(ia);
-        !a.fall && !a.bound_wrist
+        let b = self.index(ib);
+        !a.fall && !a.bound_wrist && !b.hold
     }
 }

@@ -12,7 +12,7 @@ impl Board {
                 None => " ",
                 Some(a) => if i as i32 == a {">"} else {" "},
             };
-            println!("{ac}{i} : {}{} {}", unit.txt_state(), unit.txt_bound(), unit.txt_attr());
+            println!("{ac}{i} : {}{} {} {}", unit.txt_state(), unit.txt_bound(), unit.txt_attr(), unit.txt_state_time());
         }
         
         println!("--------------------------------------------------------------------------");

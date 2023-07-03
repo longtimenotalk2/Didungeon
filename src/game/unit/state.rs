@@ -5,14 +5,17 @@ mod to_self;
 
 impl Unit {
     pub fn str(&self) -> i32 {
+        if self.stun {return 0;}
         (self.str_max - self.inj / self.inj_coefficient).max(0)
     }
 
     pub fn dex(&self) -> i32 {
+        if self.stun {return 0;}
         (self.dex_max - self.inj / self.inj_coefficient).max(0)
     }
 
     pub fn agi(&self) -> i32 {
+        if self.stun {return 0;}
         (self.agi_max - self.inj / self.inj_coefficient).max(0)
     }
 

@@ -192,5 +192,15 @@ impl Board {
         }
         let inj = self.index(ib).inj;
         print!("{}", txt_hit("punch", hit, hit_dice, is_hit, &format!("{dmg} dmg -> {inj}")));
+        // stun
+        if is_hit {
+            let hit_dice = self.dice.d(100);
+            let is_hit = dmg >= hit_dice;
+            if is_hit {
+                let b = self.index_mut(ib);
+                b.be_stun();
+            }
+            print!("{}", txt_hit("stun check", dmg, hit_dice, is_hit, &format!("stun!")));
+        }
     }
 }

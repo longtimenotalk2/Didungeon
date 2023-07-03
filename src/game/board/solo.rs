@@ -11,11 +11,11 @@ enum Action {
 impl Action {
     fn all() -> Vec<Self> {
         vec!(
-            Self::Punch,
-            Self::Unbound, 
-            Self::Struggle,
-            Self::Holddowm,
             Self::Tie,
+            Self::Unbound, 
+            Self::Holddowm,
+            Self::Struggle,
+            Self::Punch,
         )
     }
 }
@@ -71,7 +71,7 @@ impl Board {
                     }
                 },
                 Action::Punch => {
-                    if self.can_punch(ia) {
+                    if self.can_punch(ia, ib) {
                         let (hit, dmg) = self.hit_and_dmg_punch(ia, ib);
                         let point = (hit * dmg / (dmg + 1)).min(80);
                         txt += &format!("punch : {point}({hit}% * {dmg}), ");
@@ -92,6 +92,11 @@ impl Board {
         self.print(Some(i));
         let ia = i;
         let ib = 1-i;
+        if self.index(ia).stun {
+            self.index_mut(ia).stun = false;
+            println!("<stun remove>");
+            return;
+        }
         if self.can_auto_stand(ia) {
             println!("<stand auto>");
             self.index_mut(ia).fall = false;
@@ -106,7 +111,7 @@ impl Board {
             },
             None => println!("<Pass>")
         }
-        
+        self.index_mut(ia).action = false; 
     }
 
     pub fn solo_start(&mut self, turn : i32) {
@@ -114,10 +119,15 @@ impl Board {
             self.turn_pass();
             if self.index(0).spd() >= self.index(1).spd() {
                 self.action(0);
-                self.action(1);
+                if self.index(1).action {
+                    self.action(1);
+                }
+                
             }else{
                 self.action(1);
-                self.action(0);
+                if self.index(0).action {
+                    self.action(0);
+                }
             }
             if self.index(0).is_defeated() {
                 println!("player 1 win!");
@@ -127,11 +137,6 @@ impl Board {
                 println!("player 0 win!");
                 return;
             }
-            let res0 = self.index(0).restore_amount();
-            let res1 = self.index(1).restore_amount();
-            println!("[End turn] 0 restore {res0}; 1 restore {res1}");
-            self.index_mut(0).auto_restore();
-            self.index_mut(1).auto_restore();
-        }        
+        }
     }
 }

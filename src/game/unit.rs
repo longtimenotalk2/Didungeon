@@ -65,6 +65,7 @@ pub struct Unit {
 
     pub fall : bool,
     pub hold : bool,
+    pub stun : bool,
     
     pub action : bool,
 
@@ -78,5 +79,11 @@ impl Unit {
 
     pub fn auto_restore(&mut self) {
         self.inj -= self.restore_amount();
+    }
+
+    pub fn be_stun(&mut self) {
+        self.stun = true;
+        self.action = false;
+        self.fall = true;
     }
 }
