@@ -1,5 +1,8 @@
 use super::Unit;
 
+const INJ_COEFFICIENT : i32 = 5;
+const RESTORE_RATE : i32 = 10;
+
 impl Unit {
     pub fn test_new1() -> Self {
         #[allow(warnings)]
@@ -35,10 +38,11 @@ impl Unit {
         // let fall : bool = true;
 
         Self {
-            str_max : 10,
-            dex_max : 10,
-            agi_max : 10,
-            inj_coefficient : 5,
+            str_max : 20,
+            dex_max : 15,
+            agi_max : 15,
+            inj_coefficient : INJ_COEFFICIENT,
+            restore_rate : RESTORE_RATE,
             inj : 0,
 
             bound_neck,
@@ -84,19 +88,20 @@ impl Unit {
         // let bound_neck : bool = true;
         // let bound_arm : bool = true;
         // let bound_hang : bool = true;
-        let bound_wrist : bool = true;
-        let bound_joint : bool = true;
+        // let bound_wrist : bool = true;
+        // let bound_joint : bool = true;
         // let bound_thigh : bool = true;
         // let bound_calve : bool = true;
-        let bound_ankle : bool = true;
+        // let bound_ankle : bool = true;
         // let bound_long: bool = true;
         // let fall : bool = true;
 
         Self {
-            str_max : 16,
-            dex_max : 20,
-            agi_max : 18,
-            inj_coefficient : 5,
+            str_max : 15,
+            dex_max : 15,
+            agi_max : 20,
+            inj_coefficient : INJ_COEFFICIENT,
+            restore_rate : RESTORE_RATE,
             inj : 0,
 
             bound_neck,

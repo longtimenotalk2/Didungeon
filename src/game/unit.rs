@@ -50,6 +50,7 @@ pub struct Unit {
     dex_max : i32,
     agi_max : i32,
     inj_coefficient : i32,
+    restore_rate : i32,
     pub inj : i32,
 
     pub bound_neck : bool,
@@ -68,4 +69,14 @@ pub struct Unit {
     pub action : bool,
 
     pub name : String,
+}
+
+impl Unit {
+    pub fn restore_amount(&self) -> i32 {
+        self.inj * self.restore_rate / 100
+    }
+
+    pub fn auto_restore(&mut self) {
+        self.inj -= self.restore_amount();
+    }
 }

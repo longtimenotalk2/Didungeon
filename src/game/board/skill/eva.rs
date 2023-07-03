@@ -1,6 +1,6 @@
 use crate::game::{board::Board, unit::Bound};
 
-use super::to_hit;
+use super::{to_hit, to_dmg};
 
 impl Board {
     pub fn hit_unbound(&self, ia : i32) -> i32 {
@@ -74,5 +74,20 @@ impl Board {
         let acc = a.anti_hold();
         let evd = b.hold();
         to_hit(50 + (acc - evd) * 5)
+    }
+
+    pub fn hit_and_dmg_punch(&self, ia : i32, ib : i32) -> (i32, i32) {
+        let a = self.index(ia);
+        let b = self.index(ib);
+
+        let acc = a.acc_melee_hand();
+        let evd = b.evd();
+        let hit = to_hit(50 + (acc-evd) * 5);
+
+        let atk = a.hand_str();
+        let def = b.hand_str();
+        let dmg = to_dmg(10 + atk - def, 1);
+
+        (hit, dmg)
     }
 }

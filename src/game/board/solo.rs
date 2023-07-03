@@ -1,6 +1,7 @@
 use super::Board;
 
 enum Action {
+    Punch,
     Unbound,
     Tie,
     Holddowm,
@@ -10,6 +11,7 @@ enum Action {
 impl Action {
     fn all() -> Vec<Self> {
         vec!(
+            Self::Punch,
             Self::Unbound, 
             Self::Struggle,
             Self::Holddowm,
@@ -25,34 +27,31 @@ impl Board {
         let ia = i;
         let ib = 1-i;
         let mut txt = String::new();
+        let mut matcher = |a : (Action, i32)| {
+            let hit = a.1;
+            match choice {
+                Some((_, hit_)) => {
+                    if hit > hit_ {
+                        choice = Some(a);
+                    }
+                },
+                None => choice = Some(a),
+            }
+        };
         for act in Action::all() {
             match act {
                 Action::Unbound => {
                     if self.can_unbound(ia) {
                         let hit = self.hit_unbound(ia);
                         txt += &format!("unbound : {hit}, ");
-                        match choice {
-                            Some((_, hit_)) => {
-                                if hit > hit_ {
-                                    choice = Some((Action::Unbound, hit));
-                                }
-                            },
-                            None => choice = Some((Action::Unbound, hit)),
-                        }
+                        matcher((Action::Unbound, hit))
                     }
                 },
                 Action::Tie => {
                     if self.can_tie(ia, ib) {
                         if let Some((_, _, hit)) = self.choice_tie(ia, ib) {
                             txt += &format!("tie : {hit}, ");
-                            match choice {
-                                Some((_, hit_)) => {
-                                    if hit > hit_ {
-                                        choice = Some((Action::Tie, hit));
-                                    }
-                                },
-                                None => choice = Some((Action::Tie, hit)),
-                            }
+                            matcher((Action::Tie, hit))
                         }
                     }
                 },
@@ -61,28 +60,22 @@ impl Board {
                         let (hit1, hit2, hit3) = self.hit_holddown(ia, ib);
                         let hit = hit1 * (hit2 * hit3) / 10000;
                         txt += &format!("holddown : {hit}, ");
-                        match choice {
-                            Some((_, hit_)) => {
-                                if hit > hit_ {
-                                    choice = Some((Action::Holddowm, hit));
-                                }
-                            },
-                            None => choice = Some((Action::Holddowm, hit)),
-                        }
+                        matcher((Action::Holddowm, hit))
                     }
                 },
                 Action::Struggle => {
                     if self.can_struggle(ia) {
                         let hit = self.hit_struggle(ia, ib);
                         txt += &format!("struggle : {hit}, ");
-                        match choice {
-                            Some((_, hit_)) => {
-                                if hit > hit_ {
-                                    choice = Some((Action::Struggle, hit));
-                                }
-                            },
-                            None => choice = Some((Action::Struggle, hit)),
-                        }
+                        matcher((Action::Struggle, hit))
+                    }
+                },
+                Action::Punch => {
+                    if self.can_punch(ia) {
+                        let (hit, dmg) = self.hit_and_dmg_punch(ia, ib);
+                        let point = (hit * dmg / (dmg + 1)).min(80);
+                        txt += &format!("punch : {point}({hit}% * {dmg}), ");
+                        matcher((Action::Punch, point))
                     }
                 },
             }
@@ -109,6 +102,7 @@ impl Board {
                 Action::Tie => self.tie_with_most_hit(ia, ib),
                 Action::Holddowm => self.holddown(ia, ib),
                 Action::Struggle => self.struggle(ia, ib),
+                Action::Punch => self.punch(ia, ib),
             },
             None => println!("<Pass>")
         }
@@ -118,7 +112,7 @@ impl Board {
     pub fn solo_start(&mut self, turn : i32) {
         for _ in 0..turn {
             self.turn_pass();
-            if self.index(0).spd() > self.index(1).spd() {
+            if self.index(0).spd() >= self.index(1).spd() {
                 self.action(0);
                 self.action(1);
             }else{
@@ -133,6 +127,11 @@ impl Board {
                 println!("player 0 win!");
                 return;
             }
+            let res0 = self.index(0).restore_amount();
+            let res1 = self.index(1).restore_amount();
+            println!("[End turn] 0 restore {res0}; 1 restore {res1}");
+            self.index_mut(0).auto_restore();
+            self.index_mut(1).auto_restore();
         }        
     }
 }

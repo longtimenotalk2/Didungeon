@@ -15,6 +15,12 @@ impl Unit {
         !(upper && lower)
     }
 
+    pub fn hand_str(&self) -> i32 {
+        // 手部力量相关
+        // 力量 * 手部自由度系数
+        self.freedom_hand_coefficient(self.str())
+    }
+
     pub fn hand_dex(&self) -> i32 {
         // 手部操作相关灵巧
         // 灵巧 * 手部自由度系数

@@ -58,12 +58,16 @@ impl Unit {
         txt += &remove0(self.anti_hold());
         txt += &remove0(self.anti_tie_upper());
         txt += &remove0(self.anti_tie_lower());
+
+        // Hand
+        txt += &remove0(self.hand_str());
+        txt += &remove0(self.hand_dex());
+        txt += &remove0(self.hand_agi());
+
         
         // Self
         txt += &remove0(self.spd());
         txt += can_stand;
-        txt += &remove0(self.hand_dex());
-        txt += &remove0(self.hand_agi());
         txt += &remove0(self.unbound_force_upper());
         txt += &remove0(self.unbound_force_lower());
         
@@ -77,11 +81,11 @@ impl Unit {
     }
 
     pub fn title_1() -> &'static str {
-        "┌─Offense──┐┌───Defense───┐┌─────Self───────┐┌──Basic───┐"
+        "┌─Offense──┐┌───Defense───┐┌─Hand──┐┌───Self───┐┌──Basic───┐"
     }
 
     pub fn title_2() -> &'static str {
-        "AccPshHldTieEvdPshHld┌Tie─┐Spd ↑ ┌Hand┐┌Unbd┐StrDexAgiInj"
+        "AccPshHldTieEvdPshHld┌Tie─┐StrDexAgiSpd ↑ ┌Unbd┐StrDexAgiInj"
     }
 
 }

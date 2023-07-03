@@ -180,4 +180,17 @@ impl Board {
             }
         }
     }
+
+    pub fn punch(&mut self, ia : i32, ib : i32) {
+        let (hit, dmg) = self.hit_and_dmg_punch(ia, ib);
+        println!("<punch>");
+        let hit_dice = self.dice.d(100);
+        let is_hit = hit >= hit_dice;
+        if is_hit {
+            let mut b = self.index_mut(ib);
+            b.inj += dmg;
+        }
+        let inj = self.index(ib).inj;
+        print!("{}", txt_hit("punch", hit, hit_dice, is_hit, &format!("{dmg} dmg -> {inj}")));
+    }
 }
