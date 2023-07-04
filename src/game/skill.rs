@@ -1,4 +1,5 @@
 pub mod punch;
+pub mod tie;
 
 use std::collections::HashMap;
 
