@@ -1,5 +1,5 @@
 mod show;
-// mod solo;
+mod solo;
 // mod skill;
 
 use crate::wyrand::Dice;
@@ -43,12 +43,7 @@ impl<'a> Board<'a> {
     fn turn_pass(&mut self) {
         self.turn += 1;
         for unit in &mut self.units {
-            unit.action = true;
+            unit.end_turn();
         }
-        let res0 = self.index(0).restore_amount();
-        let res1 = self.index(1).restore_amount();
-        println!("[End turn] 0 restore {res0}; 1 restore {res1}");
-        self.index_mut(0).auto_restore();
-        self.index_mut(1).auto_restore();
     }
 }

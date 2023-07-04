@@ -73,6 +73,11 @@ pub struct Unit {
 }
 
 impl Unit {
+    pub fn end_turn(&mut self) {
+        self.action = true;
+        self.auto_restore();
+    }
+
     pub fn restore_amount(&self) -> i32 {
         self.inj * self.restore_rate / 100
     }
