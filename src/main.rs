@@ -6,7 +6,7 @@ pub mod wyrand;
 fn main() {
     let seed = 114517;
     println!("seed - {seed}");
-    let mut board = Board::new_solo(seed);
-    board.solo_start(100);
+    // let mut board = Board::new_solo(seed);
+    // board.solo_start(100);
 
 }
