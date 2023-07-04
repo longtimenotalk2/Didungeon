@@ -2,34 +2,52 @@ use crate::{wyrand::Dice, game::skill::Skill};
 
 use super::Board;
 
-
-
-// enum Action {
-//     Punch,
-//     Unbound,
-//     Tie,
-//     Holddowm,
-//     Struggle,
-// }
-
-// impl Action {
-//     fn all() -> Vec<Self> {
-//         vec!(
-//             Self::Tie,
-//             Self::Unbound, 
-//             Self::Holddowm,
-//             Self::Struggle,
-//             Self::Punch,
-//         )
-//     }
-// }
-
 impl<'a> Board<'a> {
+    fn make_choice(&self, ia : u8) -> Option<Skill> {
+        let mut choice : Option<(Skill, i32)> = None;
+        let ib = 1-ia;
+        let mut txt = String::new();
+        let mut matcher = |skill : Skill, point : i32, comment : Option<String>| {
+            let name = skill.name();
+            txt += &format!("{name} : {point}");
+            if let Some(c) = comment {
+                txt += &format!( "({c})");
+            }
+            match choice {
+                Some((_, point_)) => {
+                    if point > point_ {
+                        choice = Some((skill, point));
+                    }
+                },
+                None => choice = Some((skill, point))
+            }
+        };
+        for skl in Skill::all() {
+            if self.can(&skl, ia, Some(ib)) {
+                let (point, txt) = self.evaluate(&skl, ia, Some(ib));
+                matcher(skl, point, txt)
+            }
+        }
+        println!("Choices : {txt}");
+        let choice = match choice {
+            Some((c, _)) => Some(c),
+            None => None,
+        };
+        choice
+    }
+
     fn action(&mut self, ia : u8, dice : &mut Dice) {
         self.print(Some(0));
         let ib = 1-ia;
-        let txt = self.exe(&Skill::Punch, ia, Some(ib), dice);
-        print!("{txt}")
+        let skill = self.make_choice(ia);
+        match skill {
+            Some(skl) => {
+                let txt = self.exe(&skl, ia, Some(ib), dice);
+                print!("{txt}")
+            }
+            None => println!("pass")
+        }
+        
     }
 
     pub fn anto_run(&mut self, turn : i32, dice : &mut Dice) {

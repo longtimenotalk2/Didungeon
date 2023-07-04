@@ -35,6 +35,11 @@ impl<'a> Board<'a> {
         skill_can(&self, ia, ib)
     }
 
+    fn evaluate(&self, skill : &Skill, ia : u8, ib : Option<u8>) -> (i32, Option<String>) {
+        let skill_evaluate = self.skill_set.get_evaluate(skill);
+        skill_evaluate(&self, ia, ib)
+    }
+
     fn exe(&mut self, skill : &Skill, ia : u8, ib : Option<u8>, dice : &mut Dice) -> String {
         let mut skill_exe = self.skill_set.get_exe(skill);
         skill_exe(self, ia, ib, dice)

@@ -15,7 +15,7 @@ impl<'a> Board<'a> {
             println!("{ac}{i} : {}{} {} {}", unit.txt_state(), unit.txt_bound(), unit.txt_attr(), unit.txt_state_time());
         }
         
-        println!("--------------------------------------------------------------------------");
+        println!("---------------------------------------------------------------------------------");
     }
 
     pub fn title_front() -> String {

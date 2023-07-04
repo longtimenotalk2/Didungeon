@@ -42,14 +42,31 @@ impl Skillize for Punch {
         )
     }
 
+    fn evaluate(&self) -> Box<dyn Fn(&Board, u8, Option<u8>) -> (i32, Option<String>) + '_> {
+        Box::new(
+            |board, ia, ibo| {
+                let ib = ibo.unwrap();
+                let a = board.index(ia);
+                let b = board.index(ib);
+                let acc = a.acc_melee_hand();
+                let evd = b.evd();
+                let hit = self.hit(acc, evd);
+                let atk = a.hand_str();
+                let def = b.hand_str();
+                let dmg = self.dmg(atk, def);
+
+                let point = (hit * dmg / (dmg + 1)).min(80);
+                let txt = format!("{hit}% x {dmg}");
+                (point, Some(txt))
+            }
+        )
+    }
+
     fn exe(&self) -> Box<dyn FnMut(&mut Board, u8, Option<u8>, &mut Dice) -> String + '_> {
-        // Box::new(
-        //     |board, ia, ibo| {}
-        // )
         Box::new(
             |board, ia, ibo, dice| {
-                let ib = ibo.unwrap();
                 let mut txt = String::new();
+                let ib = ibo.unwrap();
                 let a = board.index(ia);
                 let b = board.index(ib);
 

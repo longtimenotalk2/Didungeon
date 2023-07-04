@@ -25,6 +25,7 @@ fn txt_hit(target : &str, hit : i32, hit_dice : i32, is_hit : bool, success : &s
 
 pub trait Skillize {
     fn can(&self) -> Box<dyn Fn(&Board, u8, Option<u8>) -> bool>;
+    fn evaluate(&self) -> Box<dyn Fn(&Board, u8, Option<u8>) -> (i32, Option<String>) + '_>;
     fn exe(&self) -> Box<dyn FnMut(&mut Board, u8, Option<u8>, &mut Dice) -> String + '_>;
 }
 
@@ -33,7 +34,13 @@ pub enum Skill {
     Punch,
 }
 
-impl Skill {
+impl Skill {    
+    pub fn name(&self) -> &str {
+        match self {
+            Skill::Punch => "punch",
+        }
+    }
+
     pub fn all() -> Vec<Self> {
         vec!(Self::Punch)
     }
@@ -62,6 +69,10 @@ impl SkillSet {
 
     pub fn get_can(&self, skill : &Skill) -> Box<dyn Fn(&Board, u8, Option<u8>) -> bool> {
         self.skill_data.get(skill).unwrap().can()
+    }
+
+    pub fn get_evaluate(&self, skill : &Skill) -> Box<dyn Fn(&Board, u8, Option<u8>) -> (i32, Option<String>) + '_> {
+        self.skill_data.get(skill).unwrap().evaluate()
     }
 
     pub fn get_exe(&self, skill : &Skill) -> Box<dyn FnMut(&mut Board, u8, Option<u8>, &mut Dice) -> String + '_> {
