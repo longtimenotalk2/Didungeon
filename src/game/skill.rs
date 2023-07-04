@@ -25,9 +25,9 @@ fn txt_hit(target : &str, hit : i32, hit_dice : i32, is_hit : bool, success : &s
 }
 
 pub trait Skillize {
-    fn can(&self) -> Box<dyn Fn(&Board, u8, Option<u8>) -> bool>;
-    fn evaluate(&self) -> Box<dyn Fn(&Board, u8, Option<u8>) -> (i32, Option<String>) + '_>;
-    fn exe(&self) -> Box<dyn FnMut(&mut Board, u8, Option<u8>, &mut Dice) -> String + '_>;
+    fn can(&self, board : &Board, ia : u8, ibo : Option<u8>) -> bool;
+    fn evaluate(&self, board : &Board, ia : u8, ibo : Option<u8>) -> (i32, Option<String>);
+    fn exe(&self, board : &mut Board, ia : u8, ibo : Option<u8>, dice : &mut Dice) -> String;
 }
 
 #[derive(PartialEq, Eq, Hash)]
@@ -68,15 +68,15 @@ impl SkillSet {
         }
     }
 
-    pub fn get_can(&self, skill : &Skill) -> Box<dyn Fn(&Board, u8, Option<u8>) -> bool> {
-        self.skill_data.get(skill).unwrap().can()
+    pub fn can(&self, skill : &Skill, board : &Board, ia : u8, ibo : Option<u8>) -> bool {
+        self.skill_data.get(skill).unwrap().can(board, ia, ibo)
     }
 
-    pub fn get_evaluate(&self, skill : &Skill) -> Box<dyn Fn(&Board, u8, Option<u8>) -> (i32, Option<String>) + '_> {
-        self.skill_data.get(skill).unwrap().evaluate()
+    pub fn evaluate(&self, skill : &Skill, board : &Board, ia : u8, ibo : Option<u8>) -> (i32, Option<String>) {
+        self.skill_data.get(skill).unwrap().evaluate(board, ia, ibo)
     }
 
-    pub fn get_exe(&self, skill : &Skill) -> Box<dyn FnMut(&mut Board, u8, Option<u8>, &mut Dice) -> String + '_> {
-        self.skill_data.get(skill).unwrap().exe()
+    pub fn exe(&self, skill : &Skill, board : &mut Board, ia : u8, ibo : Option<u8>, dice : &mut Dice) -> String {
+        self.skill_data.get(skill).unwrap().exe(board, ia, ibo, dice)
     }
 }

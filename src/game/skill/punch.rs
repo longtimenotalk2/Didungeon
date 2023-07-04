@@ -31,76 +31,64 @@ impl Punch {
 }
 
 impl Skillize for Punch {
-    fn can(&self) -> Box<dyn Fn(&Board, u8, Option<u8>) -> bool> {
-        Box::new(
-            |board, ia, _ibo| {
-                let a = board.index(ia);
-                if a.fall {return false};
-                if a.bound_wrist {return false};
-                true
-            }
-        )
+    fn can(&self, board : &Board, ia : u8, _ibo : Option<u8>) -> bool {
+        let a = board.index(ia);
+        if a.fall {return false};
+        if a.bound_wrist {return false};
+        true
     }
 
-    fn evaluate(&self) -> Box<dyn Fn(&Board, u8, Option<u8>) -> (i32, Option<String>) + '_> {
-        Box::new(
-            |board, ia, ibo| {
-                let ib = ibo.unwrap();
-                let a = board.index(ia);
-                let b = board.index(ib);
-                let acc = a.acc_melee_hand();
-                let evd = b.evd();
-                let hit = self.hit(acc, evd);
-                let atk = a.hand_str();
-                let def = b.hand_str();
-                let dmg = self.dmg(atk, def);
+    fn evaluate(&self, board : &Board, ia : u8, ibo : Option<u8>) -> (i32, Option<String>) {
+        let ib = ibo.unwrap();
+        let a = board.index(ia);
+        let b = board.index(ib);
+        let acc = a.acc_melee_hand();
+        let evd = b.evd();
+        let hit = self.hit(acc, evd);
+        let atk = a.hand_str();
+        let def = b.hand_str();
+        let dmg = self.dmg(atk, def);
 
-                let point = (hit * dmg / (dmg + 1)).min(80);
-                let txt = format!("{hit}% x {dmg}");
-                (point, Some(txt))
-            }
-        )
+        let point = (hit * dmg / (dmg + 1)).min(80);
+        let txt = format!("{hit}% x {dmg}");
+        (point, Some(txt))
     }
 
-    fn exe(&self) -> Box<dyn FnMut(&mut Board, u8, Option<u8>, &mut Dice) -> String + '_> {
-        Box::new(
-            |board, ia, ibo, dice| {
-                let mut txt = String::new();
-                let ib = ibo.unwrap();
-                let a = board.index(ia);
-                let b = board.index(ib);
+    fn exe(&self, board : &mut Board, ia : u8, ibo : Option<u8>, dice : &mut Dice) -> String {
+        let mut txt = String::new();
+        let ib = ibo.unwrap();
+        let a = board.index(ia);
+        let b = board.index(ib);
 
-                txt += "<punch>\n";
+        txt += "<punch>\n";
 
-                let acc = a.acc_melee_hand();
-                let evd = b.evd();
-                let hit = self.hit(acc, evd);
-                let atk = a.hand_str();
-                let def = b.hand_str();
-                let dmg = self.dmg(atk, def);
-                let stun_rate = self.stun_rate(atk, def);
+        let acc = a.acc_melee_hand();
+        let evd = b.evd();
+        let hit = self.hit(acc, evd);
+        let atk = a.hand_str();
+        let def = b.hand_str();
+        let dmg = self.dmg(atk, def);
+        let stun_rate = self.stun_rate(atk, def);
 
-                let hit_dice = dice.d(100);
-                let is_hit = hit >= hit_dice;
-                if is_hit {
-                    board.index_mut(ib).inj += dmg;
-                }
-                let inj = board.index(ib).inj;
-                txt += &format!("{}", txt_hit("punch", hit, hit_dice, is_hit, &format!("{dmg} dmg -> {inj}")));
+        let hit_dice = dice.d(100);
+        let is_hit = hit >= hit_dice;
+        if is_hit {
+            board.index_mut(ib).inj += dmg;
+        }
+        let inj = board.index(ib).inj;
+        txt += &format!("{}", txt_hit("punch", hit, hit_dice, is_hit, &format!("{dmg} dmg -> {inj}")));
 
-                // stun
-                if is_hit {
-                    let hit_dice = dice.d(100);
-                    let is_hit = stun_rate >= hit_dice;
-                    if is_hit {
-                        let b = board.index_mut(ib);
-                        b.be_stun();
-                    }
-                    txt += &format!("{}", txt_hit("stun check", dmg, hit_dice, is_hit, &format!("stun!")));
-                }
-
-                txt
+        // stun
+        if is_hit {
+            let hit_dice = dice.d(100);
+            let is_hit = stun_rate >= hit_dice;
+            if is_hit {
+                let b = board.index_mut(ib);
+                b.be_stun();
             }
-        )
+            txt += &format!("{}", txt_hit("stun check", dmg, hit_dice, is_hit, &format!("stun!")));
+        }
+
+        txt
     }
 }
