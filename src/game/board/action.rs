@@ -13,9 +13,9 @@ impl<'a> Board<'a> {
                 let b = self.index(ib);
                 if a.ally != b.ally {
                     ibs.push(ib);
-                }
-                if b.block() {
-                    break;
+                    if b.block() {
+                        break;
+                    }
                 }
             }
         }
@@ -26,13 +26,29 @@ impl<'a> Board<'a> {
                 let b = self.index(ib);
                 if a.ally != b.ally {
                     ibs.push(ib);
-                }
-                if b.block() {
-                    break;
+                    if b.block() {
+                        break;
+                    }
                 }
             }
         }
         ibs
+    }
+
+    pub fn rush_to(&mut self, ia : u8, ib : u8) {
+        let loca = self.get_location(ia);
+        let locb = self.get_location(ib);
+        let (loc_new, direction) = if loca > locb {
+            (locb + 1, 1)
+        }else{
+            (locb - 1, -1)
+        };
+        self.set_location(ia, loc_new);
+        let mut consider = ia;
+        while let Some(ib) = self.coincide_with(consider) {
+            consider = ib;
+            self.set_location(ib, self.get_location(ib) + direction);
+        }
     }
 }
 
@@ -41,7 +57,23 @@ impl<'a> Board<'a> {
         *self.locations.get(&ia).unwrap()
     }
 
-    fn on_location(&self, loc : i32) -> Option<u8> {
+    fn set_location(&mut self, ia : u8, loc : i32) {
+        *self.locations.get_mut(&ia).unwrap() = loc;
+    }
+
+    fn coincide_with(&mut self, ia : u8) -> Option<u8> {
+        let loc = self.get_location(ia);
+        for ib in self.locations.keys() {
+            if *ib != ia {
+                if loc == self.get_location(*ib) {
+                    return Some(*ib)
+                }
+            }
+        }
+        None
+    }
+
+    pub fn on_location(&self, loc : i32) -> Option<u8> {
         for (&i, &l) in self.locations.iter() {
             if loc == l {
                 return Some(i);

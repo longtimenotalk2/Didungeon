@@ -25,15 +25,24 @@ impl Punch {
         true
     }
 
-    fn hit(&self, acc : i32, evd : i32) -> i32 {
+    fn hit(&self, a : &Unit, b : &Unit) -> i32 {
+        let acc = a.acc_melee_hand();
+        let evd = b.evd();
+        if evd == 0 {
+            return 100;
+        }
         to_hit(self.basic_hit + self.hit_rate * (acc - evd))
     }
 
-    fn dmg(&self, atk : i32, def : i32) -> i32 {
+    fn dmg(&self, a : &Unit, b : &Unit) -> i32 {
+        let atk = a.hand_str();
+        let def = b.hand_str();
         to_dmg(self.basic_dmg + atk - def, 1)
     }
 
-    fn stun_rate(&self, atk : i32, def : i32) -> i32 {
+    fn stun_rate(&self, a : &Unit, b : &Unit) -> i32 {
+        let atk = a.hand_str();
+        let def = b.hand_str();
         to_dmg(self.basic_dmg + atk - def, 1)
     }
 }
@@ -55,12 +64,8 @@ impl Skillize for Punch {
     fn evaluate(&self, board : &Board, ia : u8, ib : u8) -> (i32, Option<String>) {
         let a = board.index(ia);
         let b = board.index(ib);
-        let acc = a.acc_melee_hand();
-        let evd = b.evd();
-        let hit = self.hit(acc, evd);
-        let atk = a.hand_str();
-        let def = b.hand_str();
-        let dmg = self.dmg(atk, def);
+        let hit = self.hit(a, b);
+        let dmg = self.dmg(a, b);
 
         let point = (hit * dmg / (dmg + 1)).min(80);
         let txt = format!("{hit}% x {dmg}");
@@ -69,18 +74,16 @@ impl Skillize for Punch {
 
     fn exe(&self, board : &mut Board, ia : u8, ib : u8, dice : &mut Dice) -> String {
         let mut txt = String::new();
-        let a = board.index(ia);
-        let b = board.index(ib);
 
         txt += &txt_announce(&Skill::Punch, ib);
 
-        let acc = a.acc_melee_hand();
-        let evd = b.evd();
-        let hit = self.hit(acc, evd);
-        let atk = a.hand_str();
-        let def = b.hand_str();
-        let dmg = self.dmg(atk, def);
-        let stun_rate = self.stun_rate(atk, def);
+        board.rush_to(ia, ib);
+
+        let a = board.index(ia);
+        let b = board.index(ib);
+        let hit = self.hit(a, b);
+        let dmg = self.dmg(a, b);
+        let stun_rate = self.stun_rate(a, b);
 
         let hit_dice = dice.d(100);
         let is_hit = hit >= hit_dice;

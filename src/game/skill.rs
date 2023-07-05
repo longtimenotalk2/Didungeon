@@ -28,7 +28,7 @@ fn txt_hit(target : &str, hit : i32, hit_dice : i32, is_hit : bool, success : &s
 }
 
 fn txt_announce(skill : &Skill, ib : u8) -> String {
-    format!("<{} -> {}>", skill.name(), ib)
+    format!("<{} -> {}>\n", skill.name(), ib)
 }
 
 pub trait Skillize {

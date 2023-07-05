@@ -23,17 +23,19 @@ impl Hold {
         }
     }
 
-    fn can(&self, a : &Unit, b : &Unit) -> bool {
-        if a.ally == b.ally { return false;}
-        if a.fall {return false;}
-        if b.hold {return false;}
-        if b.stun {return false;}
+    fn can(&self, a : &Unit, ib : u8) -> bool {
+        if let Some(ibb) = a.catch {
+            if ibb == ib {
+                return false;
+            }
+        }
         true
     }
 
     fn hit_attact(&self, a : &Unit, b : &Unit) -> i32 {
         let acc = a.acc_melee_hand();
         let evd = b.evd();
+        if evd == 0 {return 100};
         let hit = to_hit(self.basic_attach_hit + (acc - evd) * self.attach_hit_rate);
         hit
     }
@@ -41,6 +43,7 @@ impl Hold {
     fn hit_fall(&self, a : &Unit, b : &Unit) -> i32 {
         let acc = a.push();
         let evd = b.anti_push();
+        if evd == 0 {return 100};
         let hit = to_hit(self.basic_fall_hit + (acc - evd) * self.fall_hit_rate);
         hit
     }
@@ -48,6 +51,7 @@ impl Hold {
     fn hit_hold(&self, a : &Unit, b : &Unit) -> i32 {
         let acc = a.hold();
         let evd = b.anti_hold();
+        if evd == 0 {return 100};
         let hit = to_hit(self.basic_hold_hit + (acc - evd) * self.hold_hit_rate);
         hit
     }
@@ -59,8 +63,7 @@ impl Skillize for Hold {
         let mv = a.mv();
         let mut ibs = vec!();
         for ib in board.find_melee_target(ia, mv) {
-            let b = board.index(ib);
-            if self.can(a, b) {
+            if self.can(a, ib) {
                 ibs.push(ib);
             }
         }
@@ -80,16 +83,17 @@ impl Skillize for Hold {
 
     fn exe(&self, board : &mut crate::game::board::Board, ia : u8, ib : u8, dice : &mut crate::wyrand::Dice) -> String {
         let mut txt = String::new();
+
+        txt += &txt_announce(&Skill::Hold, ib);
+
+        board.rush_to(ia, ib);
         
         let a = board.index(ia);
         let b = board.index(ib); 
-
-        txt += &txt_announce(&Skill::Hold, ib);
-        
         let hit1 = self.hit_attact(a, b);
         let hit_dice = dice.d(100);
         let is_hit1 = hit1 >= hit_dice;
-        print!("{}", txt_hit("attach", hit1, hit_dice, is_hit1, "success"));
+        txt += &format!("{}", txt_hit("attach", hit1, hit_dice, is_hit1, "success"));
         if is_hit1 {
             if !b.fall {
                 let hit2 = self.hit_fall(a, b);
@@ -99,7 +103,7 @@ impl Skillize for Hold {
                     let mut b = board.index_mut(ib);
                     b.fall = true;
                 }
-                print!("{}", txt_hit("    push opponent", hit2, hit_dice, is_hit2, "success"));
+                txt += &format!("{}", txt_hit("push opponent", hit2, hit_dice, is_hit2, "success"));
             }
             let a = board.index(ia);
             let b = board.index(ib);
@@ -110,7 +114,7 @@ impl Skillize for Hold {
                 if is_hit3 {
                     board.hold(ia, ib)
                 }
-                print!("{}", txt_hit("    hold opponent", hit3, hit_dice, is_hit3, "success"));
+                txt += &format!("{}", txt_hit("hold opponent", hit3, hit_dice, is_hit3, "success"));
             }
         } 
         txt
