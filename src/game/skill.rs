@@ -1,11 +1,12 @@
 pub mod punch;
 pub mod tie;
+pub mod hold;
 
 use std::collections::HashMap;
 
 use crate::wyrand::Dice;
 
-use self::punch::Punch;
+use self::{punch::Punch, hold::Hold};
 
 use super::board::Board;
 
@@ -25,32 +26,42 @@ fn txt_hit(target : &str, hit : i32, hit_dice : i32, is_hit : bool, success : &s
 }
 
 pub trait Skillize {
-    fn can(&self, board : &Board, ia : u8, ibo : Option<u8>) -> bool;
-    fn evaluate(&self, board : &Board, ia : u8, ibo : Option<u8>) -> (i32, Option<String>);
-    fn exe(&self, board : &mut Board, ia : u8, ibo : Option<u8>, dice : &mut Dice) -> String;
+    fn can(&self, board : &Board, ia : u8, ib : u8) -> bool;
+    fn evaluate(&self, board : &Board, ia : u8, ib : u8) -> (i32, Option<String>);
+    fn exe(&self, board : &mut Board, ia : u8, ib : u8, dice : &mut Dice) -> String;
 }
 
 #[derive(PartialEq, Eq, Hash)]
 pub enum Skill {
     Punch,
+    Hold, 
 }
 
 impl Skill {    
     pub fn name(&self) -> &str {
         match self {
             Skill::Punch => "punch",
+            Skill::Hold => "hold",
         }
     }
 
     pub fn all() -> Vec<Self> {
-        vec!(Self::Punch)
+        vec!(
+            Self::Punch,
+            Self::Hold,
+        )
     }
 
     pub fn all_data() -> HashMap<Self, Box<dyn Skillize>> {
         let mut hash :HashMap<Self, Box<dyn Skillize>> = HashMap::new();
         for skill in Self::all() {
             match skill {
-                Skill::Punch => {hash.insert(skill, Box::new(Punch::new()));},
+                Skill::Punch => {
+                    hash.insert(skill, Box::new(Punch::new()));
+                },
+                Skill::Hold => {
+                    hash.insert(skill, Box::new(Hold::new()));
+                },
             }
         }
         hash
@@ -68,15 +79,15 @@ impl SkillSet {
         }
     }
 
-    pub fn can(&self, skill : &Skill, board : &Board, ia : u8, ibo : Option<u8>) -> bool {
-        self.skill_data.get(skill).unwrap().can(board, ia, ibo)
+    pub fn can(&self, skill : &Skill, board : &Board, ia : u8, ib : u8) -> bool {
+        self.skill_data.get(skill).unwrap().can(board, ia, ib)
     }
 
-    pub fn evaluate(&self, skill : &Skill, board : &Board, ia : u8, ibo : Option<u8>) -> (i32, Option<String>) {
-        self.skill_data.get(skill).unwrap().evaluate(board, ia, ibo)
+    pub fn evaluate(&self, skill : &Skill, board : &Board, ia : u8, ib : u8) -> (i32, Option<String>) {
+        self.skill_data.get(skill).unwrap().evaluate(board, ia, ib)
     }
 
-    pub fn exe(&self, skill : &Skill, board : &mut Board, ia : u8, ibo : Option<u8>, dice : &mut Dice) -> String {
-        self.skill_data.get(skill).unwrap().exe(board, ia, ibo, dice)
+    pub fn exe(&self, skill : &Skill, board : &mut Board, ia : u8, ib : u8, dice : &mut Dice) -> String {
+        self.skill_data.get(skill).unwrap().exe(board, ia, ib, dice)
     }
 }

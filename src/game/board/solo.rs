@@ -13,6 +13,7 @@ impl<'a> Board<'a> {
             if let Some(c) = comment {
                 txt += &format!( "({c})");
             }
+            txt += "; ";
             match choice {
                 Some((_, point_)) => {
                     if point > point_ {
@@ -23,8 +24,8 @@ impl<'a> Board<'a> {
             }
         };
         for skl in Skill::all() {
-            if self.can(&skl, ia, Some(ib)) {
-                let (point, txt) = self.evaluate(&skl, ia, Some(ib));
+            if self.can(&skl, ia, ib) {
+                let (point, txt) = self.evaluate(&skl, ia, ib);
                 matcher(skl, point, txt)
             }
         }
@@ -42,7 +43,7 @@ impl<'a> Board<'a> {
         let skill = self.make_choice(ia);
         match skill {
             Some(skl) => {
-                let txt = self.exe(&skl, ia, Some(ib), dice);
+                let txt = self.exe(&skl, ia, ib, dice);
                 print!("{txt}")
             }
             None => println!("pass")

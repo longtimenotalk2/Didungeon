@@ -31,15 +31,14 @@ impl Punch {
 }
 
 impl Skillize for Punch {
-    fn can(&self, board : &Board, ia : u8, _ibo : Option<u8>) -> bool {
+    fn can(&self, board : &Board, ia : u8, _ib : u8) -> bool {
         let a = board.index(ia);
         if a.fall {return false};
         if a.bound_wrist {return false};
         true
     }
 
-    fn evaluate(&self, board : &Board, ia : u8, ibo : Option<u8>) -> (i32, Option<String>) {
-        let ib = ibo.unwrap();
+    fn evaluate(&self, board : &Board, ia : u8, ib : u8) -> (i32, Option<String>) {
         let a = board.index(ia);
         let b = board.index(ib);
         let acc = a.acc_melee_hand();
@@ -54,9 +53,8 @@ impl Skillize for Punch {
         (point, Some(txt))
     }
 
-    fn exe(&self, board : &mut Board, ia : u8, ibo : Option<u8>, dice : &mut Dice) -> String {
+    fn exe(&self, board : &mut Board, ia : u8, ib : u8, dice : &mut Dice) -> String {
         let mut txt = String::new();
-        let ib = ibo.unwrap();
         let a = board.index(ia);
         let b = board.index(ib);
 

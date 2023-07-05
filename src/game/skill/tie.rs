@@ -35,9 +35,9 @@ impl Tie {
         (times, hit)
     }
 
-    pub fn choice(&self, board : &crate::game::board::Board, ia : u8, ibo : Option<u8>) -> Option<(Bound, bool, i32)> {
+    pub fn choice(&self, board : &crate::game::board::Board, ia : u8, ib : u8) -> Option<(Bound, bool, i32)> {
         let a = board.index(ia);
-        let b = board.index(ibo.unwrap());
+        let b = board.index(ib);
         let choices = b.next_can_tie_choices();
         let mut choice : Option<(Bound, bool, i32)> = None;
         let acc = a.tie_power();
@@ -59,16 +59,16 @@ impl Tie {
 }
 
 impl Skillize for Tie {
-    fn can(&self, board : &crate::game::board::Board, ia : u8, ibo : Option<u8>) -> bool {
+    fn can(&self, board : &crate::game::board::Board, ia : u8, ib : u8) -> bool {
         let a = board.index(ia);
-        let b = board.index(ibo.unwrap());
+        let b = board.index(ib);
         // if !b.hold {return false};
         if a.bound_wrist {return false};
         b.next_can_tie_choices().len() > 0
     }
 
-    fn evaluate(&self, board : &crate::game::board::Board, ia : u8, ibo : Option<u8>) -> (i32, Option<String>) {
-        if let Some((_bd, _is_tie, hit)) = self.choice(board, ia, ibo) {
+    fn evaluate(&self, board : &crate::game::board::Board, ia : u8, ib : u8) -> (i32, Option<String>) {
+        if let Some((_bd, _is_tie, hit)) = self.choice(board, ia, ib) {
             let a = board.index(ia);
             let times = a.hand_agi() as f32 / 5. ;
             let txt = format!("{hit}% x {:2}", times);
@@ -79,7 +79,7 @@ impl Skillize for Tie {
         }
     }
 
-    fn exe(&self, board : &mut crate::game::board::Board, ia : u8, ibo : Option<u8>, dice : &mut crate::wyrand::Dice) -> String {
+    fn exe(&self, board : &mut crate::game::board::Board, ia : u8, ib : u8, dice : &mut crate::wyrand::Dice) -> String {
         let mut txt = String::new();
         
         let a = board.index(ia);
@@ -91,11 +91,11 @@ impl Skillize for Tie {
         txt += &format!("<tie x {new_times}> (({times} + {hit}% -> d100 : {hit_dice}))");
         
         for _ in 0..times {
-            if let Some((bd, to_tie, hit)) = self.choice(board, ia, ibo) {
+            if let Some((bd, to_tie, hit)) = self.choice(board, ia, ib) {
                 let hit_dice = dice.d(100);
                 let is_hit = hit > hit_dice;
                 if is_hit {
-                    let b = board.index_mut(ibo.unwrap());
+                    let b = board.index_mut(ib);
                     match bd {
                         Bound::Neck => b.bound_neck = to_tie,
                         Bound::Arm => b.bound_arm = to_tie,
@@ -110,9 +110,9 @@ impl Skillize for Tie {
                 }
                 let to_tie_txt = if to_tie {"tie"} else {"untie"};
                 let target = format!("{to_tie_txt} {}", bd.txt());
-                txt += &format!("{}", txt_hit(&target, hit, hit_dice, is_hit, &board.index(ibo.unwrap()).txt_bound()));
+                txt += &format!("{}", txt_hit(&target, hit, hit_dice, is_hit, &board.index(ib).txt_bound()));
                 if is_hit {
-                    let b = board.index(ibo.unwrap());
+                    let b = board.index(ib);
                     txt += &format!("{}{}\n", Board::title_front(), b.txt_attr());
                 }
 

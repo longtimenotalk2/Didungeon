@@ -30,16 +30,16 @@ impl<'a> Board<'a> {
         self.units.get_mut(i).unwrap()
     }
 
-    fn can(&self, skill : &Skill, ia : u8, ibo : Option<u8>) -> bool {
-        self.skill_set.can(skill, self, ia, ibo)
+    fn can(&self, skill : &Skill, ia : u8, ib : u8) -> bool {
+        self.skill_set.can(skill, self, ia, ib)
     }
 
-    fn evaluate(&self, skill : &Skill, ia : u8, ibo : Option<u8>) -> (i32, Option<String>) {
-        self.skill_set.evaluate(skill, self, ia, ibo)
+    fn evaluate(&self, skill : &Skill, ia : u8, ib: u8) -> (i32, Option<String>) {
+        self.skill_set.evaluate(skill, self, ia, ib)
     }
 
-    fn exe(&mut self, skill : &Skill, ia : u8, ibo : Option<u8>, dice : &mut Dice) -> String {
-        self.skill_set.exe(skill, self, ia, ibo, dice)
+    fn exe(&mut self, skill : &Skill, ia : u8, ib : u8, dice : &mut Dice) -> String {
+        self.skill_set.exe(skill, self, ia, ib, dice)
     }
 
     fn turn_pass(&mut self) {
