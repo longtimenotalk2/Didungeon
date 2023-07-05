@@ -15,13 +15,8 @@ impl Struggle {
         }
     }
 
-    fn can(&self, a : &Unit, b : &Unit, ia : u8) -> bool {
-        if let Some(iaa) = b.catch {
-            if iaa == ia {
-                return a.anti_hold() > 0
-            }
-        }
-        false
+    fn can(&self, a : &Unit) -> bool {
+        a.anti_hold() > 0
     }
 
     fn hit(&self, a : &Unit, b : &Unit) -> i32 {
@@ -38,8 +33,10 @@ impl Skillize for Struggle {
         let mut ibs = vec!();
         for ib in board.find_melee_target(ia, 0) {
             let b = board.index(ib);
-            if self.can(a, b, ia) {
-                ibs.push(ib);
+            if b.is_catch_with(ia) {
+                if self.can(a) {
+                    ibs.push(ib);
+                }
             }
         }
         ibs
@@ -64,8 +61,10 @@ impl Skillize for Struggle {
         let is_hit = hit >= hit_dice;
         txt += &format!("{}", txt_hit("struggle", hit, hit_dice, is_hit, "success"));
         if is_hit {
+            let mut b = board.index_mut(ib);
+            b.catch = None;
             let mut a = board.index_mut(ia);
-            a.hold = false;
+            a.hold = None;
             if a.fall && a.can_stand() {
                 a.fall = false;
                 txt += &format!("<stand auto>\n");

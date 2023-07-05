@@ -24,7 +24,7 @@ impl Unit {
             bound_ankle: false,
             bound_long: false,
             fall: false,
-            hold: false,
+            hold: None,
             stun: false,
             catch: None,
             action: true,
@@ -33,6 +33,6 @@ impl Unit {
     }
 
     pub fn new_blank(ally : bool) -> Self {
-        Self::new(10, 10, 10, ally)
+        Self::new(20, 20, 20, ally)
     }
 }

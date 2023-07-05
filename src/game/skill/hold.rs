@@ -23,12 +23,11 @@ impl Hold {
         }
     }
 
-    fn can(&self, a : &Unit, ib : u8) -> bool {
-        if let Some(ibb) = a.catch {
-            if ibb == ib {
-                return false;
-            }
-        }
+    fn can(&self, a : &Unit, b : &Unit) -> bool {
+        if a.fall {return false;}
+        if a.stun {return false;}
+        if a.bound_wrist {return false;}
+        if b.is_hold() {return false;}
         true
     }
 
@@ -63,7 +62,8 @@ impl Skillize for Hold {
         let mv = a.mv();
         let mut ibs = vec!();
         for ib in board.find_melee_target(ia, mv) {
-            if self.can(a, ib) {
+            let b = board.index(ib);
+            if self.can(a, b) {
                 ibs.push(ib);
             }
         }
@@ -86,7 +86,8 @@ impl Skillize for Hold {
 
         txt += &txt_announce(&Skill::Hold, ib);
 
-        board.rush_to(ia, ib);
+        //rush
+        let arr = board.rush_to(ia, ib);
         
         let a = board.index(ia);
         let b = board.index(ib); 
@@ -112,11 +113,15 @@ impl Skillize for Hold {
                 let hit_dice = dice.d(100);
                 let is_hit3 = hit3 >= hit_dice;
                 if is_hit3 {
-                    board.hold(ia, ib)
+                    board.hold(ia, &arr);    
                 }
                 txt += &format!("{}", txt_hit("hold opponent", hit3, hit_dice, is_hit3, "success"));
             }
         } 
+
+        // catch return
+        board.catch_return_from(ib);
+        
         txt
     }
 }

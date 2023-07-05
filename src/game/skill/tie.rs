@@ -19,7 +19,7 @@ impl Tie {
         if a.ally == b.ally {return false;}
         if a.bound_wrist {return false};
         if b.stun {return true};
-        if !b.hold {return false};
+        if !b.is_hold() {return false};
         b.next_can_tie_choices().len() > 0
     }
 
@@ -88,8 +88,9 @@ impl Skillize for Tie {
 
         // free hold when stun
         let b = board.index_mut(ib);
-        if b.stun && !b.hold {
-            board.hold(ia, ib);
+        if b.stun && !b.is_hold() {
+            let arr = board.distance(ia, ib).1;
+            board.hold(ia, &arr);
             txt += "<auto hold>\n";
         }
         

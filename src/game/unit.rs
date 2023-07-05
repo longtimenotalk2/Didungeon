@@ -1,7 +1,29 @@
 mod new;
 mod state;
 mod show;
-mod test;
+// mod test;
+
+#[derive(Clone)]
+pub enum Arrow {
+    Up,
+    Down,
+}
+
+impl Arrow {
+    pub fn anti(&self) -> Self {
+        match self {
+            Arrow::Up => Arrow::Down,
+            Arrow::Down => Arrow::Up,
+        }
+    }
+
+    pub fn to_i32(&self) -> i32 {
+        match self {
+            Arrow::Up => -1,
+            Arrow::Down => 1,
+        }
+    }
+}
 
 pub enum Bound {
     Neck,
@@ -65,7 +87,7 @@ pub struct Unit {
     pub bound_long : bool,
 
     pub fall : bool,
-    pub hold : bool,
+    pub hold : Option<u8>,
     pub stun : bool,
     pub catch : Option<u8>,
     
@@ -88,10 +110,26 @@ impl Unit {
         self.inj -= self.restore_amount();
     }
 
+    pub fn is_hold(&self) -> bool {
+        self.hold.is_some()
+    }
+
     pub fn be_stun(&mut self) {
         self.stun = true;
         self.action = false;
         self.fall = true;
         self.catch = None;
+    }
+
+    pub fn is_catch_with(&self, ib : u8) -> bool {
+        if let Some(target) = self.catch {
+            if target == ib {
+                true
+            }else{
+                false
+            }
+        }else{
+            false
+        }
     }
 }

@@ -22,6 +22,7 @@ impl Punch {
         if a.fall {return false};
         if a.bound_wrist {return false};
         if b.is_defeated() {return false};
+        if b.fall {return false};
         true
     }
 
@@ -77,6 +78,7 @@ impl Skillize for Punch {
 
         txt += &txt_announce(&Skill::Punch, ib);
 
+        // rush
         board.rush_to(ia, ib);
 
         let a = board.index(ia);
@@ -104,6 +106,9 @@ impl Skillize for Punch {
             }
             txt += &format!("{}", txt_hit("stun check", dmg, hit_dice, is_hit, &format!("stun!")));
         }
+
+        // catch return
+        board.catch_return_from(ib);
 
         txt
     }

@@ -45,11 +45,6 @@ impl<'a> Board<'a> {
         }
     }
 
-    pub fn hold(&mut self, ia : u8, ib : u8) {
-        let mut a = self.index_mut(ia);
-        a.catch = Some(ib);
-        let mut b = self.index_mut(ib);
-        b.hold = true;
-    }
+
     
 }

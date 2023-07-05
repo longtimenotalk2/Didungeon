@@ -1,4 +1,4 @@
-use super::Unit;
+use super::{Unit};
 
 fn remove0(num : i32) -> String {
     if num > 0 {
@@ -42,11 +42,13 @@ impl Unit {
 
     pub fn txt_state(&self) -> String {
         let mut txt = if self.action {"|".to_string()} else {" ".to_string()};
-        txt += &match self.catch {
-            Some(ib) => format!("<{ib}>"),
+        txt += &match &self.catch {
+            Some(ib) => {
+                format!("<{ib}>")
+            },
             None => {
                 let fall = if self.fall {"F"} else {" "};
-                let hold = if self.hold {"H"} else {" "};
+                let hold = if self.is_hold() {"H"} else {" "};
                 let stun = if self.stun {"S"} else {" "};
                 format!("{fall}{hold}{stun}")
             },
