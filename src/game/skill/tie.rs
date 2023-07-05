@@ -16,6 +16,7 @@ impl Tie {
     }
 
     pub fn can(&self, a : &Unit, b : &Unit) -> bool {
+        if a.ally == b.ally {return false;}
         if a.bound_wrist {return false};
         if b.stun {return true};
         if !b.hold {return false};

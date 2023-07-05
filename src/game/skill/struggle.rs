@@ -15,7 +15,8 @@ impl Struggle {
         }
     }
 
-    fn can(&self, a : &Unit) -> bool {
+    fn can(&self, a : &Unit, b : &Unit) -> bool {
+        if a.ally == b.ally {return false;}
         a.hold
     }
 
@@ -28,9 +29,10 @@ impl Struggle {
 }
 
 impl Skillize for Struggle {
-    fn can(&self, board : &crate::game::board::Board, ia : u8, _ib : u8) -> bool {
+    fn can(&self, board : &crate::game::board::Board, ia : u8, ib : u8) -> bool {
         let a = board.index(ia);
-        self.can(a)
+        let b = board.index(ib);
+        self.can(a, b)
     }
 
     fn evaluate(&self, board : &crate::game::board::Board, ia : u8, ib : u8) -> (i32, Option<String>) {

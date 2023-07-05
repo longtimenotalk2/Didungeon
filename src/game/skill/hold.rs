@@ -24,6 +24,7 @@ impl Hold {
     }
 
     fn can(&self, a : &Unit, b : &Unit) -> bool {
+        if a.ally == b.ally { return false;}
         if a.fall {return false;}
         if b.hold {return false;}
         if b.stun {return false;}

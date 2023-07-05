@@ -70,6 +70,7 @@ pub struct Unit {
     pub action : bool,
 
     pub name : String,
+    pub ally : bool,
 }
 
 impl Unit {

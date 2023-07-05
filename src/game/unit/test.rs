@@ -60,6 +60,7 @@ impl Unit {
             stun : false,
             action : true,
             name : "a".to_string(),
+            ally: true,
             
         }
     }
@@ -120,6 +121,7 @@ impl Unit {
             stun : false,
             action : true,
             name : "a".to_string(),
+            ally: false,
             
         }
     }

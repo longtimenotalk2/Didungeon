@@ -1,4 +1,4 @@
-use crate::{game::board::Board, wyrand::Dice};
+use crate::{game::{board::Board, unit::Unit}, wyrand::Dice};
 
 use super::{BASIC_HIT, HIT_RATE, to_hit, to_dmg, txt_hit, Skillize};
 
@@ -17,25 +17,31 @@ impl Punch {
         }
     }
 
-    pub fn hit(&self, acc : i32, evd : i32) -> i32 {
+    fn can(&self, a : &Unit, b : &Unit) -> bool {
+        if a.ally == b.ally {return false;}
+        if a.fall {return false};
+        if a.bound_wrist {return false};
+        true
+    }
+
+    fn hit(&self, acc : i32, evd : i32) -> i32 {
         to_hit(self.basic_hit + self.hit_rate * (acc - evd))
     }
 
-    pub fn dmg(&self, atk : i32, def : i32) -> i32 {
+    fn dmg(&self, atk : i32, def : i32) -> i32 {
         to_dmg(self.basic_dmg + atk - def, 1)
     }
 
-    pub fn stun_rate(&self, atk : i32, def : i32) -> i32 {
+    fn stun_rate(&self, atk : i32, def : i32) -> i32 {
         to_dmg(self.basic_dmg + atk - def, 1)
     }
 }
 
 impl Skillize for Punch {
-    fn can(&self, board : &Board, ia : u8, _ib : u8) -> bool {
+    fn can(&self, board : &Board, ia : u8, ib : u8) -> bool {
         let a = board.index(ia);
-        if a.fall {return false};
-        if a.bound_wrist {return false};
-        true
+        let b = board.index(ib);
+        self.can(a, b)
     }
 
     fn evaluate(&self, board : &Board, ia : u8, ib : u8) -> (i32, Option<String>) {

@@ -120,7 +120,8 @@ enum UnboundType {
 }
 
 impl Skillize for Unbound {
-    fn can(&self, board : &crate::game::board::Board, ia : u8, _ib : u8) -> bool {
+    fn can(&self, board : &crate::game::board::Board, ia : u8, ib : u8) -> bool {
+        if ia != ib {return false};
         let a = board.index(ia);
         self.can_force_upper(a) || self.can_force_lower(a) || self.can_hand(a) || self.can_rub(a)
     }
