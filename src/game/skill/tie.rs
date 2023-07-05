@@ -1,32 +1,32 @@
-use crate::game::{unit::Bound, board::Board};
+use crate::game::{unit::{Bound, Unit}, board::Board};
 
-use super::{Skillize, to_hit, txt_hit};
+use super::{Skillize, to_hit, txt_hit, HIT_RATE, BASIC_HIT};
 
 pub struct Tie {
-    // weight_neck : i32,
-    // weight_arm : i32,
-    // weight_hang : i32,
-    // weight_wrist : i32,
-    // weight_joint : i32,
-    // weight_thigh : i32,
-    // weight_calve : i32,
-    // weight_ankle : i32,
-    // weight_long : i32,
+    basic_hit : i32,
+    hit_rate : i32,
 }
 
 impl Tie {
     pub fn new() -> Self {
         Self {
-            // weight_neck: 100,
-            // weight_arm: 100,
-            // weight_hang: 100,
-            // weight_wrist: 100,
-            // weight_joint: 100,
-            // weight_thigh: 100,
-            // weight_calve: 100,
-            // weight_ankle: 100,
-            // weight_long: 100,
+            basic_hit: BASIC_HIT,
+            hit_rate: HIT_RATE,
         }
+    }
+
+    pub fn can(&self, a : &Unit, b : &Unit) -> bool {
+        if a.bound_wrist {return false};
+        if b.stun {return true};
+        if !b.hold {return false};
+        b.next_can_tie_choices().len() > 0
+    }
+
+    pub fn hit(&self, a : &Unit, b : &Unit, bd : &Bound) -> i32 {
+        let acc = a.tie_power();
+        let evd = if bd.is_upper() {b.anti_tie_upper()} else {b.anti_tie_lower()};
+        let hit = to_hit(self.basic_hit + (acc - evd) * self.hit_rate);
+        hit 
     }
 
     pub fn times_and_remain_hit(&self, agi : i32) -> (i32, i32) {
@@ -40,11 +40,9 @@ impl Tie {
         let b = board.index(ib);
         let choices = b.next_can_tie_choices();
         let mut choice : Option<(Bound, bool, i32)> = None;
-        let acc = a.tie_power();
         for ch in choices {
             let (bd, is_tie) = ch;
-            let evd = if bd.is_upper() {b.anti_tie_upper()} else {b.anti_tie_lower()};
-            let hit = to_hit(50 + (acc - evd) * 5);
+            let hit = self.hit(a, b, &bd);
             match choice {
                 Some((_, _, hit_)) => {
                     if hit > hit_ {
@@ -62,11 +60,7 @@ impl Skillize for Tie {
     fn can(&self, board : &crate::game::board::Board, ia : u8, ib : u8) -> bool {
         let a = board.index(ia);
         let b = board.index(ib);
-        // if !b.hold {return false};
-        if a.bound_wrist {return false};
-        if b.stun {return true};
-        if !b.hold {return false};
-        b.next_can_tie_choices().len() > 0
+        self.can(a, b)
     }
 
     fn evaluate(&self, board : &crate::game::board::Board, ia : u8, ib : u8) -> (i32, Option<String>) {
