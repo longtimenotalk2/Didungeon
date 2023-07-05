@@ -33,10 +33,16 @@ impl Struggle {
 }
 
 impl Skillize for Struggle {
-    fn can(&self, board : &crate::game::board::Board, ia : u8, ib : u8) -> bool {
+    fn target(&self, board : &crate::game::board::Board, ia : u8) -> Vec<u8> {
         let a = board.index(ia);
-        let b = board.index(ib);
-        self.can(a, b, ia)
+        let mut ibs = vec!();
+        for ib in board.find_melee_target(ia, 0) {
+            let b = board.index(ib);
+            if self.can(a, b, ia) {
+                ibs.push(ib);
+            }
+        }
+        ibs
     }
 
     fn evaluate(&self, board : &crate::game::board::Board, ia : u8, ib : u8) -> (i32, Option<String>) {

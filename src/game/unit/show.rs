@@ -80,6 +80,7 @@ impl Unit {
         // Self
         txt += &remove0(self.spd());
         txt += can_stand;
+        txt += &remove0(self.mv());
         txt += &remove0(self.unbound_force_upper());
         txt += &remove0(self.unbound_force_lower());
         
@@ -93,11 +94,11 @@ impl Unit {
     }
 
     pub fn title_1() -> &'static str {
-        "┌─Offense──┐┌───Defense───┐┌─Hand──┐┌───Self───┐┌──Basic───┐"
+        "┌─Offense──┐┌───Defense───┐┌─Hand──┐┌────Self─────┐┌──Basic───┐"
     }
 
     pub fn title_2() -> &'static str {
-        "AccPshHldTieEvdPshHld┌Tie─┐StrDexAgiSpd ↑ ┌Unbd┐StrDexAgiInj"
+        "AccPshHldTieEvdPshHld┌Tie─┐StrDexAgiSpd ↑ Mov┌Unbd┐StrDexAgiInj"
     }
 
 }

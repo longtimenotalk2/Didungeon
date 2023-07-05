@@ -15,6 +15,19 @@ impl Unit {
         !(upper && lower)
     }
 
+    pub fn mv(&self) -> i32 {
+        // 步行距离
+        // 从跑和跳两种模式中选一个最大的
+        // 跑的模式：敏捷 * 步行系数
+        // 跳的模式：敏捷 * 跳跃系数
+        // 最终 / 5
+
+        let walk = self.walk_coefficient(self.agi());
+        let jump = self.jump_coefficient(self.agi());
+        let mv = walk.max(jump);
+        mv / 5
+    }
+
     pub fn hand_str(&self) -> i32 {
         // 手部力量相关
         // 力量 * 手部自由度系数

@@ -53,11 +53,18 @@ impl Hold {
     }
 }
 
-impl Skillize for Hold {
-    fn can(&self, board : &crate::game::board::Board, ia : u8, ib : u8) -> bool {
+impl Skillize for Hold {    
+    fn target(&self, board : &crate::game::board::Board, ia : u8) -> Vec<u8> {
         let a = board.index(ia);
-        let b = board.index(ib);
-        self.can(a, b)
+        let mv = a.mv();
+        let mut ibs = vec!();
+        for ib in board.find_melee_target(ia, mv) {
+            let b = board.index(ib);
+            if self.can(a, b) {
+                ibs.push(ib);
+            }
+        }
+        ibs
     }
 
     fn evaluate(&self, board : &crate::game::board::Board, ia : u8, ib : u8) -> (i32, Option<String>) {
@@ -107,6 +114,5 @@ impl Skillize for Hold {
             }
         } 
         txt
-
     }
 }

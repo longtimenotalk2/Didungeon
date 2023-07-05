@@ -179,6 +179,10 @@ impl Unit {
         list
     }
 
+    pub fn block(&self) -> bool {
+        self.anti_hold() > 0
+    }
+
     pub fn is_defeated(&self) -> bool {
         self.bound_neck && self.bound_arm && self.bound_hang && self.bound_wrist && !self.bound_joint && self.bound_thigh && self.bound_calve && self.bound_ankle && self.bound_long
     }

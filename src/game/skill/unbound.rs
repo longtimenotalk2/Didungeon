@@ -23,6 +23,10 @@ impl Unbound {
         }
     }
 
+    fn can(&self, a : &Unit) -> bool {
+        self.can_force_upper(a) || self.can_force_lower(a) || self.can_hand(a) || self.can_rub(a)
+    }
+
     fn can_force_upper(&self, a : &Unit) -> bool {
         if a.bound_ankle && a.bound_arm && a.bound_hang && a.bound_wrist {return false};
         a.next_force_upper().is_some()
@@ -120,10 +124,13 @@ enum UnboundType {
 }
 
 impl Skillize for Unbound {
-    fn can(&self, board : &crate::game::board::Board, ia : u8, ib : u8) -> bool {
-        if ia != ib {return false};
+    fn target(&self, board : &crate::game::board::Board, ia : u8) -> Vec<u8> {
         let a = board.index(ia);
-        self.can_force_upper(a) || self.can_force_lower(a) || self.can_hand(a) || self.can_rub(a)
+        if self.can(a) {
+            vec!(ia)
+        }else{
+            vec!()
+        }
     }
 
     fn evaluate(&self, board : &crate::game::board::Board, ia : u8, _ib : u8) -> (i32, Option<String>) {

@@ -32,12 +32,12 @@ fn txt_announce(skill : &Skill, ib : u8) -> String {
 }
 
 pub trait Skillize {
-    fn can(&self, board : &Board, ia : u8, ib : u8) -> bool;
+    fn target(&self, board : &Board, ia : u8) -> Vec<u8>;
     fn evaluate(&self, board : &Board, ia : u8, ib : u8) -> (i32, Option<String>);
     fn exe(&self, board : &mut Board, ia : u8, ib : u8, dice : &mut Dice) -> String;
 }
 
-#[derive(PartialEq, Eq, Hash)]
+#[derive(PartialEq, Eq, Hash, Clone)]
 pub enum Skill {
     Punch,
     Hold, 
@@ -103,8 +103,8 @@ impl SkillSet {
         }
     }
 
-    pub fn can(&self, skill : &Skill, board : &Board, ia : u8, ib : u8) -> bool {
-        self.skill_data.get(skill).unwrap().can(board, ia, ib)
+    pub fn target(&self, skill : &Skill, board : &Board, ia : u8) -> Vec<u8> {
+        self.skill_data.get(skill).unwrap().target(board, ia)
     }
 
     pub fn evaluate(&self, skill : &Skill, board : &Board, ia : u8, ib : u8) -> (i32, Option<String>) {

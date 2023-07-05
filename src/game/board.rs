@@ -1,6 +1,9 @@
 mod show;
 mod run;
-mod team;
+mod new;
+mod action;
+
+use std::collections::HashMap;
 
 use crate::wyrand::Dice;
 use super::{unit::Unit, skill::{Skill, SkillSet}};
@@ -8,18 +11,11 @@ use super::{unit::Unit, skill::{Skill, SkillSet}};
 pub struct Board<'a> {
     turn : i32,
     units : Vec<Unit>,
+    locations : HashMap<u8, i32>,
     skill_set : &'a SkillSet,
 }
 
 impl<'a> Board<'a> {
-    pub fn new_solo(skill_set : &'a SkillSet) -> Self {
-        Self {
-            turn : 0,
-            units : vec!(Unit::test_new1(), Unit::test_new2()),
-            skill_set,
-        }
-    }
-
     pub fn index(&self, id : u8) -> &Unit {
         let i : usize = id.try_into().unwrap();
         self.units.get(i).unwrap()
@@ -30,8 +26,8 @@ impl<'a> Board<'a> {
         self.units.get_mut(i).unwrap()
     }
 
-    fn can(&self, skill : &Skill, ia : u8, ib : u8) -> bool {
-        self.skill_set.can(skill, self, ia, ib)
+    fn target(&self, skill : &Skill, ia : u8) -> Vec<u8> {
+        self.skill_set.target(skill, self, ia)
     }
 
     fn evaluate(&self, skill : &Skill, ia : u8, ib: u8) -> (i32, Option<String>) {
@@ -55,4 +51,5 @@ impl<'a> Board<'a> {
         let mut b = self.index_mut(ib);
         b.hold = true;
     }
+    
 }

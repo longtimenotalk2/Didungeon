@@ -28,9 +28,11 @@ impl<'a> Board<'a> {
     fn auto_make_choice(&self, ia : u8) -> Option<(Skill, u8)> {
         let mut choice : Option<(Skill, u8, i32)> = None;
         let mut txt = String::new();
-        for ib in 0..self.units.len() {
-            let ib : u8 = ib.try_into().unwrap();
-            let mut matcher = |skill : Skill, point : i32, comment : Option<String>| {
+
+        for skill in &Skill::all() {
+            let target = self.target(&skill, ia);
+            for ib in target {
+                let (point, comment) = self.evaluate(skill, ia, ib);
                 let name = skill.name();
                 txt += &format!("{name}<{ib}> : {point}");
                 if let Some(c) = comment {
@@ -40,19 +42,14 @@ impl<'a> Board<'a> {
                 match choice {
                     Some((_, _, point_)) => {
                         if point > point_ {
-                            choice = Some((skill, ib, point));
+                            choice = Some((skill.clone(), ib, point));
                         }
                     },
-                    None => choice = Some((skill, ib, point))
+                    None => choice = Some((skill.clone(), ib, point))
                 }
-            };
-            for skl in Skill::all() {
-                if self.can(&skl, ia, ib) {
-                    let (point, txt) = self.evaluate(&skl, ia, ib);
-                    matcher(skl, point, txt)
-                }
-            }  
-        }
+            }
+        }  
+
         println!("Choices : {txt}");
         let choice = match choice {
             Some((c, ib, _)) => Some((c, ib)),
