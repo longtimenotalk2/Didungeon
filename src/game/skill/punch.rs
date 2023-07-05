@@ -21,6 +21,7 @@ impl Punch {
         if a.ally == b.ally {return false;}
         if a.fall {return false};
         if a.bound_wrist {return false};
+        if b.is_defeated() {return false};
         true
     }
 
