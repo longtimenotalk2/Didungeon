@@ -64,6 +64,8 @@ impl Skillize for Tie {
         let b = board.index(ib);
         // if !b.hold {return false};
         if a.bound_wrist {return false};
+        if b.stun {return true};
+        if !b.hold {return false};
         b.next_can_tie_choices().len() > 0
     }
 
@@ -81,6 +83,13 @@ impl Skillize for Tie {
 
     fn exe(&self, board : &mut crate::game::board::Board, ia : u8, ib : u8, dice : &mut crate::wyrand::Dice) -> String {
         let mut txt = String::new();
+
+        // free hold when stun
+        let b = board.index_mut(ib);
+        if b.stun && !b.hold {
+            b.hold = true;
+            txt += "<auto hold>\n";
+        }
         
         let a = board.index(ia);
         let agi = a.hand_agi();
@@ -88,9 +97,9 @@ impl Skillize for Tie {
         let hit_dice = dice.d(100);
         let is_hit = hit >= hit_dice;
         let new_times = if is_hit {times + 1}else{times};
-        txt += &format!("<tie x {new_times}> (({times} + {hit}% -> d100 : {hit_dice}))");
+        txt += &format!("<tie x {new_times}> ({times} + {hit}% -> d100 : {hit_dice})\n");
         
-        for _ in 0..times {
+        for _ in 0..new_times {
             if let Some((bd, to_tie, hit)) = self.choice(board, ia, ib) {
                 let hit_dice = dice.d(100);
                 let is_hit = hit > hit_dice;

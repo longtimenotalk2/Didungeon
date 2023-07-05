@@ -83,6 +83,7 @@ impl Skillize for Punch {
             if is_hit {
                 let b = board.index_mut(ib);
                 b.be_stun();
+                b.action = false;
             }
             txt += &format!("{}", txt_hit("stun check", dmg, hit_dice, is_hit, &format!("stun!")));
         }

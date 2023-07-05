@@ -1,12 +1,13 @@
-pub mod punch;
-pub mod tie;
-pub mod hold;
+mod punch;
+mod tie;
+mod hold;
+mod struggle;
 
 use std::collections::HashMap;
 
 use crate::wyrand::Dice;
 
-use self::{punch::Punch, hold::Hold};
+use self::{punch::Punch, hold::Hold, tie::Tie, struggle::Struggle};
 
 use super::board::Board;
 
@@ -35,6 +36,8 @@ pub trait Skillize {
 pub enum Skill {
     Punch,
     Hold, 
+    Struggle,
+    Tie, 
 }
 
 impl Skill {    
@@ -42,6 +45,8 @@ impl Skill {
         match self {
             Skill::Punch => "punch",
             Skill::Hold => "hold",
+            Skill::Struggle => "struggle",
+            Skill::Tie => "tie",
         }
     }
 
@@ -49,6 +54,8 @@ impl Skill {
         vec!(
             Self::Punch,
             Self::Hold,
+            Self::Struggle,
+            Self::Tie,
         )
     }
 
@@ -62,6 +69,13 @@ impl Skill {
                 Skill::Hold => {
                     hash.insert(skill, Box::new(Hold::new()));
                 },
+                Skill::Struggle => {
+                    hash.insert(skill, Box::new(Struggle::new()));
+                },
+                Skill::Tie => {
+                    hash.insert(skill, Box::new(Tie::new()));
+                },
+                
             }
         }
         hash

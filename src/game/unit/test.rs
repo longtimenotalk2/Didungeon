@@ -38,9 +38,9 @@ impl Unit {
         // let fall : bool = true;
 
         Self {
-            str_max : 20,
-            dex_max : 15,
-            agi_max : 15,
+            str_max : 5,
+            dex_max : 5,
+            agi_max : 5,
             inj_coefficient : INJ_COEFFICIENT,
             restore_rate : RESTORE_RATE,
             inj : 0,
@@ -98,9 +98,9 @@ impl Unit {
         // let fall : bool = true;
 
         Self {
-            str_max : 15,
-            dex_max : 20,
-            agi_max : 20,
+            str_max : 5,
+            dex_max : 5,
+            agi_max : 5,
             inj_coefficient : INJ_COEFFICIENT,
             restore_rate : RESTORE_RATE,
             inj : 0,

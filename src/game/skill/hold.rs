@@ -26,6 +26,7 @@ impl Hold {
     fn can(&self, a : &Unit, b : &Unit) -> bool {
         if a.fall {return false;}
         if b.hold {return false;}
+        if b.stun {return false;}
         true
     }
 

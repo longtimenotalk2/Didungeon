@@ -38,8 +38,19 @@ impl<'a> Board<'a> {
     }
 
     fn action(&mut self, ia : u8, dice : &mut Dice) {
-        self.print(Some(0));
+        self.print(Some(ia));
         let ib = 1-ia;
+        let mut a = self.index_mut(ia);
+        if a.stun {
+            a.stun = false;
+            a.action = false;
+            println!("<awake>");
+            return;
+        }
+        if a.fall && a.can_stand() && !a.hold {
+            a.fall = false;
+            println!("<anto stand>");
+        }
         let skill = self.make_choice(ia);
         match skill {
             Some(skl) => {
@@ -48,23 +59,36 @@ impl<'a> Board<'a> {
             }
             None => println!("pass")
         }
-        
+        self.index_mut(ia).action = false;
+    }
+
+    fn find_next_actor(&self) -> Option<u8> {
+        let mut next : Option<(u8, i32)> = None;
+        for (i, p) in self.units.iter().enumerate() {
+            let i : u8 = i.try_into().unwrap();
+            if p.action {
+                let spd = p.spd();
+                match next {
+                    Some((_, s)) => {
+                        if spd > s {
+                            next = Some((i, spd));
+                        }
+                    },
+                    None => {next = Some((i, spd));},
+                }
+            }
+        }
+        match next {
+            Some((i, _)) => Some(i),
+            None => None,
+        }
     }
 
     pub fn anto_run(&mut self, turn : i32, dice : &mut Dice) {
         for _ in 0..turn {
             self.turn_pass();
-            if self.index(0).spd() >= self.index(1).spd() {
-                self.action(0, dice);
-                if self.index(1).action {
-                    self.action(1, dice);
-                }
-                
-            }else{
-                self.action(1, dice);
-                if self.index(0).action {
-                    self.action(0, dice);
-                }
+            while let Some(actor) = self.find_next_actor() {
+                self.action(actor, dice);
             }
             if self.index(0).is_defeated() {
                 println!("player 1 win!");

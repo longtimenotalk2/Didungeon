@@ -9,6 +9,6 @@ fn main() {
     let skill_set = SkillSet::new();
     println!("seed - {seed}");
     let mut board = Board::new_solo(&skill_set);
-    board.anto_run(10, &mut dice);
+    board.anto_run(100, &mut dice);
 
 }
