@@ -61,6 +61,7 @@ impl Unit {
             action : true,
             name : "a".to_string(),
             ally: true,
+            catch: None,
             
         }
     }
@@ -122,6 +123,7 @@ impl Unit {
             action : true,
             name : "a".to_string(),
             ally: false,
+            catch: None,
             
         }
     }

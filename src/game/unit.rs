@@ -66,6 +66,7 @@ pub struct Unit {
     pub fall : bool,
     pub hold : bool,
     pub stun : bool,
+    pub catch : Option<u8>,
     
     pub action : bool,
 

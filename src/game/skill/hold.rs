@@ -100,8 +100,7 @@ impl Skillize for Hold {
                 let hit_dice = dice.d(100);
                 let is_hit3 = hit3 >= hit_dice;
                 if is_hit3 {
-                    let mut b = board.index_mut(ib);
-                    b.hold = true;
+                    board.hold(ia, ib)
                 }
                 print!("{}", txt_hit("    hold opponent", hit3, hit_dice, is_hit3, "success"));
             }

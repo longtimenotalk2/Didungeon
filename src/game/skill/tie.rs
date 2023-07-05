@@ -82,7 +82,7 @@ impl Skillize for Tie {
         // free hold when stun
         let b = board.index_mut(ib);
         if b.stun && !b.hold {
-            b.hold = true;
+            board.hold(ia, ib);
             txt += "<auto hold>\n";
         }
         

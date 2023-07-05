@@ -37,15 +37,17 @@ impl Unit {
     }
 
     pub fn txt_state(&self) -> String {
-        let fall = if self.fall {"F"} else {" "};
-        let hold = if self.hold {"H"} else {" "};
-        format!("{fall}{hold}")
-    }
-
-    pub fn txt_state_time(&self) -> String {
-        let action = if self.action {"|"} else {" "};
-        let stun = if self.stun {"S"} else {" "};
-        format!("{action}{stun}")
+        let mut txt = if self.action {"|".to_string()} else {" ".to_string()};
+        txt += &match self.catch {
+            Some(ib) => format!("<{ib}>"),
+            None => {
+                let fall = if self.fall {"F"} else {" "};
+                let hold = if self.hold {"H"} else {" "};
+                let stun = if self.stun {"S"} else {" "};
+                format!("{fall}{hold}{stun}")
+            },
+        };
+        txt
     }
 
     pub fn txt_attr(&self) -> String {
