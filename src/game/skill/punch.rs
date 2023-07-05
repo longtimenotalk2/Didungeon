@@ -1,6 +1,6 @@
 use crate::{game::{board::Board, unit::Unit}, wyrand::Dice};
 
-use super::{BASIC_HIT, HIT_RATE, to_hit, to_dmg, txt_hit, Skillize};
+use super::{BASIC_HIT, HIT_RATE, to_hit, to_dmg, txt_hit, Skillize, txt_announce, Skill};
 
 pub struct Punch {
     basic_hit : i32,
@@ -64,7 +64,7 @@ impl Skillize for Punch {
         let a = board.index(ia);
         let b = board.index(ib);
 
-        txt += "<punch>\n";
+        txt += &txt_announce(&Skill::Punch, ib);
 
         let acc = a.acc_melee_hand();
         let evd = b.evd();

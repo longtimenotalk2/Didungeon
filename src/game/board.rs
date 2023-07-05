@@ -1,6 +1,6 @@
 mod show;
-mod solo;
-// mod skill;
+mod run;
+mod team;
 
 use crate::wyrand::Dice;
 use super::{unit::Unit, skill::{Skill, SkillSet}};

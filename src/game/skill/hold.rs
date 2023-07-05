@@ -1,4 +1,4 @@
-use crate::game::{unit::Unit, skill::txt_hit};
+use crate::game::{unit::Unit, skill::{txt_hit, txt_announce, Skill}};
 
 use super::{BASIC_HIT, HIT_RATE, to_hit, Skillize};
 
@@ -77,7 +77,8 @@ impl Skillize for Hold {
         let a = board.index(ia);
         let b = board.index(ib); 
 
-        txt += "<hold down>\n";
+        txt += &txt_announce(&Skill::Hold, ib);
+        
         let hit1 = self.hit_attact(a, b);
         let hit_dice = dice.d(100);
         let is_hit1 = hit1 >= hit_dice;

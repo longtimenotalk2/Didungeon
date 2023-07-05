@@ -12,7 +12,7 @@ impl<'a> Board<'a> {
                 None => " ",
                 Some(a) => if i as u8 == a {">"} else {" "},
             };
-            println!("{ac}{i} : {}{} {}", unit.txt_state(), unit.txt_bound(), unit.txt_attr());
+            println!("{ac}{i}{}: {}{} {}", unit.txt_ally(), unit.txt_state(), unit.txt_bound(), unit.txt_attr());
         }
         
         println!("---------------------------------------------------------------------------------");

@@ -36,6 +36,10 @@ impl Unit {
         format!("[{neck}{arm}{hang}{wrist}{joint}{thigh}{calve}{ankle}]")
     }
 
+    pub fn txt_ally(&self) -> String {
+        (if self.ally {" "} else {"x"}).to_string()
+    }
+
     pub fn txt_state(&self) -> String {
         let mut txt = if self.action {"|".to_string()} else {" ".to_string()};
         txt += &match self.catch {

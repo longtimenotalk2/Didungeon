@@ -92,7 +92,7 @@ impl Skillize for Tie {
         let hit_dice = dice.d(100);
         let is_hit = hit >= hit_dice;
         let new_times = if is_hit {times + 1}else{times};
-        txt += &format!("<tie x {new_times}> ({times} + {hit}% -> d100 : {hit_dice})\n");
+        txt += &format!("<tie x {new_times} -> {ib}> ({times} + {hit}% -> d100 : {hit_dice})\n");
         
         for _ in 0..new_times {
             if let Some((bd, to_tie, hit)) = self.choice(board, ia, ib) {

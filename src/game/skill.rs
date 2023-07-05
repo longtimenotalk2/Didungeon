@@ -27,6 +27,10 @@ fn txt_hit(target : &str, hit : i32, hit_dice : i32, is_hit : bool, success : &s
     format!("  {target} : {hit} -> d100 = {hit_dice} -> {}\n", if is_hit {success} else {"miss"})
 }
 
+fn txt_announce(skill : &Skill, ib : u8) -> String {
+    format!("<{} -> {}>", skill.name(), ib)
+}
+
 pub trait Skillize {
     fn can(&self, board : &Board, ia : u8, ib : u8) -> bool;
     fn evaluate(&self, board : &Board, ia : u8, ib : u8) -> (i32, Option<String>);

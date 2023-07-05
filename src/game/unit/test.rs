@@ -59,7 +59,6 @@ impl Unit {
             hold : false,
             stun : false,
             action : true,
-            name : "a".to_string(),
             ally: true,
             catch: None,
             
@@ -121,7 +120,6 @@ impl Unit {
             hold : false,
             stun : false,
             action : true,
-            name : "a".to_string(),
             ally: false,
             catch: None,
             

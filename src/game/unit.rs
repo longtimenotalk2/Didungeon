@@ -1,3 +1,4 @@
+mod new;
 mod state;
 mod show;
 mod test;
@@ -70,7 +71,6 @@ pub struct Unit {
     
     pub action : bool,
 
-    pub name : String,
     pub ally : bool,
 }
 
@@ -92,5 +92,6 @@ impl Unit {
         self.stun = true;
         self.action = false;
         self.fall = true;
+        self.catch = None;
     }
 }

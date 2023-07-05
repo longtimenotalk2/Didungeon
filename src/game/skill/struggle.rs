@@ -1,6 +1,6 @@
 use crate::game::{unit::Unit, skill::txt_hit};
 
-use super::{BASIC_HIT, HIT_RATE, to_hit, Skillize};
+use super::{BASIC_HIT, HIT_RATE, to_hit, Skillize, txt_announce, Skill};
 
 pub struct Struggle {
     basic_hit : i32,
@@ -15,16 +15,13 @@ impl Struggle {
         }
     }
 
-    fn can(&self, b : &Unit, ia : u8) -> bool {
+    fn can(&self, a : &Unit, b : &Unit, ia : u8) -> bool {
         if let Some(iaa) = b.catch {
             if iaa == ia {
-                true
-            }else{
-                false
+                return a.anti_hold() > 0
             }
-        }else {
-            false
         }
+        false
     }
 
     fn hit(&self, a : &Unit, b : &Unit) -> i32 {
@@ -37,8 +34,9 @@ impl Struggle {
 
 impl Skillize for Struggle {
     fn can(&self, board : &crate::game::board::Board, ia : u8, ib : u8) -> bool {
+        let a = board.index(ia);
         let b = board.index(ib);
-        self.can(b, ia)
+        self.can(a, b, ia)
     }
 
     fn evaluate(&self, board : &crate::game::board::Board, ia : u8, ib : u8) -> (i32, Option<String>) {
@@ -53,7 +51,7 @@ impl Skillize for Struggle {
         let a = board.index(ia);
         let b = board.index(ib);
 
-        txt += "<struggle>";
+        txt += &txt_announce(&Skill::Struggle, ib);
 
         let hit = self.hit(a, b);
         let hit_dice = dice.d(100);
