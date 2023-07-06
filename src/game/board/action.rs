@@ -85,31 +85,6 @@ impl<'a> Board<'a> {
         None
     }
 
-    fn find_arr_with(&self, ia : u8, arr : &Arrow) -> Option<u8> {
-        let mut loc = self.get_location(ia);
-        match arr {
-            Arrow::Up => {loc -= 1;},
-            Arrow::Down => {loc += 1;},
-        }
-        self.on_location(loc)
-    }
-
-    pub fn hold(&mut self, ia : u8, arr : &Arrow) {
-        match self.find_arr_with(ia, arr) {
-            Some(ib) => {
-                let b = self.index(ib);
-                if let Some(ic) = &b.hold {
-                    self.index_mut(*ic).catch = None;
-                }
-                let b = self.index_mut(ib);
-                b.hold = Some(ia);
-                let a = self.index_mut(ia);
-                a.catch = Some(ib);
-            },
-            None => (),
-        }
-    }
-
     pub fn distance(&self, ia : u8, ib : u8) -> (i32, Arrow) {
         let loca = self.get_location(ia);
         let locb = self.get_location(ib);
@@ -121,12 +96,16 @@ impl<'a> Board<'a> {
         }
     }
 
-    pub fn catch_return_from(&mut self, ia : u8) {
-        if let Some(ib) = &self.index(ia).catch {
-            self.rush_to(*ib, ia);
+    pub fn find_adjacent(&self, ia : u8) -> Vec<u8> {
+        let loca = self.get_location(ia);
+        let mut adjs = vec!();
+        if let Some(ib) = self.on_location(loca - 1) {
+            adjs.push(ib);
         }
-        if let Some(ib) = &self.index(ia).hold {
-            self.rush_to(*ib, ia);
+        if let Some(ib) = self.on_location(loca + 1) {
+            adjs.push(ib);
         }
+        adjs
     }
+
 }

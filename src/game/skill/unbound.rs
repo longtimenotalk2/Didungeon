@@ -38,7 +38,7 @@ impl Unbound {
     }
 
     fn can_hand(&self, a : &Unit) -> bool {
-        !a.bound_wrist && !a.is_hold() && a.next_hand().is_some()
+        !a.bound_wrist && a.next_hand().is_some()
     }
 
     fn can_rub(&self, a : &Unit) -> bool {

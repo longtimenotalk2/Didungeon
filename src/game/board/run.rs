@@ -67,10 +67,7 @@ impl<'a> Board<'a> {
             println!("<awake>");
             return;
         }
-        if a.fall && a.can_stand() && !a.is_hold() {
-            a.fall = false;
-            println!("<anto stand>");
-        }
+
         let skill = self.auto_make_choice(ia);
         match skill {
             Some((skl, ib)) => {

@@ -87,9 +87,7 @@ pub struct Unit {
     pub bound_long : bool,
 
     pub fall : bool,
-    pub hold : Option<u8>,
     pub stun : bool,
-    pub catch : Option<u8>,
     
     pub action : bool,
 
@@ -110,26 +108,9 @@ impl Unit {
         self.inj -= self.restore_amount();
     }
 
-    pub fn is_hold(&self) -> bool {
-        self.hold.is_some()
-    }
-
     pub fn be_stun(&mut self) {
         self.stun = true;
         self.action = false;
         self.fall = true;
-        self.catch = None;
-    }
-
-    pub fn is_catch_with(&self, ib : u8) -> bool {
-        if let Some(target) = self.catch {
-            if target == ib {
-                true
-            }else{
-                false
-            }
-        }else{
-            false
-        }
     }
 }

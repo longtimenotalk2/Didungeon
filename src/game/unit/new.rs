@@ -24,9 +24,7 @@ impl Unit {
             bound_ankle: false,
             bound_long: false,
             fall: false,
-            hold: None,
             stun: false,
-            catch: None,
             action: true,
             ally,
         }

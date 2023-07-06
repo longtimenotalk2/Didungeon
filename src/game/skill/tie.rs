@@ -18,8 +18,7 @@ impl Tie {
     pub fn can(&self, a : &Unit, b : &Unit) -> bool {
         if a.ally == b.ally {return false;}
         if a.bound_wrist {return false};
-        if b.stun {return true};
-        if !b.is_hold() {return false};
+        if !b.fall {return false};
         b.next_can_tie_choices().len() > 0
     }
 
@@ -85,14 +84,6 @@ impl Skillize for Tie {
 
     fn exe(&self, board : &mut crate::game::board::Board, ia : u8, ib : u8, dice : &mut crate::wyrand::Dice) -> String {
         let mut txt = String::new();
-
-        // free hold when stun
-        let b = board.index_mut(ib);
-        if b.stun && !b.is_hold() {
-            let arr = board.distance(ia, ib).1;
-            board.hold(ia, &arr);
-            txt += "<auto hold>\n";
-        }
         
         let a = board.index(ia);
         let agi = a.hand_agi();

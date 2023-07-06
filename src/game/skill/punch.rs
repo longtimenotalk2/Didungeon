@@ -107,9 +107,6 @@ impl Skillize for Punch {
             txt += &format!("{}", txt_hit("stun check", dmg, hit_dice, is_hit, &format!("stun!")));
         }
 
-        // catch return
-        board.catch_return_from(ib);
-
         txt
     }
 }
