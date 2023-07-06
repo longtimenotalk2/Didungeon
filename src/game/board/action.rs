@@ -1,4 +1,4 @@
-use crate::game::unit::Arrow;
+use crate::{game::{unit::Arrow, skill::Skillize}, wyrand::Dice};
 
 use super::Board;
 
@@ -106,6 +106,12 @@ impl<'a> Board<'a> {
             adjs.push(ib);
         }
         adjs
+    }
+
+    pub fn auto_stand(&mut self, ia : u8, dice : &mut Dice) {
+        if self.anto_stand.target(self, ia).len() > 0 {
+            print!("{}", self.anto_stand.exe(self, ia, ia, dice));
+        }
     }
 
 }

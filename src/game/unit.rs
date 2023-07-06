@@ -98,6 +98,7 @@ impl Unit {
     pub fn end_turn(&mut self) {
         self.action = true;
         self.auto_restore();
+        self.stun = false;
     }
 
     pub fn restore_amount(&self) -> i32 {

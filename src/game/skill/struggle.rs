@@ -5,13 +5,23 @@ use super::{BASIC_HIT, HIT_RATE, to_hit, Skillize};
 pub struct Struggle {
     basic_hit : i32,
     hit_rate : i32,
+    auto : bool,
 }
 
 impl Struggle {
-    pub fn new() -> Self {
+    pub fn new_auto() -> Self {
         Self {
             basic_hit: BASIC_HIT,
             hit_rate: HIT_RATE,
+            auto : true,
+        }
+    }
+
+    pub fn new() -> Self {
+        Self {
+            basic_hit: BASIC_HIT + 100,
+            hit_rate: HIT_RATE,
+            auto : false,
         }
     }
 
@@ -65,7 +75,7 @@ impl Skillize for Struggle {
         }
         let hit = self.hit(a, &bs);
 
-        txt += "<struggle>";
+        txt += if self.auto {"<auto stand>"} else {"<struggle>"};
 
         let hit_dice = dice.d(100);
         let is_hit = hit >= hit_dice;

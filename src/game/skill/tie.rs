@@ -1,6 +1,6 @@
 use crate::game::{unit::{Bound, Unit}, board::Board};
 
-use super::{Skillize, to_hit, txt_hit, HIT_RATE, BASIC_HIT};
+use super::{Skillize, to_hit, txt_hit, BASIC_HIT};
 
 pub struct Tie {
     basic_hit : i32,
@@ -11,7 +11,7 @@ impl Tie {
     pub fn new() -> Self {
         Self {
             basic_hit: BASIC_HIT,
-            hit_rate: HIT_RATE,
+            hit_rate: 2,
         }
     }
 

@@ -60,13 +60,9 @@ impl<'a> Board<'a> {
 
     fn action(&mut self, ia : u8, dice : &mut Dice) {
         self.print(Some(ia));
-        let mut a = self.index_mut(ia);
-        if a.stun {
-            a.stun = false;
-            a.action = false;
-            println!("<awake>");
-            return;
-        }
+
+        // try auto stand
+        self.auto_stand(ia, dice);
 
         let skill = self.auto_make_choice(ia);
         match skill {
@@ -116,6 +112,13 @@ impl<'a> Board<'a> {
             None
         }else{
             Some(ally_defeated)
+        }
+    }
+
+    fn turn_pass(&mut self) {
+        self.turn += 1;
+        for unit in &mut self.units {
+            unit.end_turn();
         }
     }
 }

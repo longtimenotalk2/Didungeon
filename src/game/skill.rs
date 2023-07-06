@@ -1,7 +1,7 @@
 mod punch;
 mod tie;
 // mod hold;
-mod struggle;
+pub mod struggle;
 mod unbound;
 
 use std::collections::HashMap;

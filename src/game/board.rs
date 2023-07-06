@@ -6,13 +6,14 @@ mod action;
 use std::collections::HashMap;
 
 use crate::wyrand::Dice;
-use super::{unit::Unit, skill::{Skill, SkillSet}};
+use super::{skill::{Skill, SkillSet, struggle::Struggle}, unit::Unit};
 
 pub struct Board<'a> {
     turn : i32,
     units : Vec<Unit>,
     locations : HashMap<u8, i32>,
     skill_set : &'a SkillSet,
+    anto_stand : &'a Struggle,
 }
 
 impl<'a> Board<'a> {
@@ -37,14 +38,6 @@ impl<'a> Board<'a> {
     fn exe(&mut self, skill : &Skill, ia : u8, ib : u8, dice : &mut Dice) -> String {
         self.skill_set.exe(skill, self, ia, ib, dice)
     }
-
-    fn turn_pass(&mut self) {
-        self.turn += 1;
-        for unit in &mut self.units {
-            unit.end_turn();
-        }
-    }
-
 
     
 }

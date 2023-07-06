@@ -6,7 +6,7 @@ use super::Board;
 impl<'a> Board<'a> {
     pub fn print(&self, act : Option<u8>) {
         println!("[T = {:4<}]            {}", self.turn, Unit::title_1());
-        println!("                    {}", Unit::title_2());
+        println!("                   {}", Unit::title_2());
         let min = self.locations.values().min().unwrap();
         let max = self.locations.values().max().unwrap();
         for loc in (*min)..(*max + 1) {
