@@ -108,10 +108,20 @@ impl<'a> Board<'a> {
         adjs
     }
 
+    pub fn find_with_arr(&self, ia : u8, ) -> Option<u8> {
+
+    }
+
     pub fn auto_stand(&mut self, ia : u8, dice : &mut Dice) {
         if self.anto_stand.target(self, ia).len() > 0 {
             print!("{}", self.anto_stand.exe(self, ia, ia, dice));
         }
+    }
+
+    
+
+    pub fn exchange_with_arr(&mut self, ia : u8, arr : &Arrow) {
+
     }
 
 }

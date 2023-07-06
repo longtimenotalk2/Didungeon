@@ -5,7 +5,7 @@ use crate::game::{skill::{SkillSet, struggle::Struggle}, unit::Unit};
 use super::Board;
 
 impl<'a> Board<'a> {
-    pub fn new_team(skill_set : &'a SkillSet, struggle : &'a Struggle) -> Self {
+    pub fn new_team_4(skill_set : &'a SkillSet, struggle : &'a Struggle) -> Self {
         let mut board = Self {
             turn : 0,
             units : vec!(),
@@ -16,6 +16,27 @@ impl<'a> Board<'a> {
 
         board.insert_unit(Unit::new_blank(true));
         board.insert_unit(Unit::new_blank(true));
+        board.insert_unit(Unit::new_blank(false));
+        board.insert_unit(Unit::new_blank(false));
+
+        board
+    }
+
+    pub fn new_team_8(skill_set : &'a SkillSet, struggle : &'a Struggle) -> Self {
+        let mut board = Self {
+            turn : 0,
+            units : vec!(),
+            locations : HashMap::new(),
+            skill_set,
+            anto_stand : struggle,
+        };
+
+        board.insert_unit(Unit::new_blank(true));
+        board.insert_unit(Unit::new_blank(true));
+        board.insert_unit(Unit::new_blank(true));
+        board.insert_unit(Unit::new_blank(true));
+        board.insert_unit(Unit::new_blank(false));
+        board.insert_unit(Unit::new_blank(false));
         board.insert_unit(Unit::new_blank(false));
         board.insert_unit(Unit::new_blank(false));
 

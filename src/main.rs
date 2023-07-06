@@ -9,7 +9,7 @@ fn main() {
     let skill_set = SkillSet::new();
     let auto_stand = Struggle::new_auto();
     println!("seed - {seed}");
-    let mut board = Board::new_team(&skill_set, &auto_stand);
-    board.anto_run(30, &mut dice);
+    let mut board = Board::new_team_8(&skill_set, &auto_stand);
+    board.anto_run(100, &mut dice);
 
 }
