@@ -150,6 +150,24 @@ impl Unit {
         }
     }
 
+    pub fn next_untie(&self) -> Option<Bound> {
+        if self.bound_wrist {
+            Some(Bound::Wrist)
+        }else if self.bound_ankle {
+            Some(Bound::Ankle)
+        }else if self.bound_arm {
+            Some(Bound::Arm)
+        }else if self.bound_neck {
+            Some(Bound::Neck)
+        }else if self.bound_calve {
+            Some(Bound::Calve)
+        }else if self.bound_thigh {
+            Some(Bound::Thigh)
+        }else{
+            None
+        }
+    }
+
     pub fn next_can_tie_choices(&self) -> Vec<(Bound, bool)> {
         let mut list = vec!();
 

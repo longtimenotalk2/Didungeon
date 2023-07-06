@@ -1,17 +1,21 @@
 use crate::game::{unit::{Bound, Unit}, board::Board};
 
-use super::{Skillize, to_hit, txt_hit, BASIC_HIT};
+use super::{Skillize, to_hit, txt_hit};
 
 pub struct Tie {
-    basic_hit : i32,
-    hit_rate : i32,
+    basic_force_hit : i32,
+    force_hit_rate : i32,
+    basic_dex_hit : i32,
+    dex_hit_rate : i32,
 }
 
 impl Tie {
     pub fn new() -> Self {
         Self {
-            basic_hit: BASIC_HIT,
-            hit_rate: 2,
+            basic_force_hit: 0,
+            force_hit_rate: 10,
+            basic_dex_hit: 0,
+            dex_hit_rate: 5,
         }
     }
 
@@ -22,11 +26,22 @@ impl Tie {
         b.next_can_tie_choices().len() > 0
     }
 
-    pub fn hit(&self, a : &Unit, b : &Unit, bd : &Bound) -> i32 {
-        let acc = a.tie_power();
+    pub fn hit(&self, board : &Board, ia : u8, ib : u8, bd : &Bound) -> i32 {
+        let a = board.index(ia);
+        let b = board.index(ib);
+        let mut support_force = 0;
+        for ic in board.find_adjacent(ib) {
+            if ic != ia {
+                support_force += board.index(ic).tie_power() / 2;
+            }
+        }
+
+        let acc = a.tie_power() + support_force;
         let evd = if bd.is_upper() {b.anti_tie_upper()} else {b.anti_tie_lower()};
-        let hit = to_hit(self.basic_hit + (acc - evd) * self.hit_rate);
-        hit 
+        let hit1 = to_hit(self.basic_force_hit + (acc - evd) * self.force_hit_rate);
+        let hit2 = to_hit(self.basic_dex_hit + self.dex_hit_rate * a.hand_dex());
+        let hit = hit1 * hit2 / 100;
+        hit
     }
 
     pub fn times_and_remain_hit(&self, agi : i32) -> (i32, i32) {
@@ -36,13 +51,12 @@ impl Tie {
     }
 
     pub fn choice(&self, board : &crate::game::board::Board, ia : u8, ib : u8) -> Option<(Bound, bool, i32)> {
-        let a = board.index(ia);
         let b = board.index(ib);
         let choices = b.next_can_tie_choices();
         let mut choice : Option<(Bound, bool, i32)> = None;
         for ch in choices {
             let (bd, is_tie) = ch;
-            let hit = self.hit(a, b, &bd);
+            let hit = self.hit(board, ia, ib, &bd);
             match choice {
                 Some((_, _, hit_)) => {
                     if hit > hit_ {
@@ -61,7 +75,7 @@ impl Skillize for Tie {
     fn target(&self, board : &crate::game::board::Board, ia : u8) -> Vec<u8> {
         let a = board.index(ia);
         let mut ibs = vec!();
-        for ib in board.find_melee_target(ia, 0) {
+        for ib in board.find_adjacent(ia) {
             let b = board.index(ib);
             if self.can(a, b) {
                 ibs.push(ib);

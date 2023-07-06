@@ -3,12 +3,13 @@ mod tie;
 // mod hold;
 pub mod struggle;
 mod unbound;
+mod untie;
 
 use std::collections::HashMap;
 
 use crate::wyrand::Dice;
 
-use self::{punch::Punch, tie::Tie, struggle::Struggle, unbound::Unbound};
+use self::{punch::Punch, tie::Tie, struggle::Struggle, unbound::Unbound, untie::Untie};
 
 use super::board::Board;
 
@@ -42,6 +43,7 @@ pub enum Skill {
     Punch,
     Struggle,
     Tie, 
+    Untie, 
     Unbound,
 }
 
@@ -51,6 +53,7 @@ impl Skill {
             Skill::Punch => "punch",
             Skill::Struggle => "struggle",
             Skill::Tie => "tie",
+            Skill::Untie => "untie",
             Skill::Unbound => "unbound"
         }
     }
@@ -60,6 +63,7 @@ impl Skill {
             Self::Punch,
             Self::Struggle,
             Self::Tie,
+            Self::Untie,
             Self::Unbound,
         )
     }
@@ -76,6 +80,9 @@ impl Skill {
                 },
                 Skill::Tie => {
                     hash.insert(skill, Box::new(Tie::new()));
+                },
+                Skill::Untie => {
+                    hash.insert(skill, Box::new(Untie::new()));
                 },
                 Skill::Unbound => {
                     hash.insert(skill, Box::new(Unbound::new()));
