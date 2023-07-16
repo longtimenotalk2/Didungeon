@@ -10,6 +10,13 @@ impl Unit {
         r.ceil().to_integer()
     }
 
+    pub fn atk_melee_hand(&self) -> i32 {
+        // 上身攻击力，用于计算拳攻击时的力
+        // 力量 * 移动衰减 * 手部自由度衰减
+        let r = Ratio::from_integer(self.str()) * self.walk_coefficient() * self.freedom_hand_coefficient();
+        r.ceil().to_integer()
+    }
+
     pub fn hold_force(&self) -> i32 {
         // 压制力
         // 倒地为0
@@ -23,6 +30,7 @@ impl Unit {
         if self.free_lower() {
             r += Ratio::new(1, 2);
         }
+        let r = Ratio::from_integer(self.str()) * r;
         r.ceil().to_integer()
     }
 

@@ -52,7 +52,7 @@ impl Unit {
         if self.is_bound_bow() {
             return Ratio::new(0, 1);
         }
-        let mut r = Ratio::from_integer(self.agi()) / 2;
+        let mut r = Ratio::new(1, 2);
         if !self.free_upper() {
             r /= 2;
         }

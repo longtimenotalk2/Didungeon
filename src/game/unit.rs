@@ -6,9 +6,11 @@ pub mod bound;
 pub mod new;
 mod state;
 mod attr;
+mod show;
+mod set;
 
-type Id = u32;
-type Pos = i32;
+pub type Id = u32;
+pub type Pos = i32;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub enum Dir {
@@ -21,6 +23,7 @@ pub struct Unit {
     id : Id,
     name : String,
     ally : bool,
+    you : bool,
     pos : Pos,
     
     str_max : i32,

@@ -1,20 +1,39 @@
 use super::{Unit, Id, bound::BoundState, Dir, Pos};
 
 impl Unit {
+    pub fn new_noal(id : Id, pos : Pos) -> Self {
+        Self::new(id, "诺艾尔  ".to_string(), true, true, pos, 10, 10, 10)
+    }
+
+    pub fn new_yelin(id : Id, pos : Pos) -> Self {
+        Self::new(id, "叶琳    ".to_string(), true, false, pos, 15, 12, 14)
+    }
+
+    pub fn new_kuinuo(id : Id, pos : Pos) -> Self {
+        Self::new(id, "奎诺    ".to_string(), false, false, pos, 16, 20, 18)
+    }
+}
+
+impl Unit {
     pub fn new(
         id : Id, 
         name : String, 
         ally : bool,
+        you : bool,
         pos : Pos,
+        str : i32,
+        dex : i32,
+        agi : i32,
     ) -> Self {
         Self {
             id,
             name,
             ally,
+            you, 
             pos,
-            str_max: 10,
-            dex_max: 10,
-            agi_max: 10,
+            str_max: str,
+            dex_max: dex,
+            agi_max: agi,
             inj_coefficient: 5,
             restore_rate: 25,
             bound: BoundState::new(),

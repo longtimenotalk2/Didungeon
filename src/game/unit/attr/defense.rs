@@ -14,6 +14,15 @@ impl Unit {
         r.ceil().to_integer()
     }
 
+    pub fn def_gym(&self) -> i32 {
+        // 防御体术攻击
+        // 上肢受限则为0
+        match self.free_upper() {
+            true => self.str(),
+            false => 0,
+        }
+    }
+
     pub fn struggle_force(&self) -> i32 {
         // 反压制力
         // 上肢下肢自由度取平均

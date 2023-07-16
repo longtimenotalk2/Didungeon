@@ -13,6 +13,10 @@ impl Unit {
         !(self.is_stun() || self.is_sleep())
     }
 
+    pub fn is_fall(&self) -> bool {
+        self.fall
+    }
+
     pub fn is_bound(&self, part : &BoundPart) -> bool {
         self.bound.is_bound(part)
     }
