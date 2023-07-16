@@ -4,6 +4,8 @@ use self::bound::BoundState;
 
 pub mod bound;
 pub mod new;
+mod state;
+mod attr;
 
 type Id = u32;
 type Pos = i32;
