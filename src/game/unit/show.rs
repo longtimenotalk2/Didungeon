@@ -17,7 +17,7 @@ fn spaces(intend : usize) -> String {
 
 impl Unit {
     pub fn show(&self) {
-        self.identity();
+        self.identity_for_pure_chinese();
         print!(" ");
         self.state();
         print!(" ");
@@ -35,7 +35,7 @@ impl Unit {
         println!("{}{}", spaces(intend), Self::title_2());
     }
 
-    fn identity(&self) {
+    pub fn show_identity(&self) {
         let name_color = match self.you {
             true => Color::Green,
             false => match self.ally {
@@ -46,7 +46,19 @@ impl Unit {
         print!("{}", self.name.clone().color(name_color));
     }
 
+    fn identity_for_pure_chinese(&self) {
+        let len = self.name.len();
+        let adder = " ".repeat(8-len/3*2);
+        self.show_identity();
+        print!("{}", adder);
+    }
+
     fn state(&self) {
+        if self.action {
+            print!("|");
+        }else{
+            print!(" ");
+        }
         if self.is_stun() {
             print!("💫")
         }else if self.is_sleep() {
@@ -95,9 +107,9 @@ impl Unit {
         txt += &remove0(self.unbound_force_lower());
         
         // Basic
-        txt += &remove0(self.str()); 
-        txt += &remove0(self.dex()); 
-        txt += &remove0(self.agi()); 
+        txt += &remove0(self.str_adj()); 
+        txt += &remove0(self.dex_adj()); 
+        txt += &remove0(self.agi_adj()); 
         txt += &remove0(self.inj);
 
         print!("{}", txt);

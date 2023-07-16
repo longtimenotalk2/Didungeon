@@ -1,4 +1,18 @@
-use super::{Unit, Id, Dir};
+use super::{Unit, Id, Dir, Pos};
+
+impl Unit {
+    pub fn get_id(&self) -> Id {
+        self.id
+    }
+
+    pub fn get_pos(&self) -> Pos {
+        self.pos
+    }
+
+    pub fn get_inj(&self) -> i32 {
+        self.inj
+    }
+}
 
 impl Unit {
     pub fn set_catch(&mut self, id : Id, dir : Dir) {

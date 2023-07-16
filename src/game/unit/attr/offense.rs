@@ -36,7 +36,9 @@ impl Unit {
 
     pub fn tie_power(&self) -> i32 {
         // 捆绑时的力量
+        // 倒下时为0
         // 力量 * 手部自由度衰减
+        if self.fall {return 0;}
         let r = Ratio::from_integer(self.str()) * self.freedom_hand_coefficient();
         r.ceil().to_integer()
     }

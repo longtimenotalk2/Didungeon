@@ -10,19 +10,31 @@ use super::Unit;
 
 impl Unit {
     // Basic
+    pub fn str_adj(&self) -> i32 {
+        (self.str_max - self.inj / self.inj_coefficient).max(0)
+    }
+
+    pub fn dex_adj(&self) -> i32 {
+        (self.dex_max - self.inj / self.inj_coefficient).max(0)
+    }
+
+    pub fn agi_adj(&self) -> i32 {
+        (self.agi_max - self.inj / self.inj_coefficient).max(0)
+    }
+
     pub fn str(&self) -> i32 {
         if !self.is_able() {return 0;}
-        (self.str_max - self.inj / self.inj_coefficient).max(0)
+        self.str_adj()
     }
 
     pub fn dex(&self) -> i32 {
         if !self.is_able() {return 0;}
-        (self.dex_max - self.inj / self.inj_coefficient).max(0)
+        self.dex_adj()
     }
 
     pub fn agi(&self) -> i32 {
         if !self.is_able() {return 0;}
-        (self.agi_max - self.inj / self.inj_coefficient).max(0)
+        self.agi_adj()
     }
 
     fn walk_coefficient(&self) -> Ratio<i32> {

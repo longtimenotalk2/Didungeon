@@ -7,7 +7,8 @@ pub mod new;
 mod state;
 mod attr;
 mod show;
-mod set;
+mod basic;
+mod action;
 
 pub type Id = u32;
 pub type Pos = i32;
@@ -16,6 +17,15 @@ pub type Pos = i32;
 pub enum Dir {
     Left,
     Right,
+}
+
+impl Dir {
+    pub fn notice(&self) -> &'static str {
+        match self {
+            Dir::Left => "↑",
+            Dir::Right => "↓",
+        }
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug)]

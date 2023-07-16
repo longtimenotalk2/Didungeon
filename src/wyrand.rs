@@ -1,6 +1,9 @@
+use serde::{Serialize, Deserialize};
+
 #[allow(warnings)]
 
 //#[repr(transparent)]
+#[derive(Serialize, Deserialize, Debug)]
 struct WyRand {
     state: u64,
 }
@@ -23,6 +26,7 @@ impl WyRand {
     }
 }
 
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Dice {
     wy : WyRand,
 }

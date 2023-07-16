@@ -24,7 +24,7 @@ fn test_show_units() {
     kuinuo.set_sleep(true);
     yelin.set_fall(true);
 
-    let intend = 23;
+    let intend = 24;
     Unit::show_title1(intend);
     Unit::show_title2(intend);
     noel.show();

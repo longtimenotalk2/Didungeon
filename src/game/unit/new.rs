@@ -2,15 +2,15 @@ use super::{Unit, Id, bound::BoundState, Dir, Pos};
 
 impl Unit {
     pub fn new_noal(id : Id, pos : Pos) -> Self {
-        Self::new(id, "诺艾尔  ".to_string(), true, true, pos, 10, 10, 10)
+        Self::new(id, "诺艾尔".to_string(), true, true, pos, 10, 10, 10)
     }
 
     pub fn new_yelin(id : Id, pos : Pos) -> Self {
-        Self::new(id, "叶琳    ".to_string(), true, false, pos, 15, 12, 14)
+        Self::new(id, "叶琳".to_string(), true, false, pos, 15, 12, 14)
     }
 
     pub fn new_kuinuo(id : Id, pos : Pos) -> Self {
-        Self::new(id, "奎诺    ".to_string(), false, false, pos, 16, 20, 18)
+        Self::new(id, "奎诺".to_string(), false, false, pos, 16, 20, 18)
     }
 }
 
