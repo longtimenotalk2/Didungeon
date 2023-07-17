@@ -1,3 +1,6 @@
+use colorful::Color;
+use colorful::Colorful;
+
 use crate::{game::{skill::Skill, unit::{Id, Dir}}, common};
 
 use super::Board;
@@ -34,25 +37,34 @@ impl Board {
 impl Board {
     fn continue_turn(&mut self) -> Option<Vec<Choose>> {
         // 找当前可动的速度最快的角色行动
-        let mut id: Option<u32> = self.find_next_actor();
-        if let None = id {
+        let mut ido: Option<u32> = self.find_next_actor();
+        if let None = ido {
             self.turn_end();
-            id = self.find_next_actor();
+            ido = self.find_next_actor();
         }
 
         // 准备屏幕
         common::clear_cmd();
-        self.show(id);
+        println!("当前回合 : {}", self.turn);
+        self.show(ido);
         println!();
 
         // 生成回合人
-        let id = id.unwrap();
+        let id = ido.unwrap();
         self.actor = Some(id);
         let actor = self.get_unit(id);
         println!("{} 的回合", actor.identity());
         println!();
 
+        // 自动行动
+        if self.auto_action(id) {
+            println!();
+            self.show(ido);
+            println!();
+        }
+
         // 生成选择
+        let actor = self.get_unit(id);
         let skills = actor.get_skills();
         
         let chooses = self.calc_chooses(id, skills);
@@ -69,13 +81,22 @@ impl Board {
 
         // 分支，如果是玩家，返回行动，否则自动选择行动执行
         if actor.is_human() {
-            println!("请选择 : ");
+            println!("{}", "请选择 : ".to_string().color(Color::Yellow));
             Some(chooses)
         }else{
             let choose = self.ai_choose(id, chooses);
             self.exe_choose(id, choose);
             None
         }
+    }
+
+    fn auto_action(&mut self, id : Id) -> bool {
+        // 自动起身
+        if self.get_unit_mut(id).check_to_stand() {
+            println!("[自动起身]");
+            return true;
+        }
+        false
     }
 
     fn ai_choose(&self, _id : Id, chooses : Vec<Choose>) -> Option<Choose>{
@@ -103,7 +124,7 @@ impl Board {
     fn turn_end(&mut self) {
         self.turn += 1;
         for unit in &mut self.units {
-            unit.set_action(true);
+            unit.end_turn()
         }
     }
 

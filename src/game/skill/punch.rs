@@ -15,7 +15,7 @@ impl Punch {
         Self {
             basic_hit: 50,
             hit_rate: 5,
-            basic_dmg: 10,
+            basic_dmg: 5,
         }
     }
 

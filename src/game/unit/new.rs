@@ -12,7 +12,9 @@ impl Unit {
     }
 
     pub fn new_kuinuo(id : Id, pos : Pos) -> Self {
-        Self::new(id, "奎诺".to_string(), false, false, pos, 16, 20, 18)
+        let mut unit = Self::new(id, "奎诺".to_string(), false, false, pos, 16, 20, 18);
+        unit.take_sleep();
+        unit
     }
 }
 
