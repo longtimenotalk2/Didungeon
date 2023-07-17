@@ -86,6 +86,34 @@ impl BoundState {
         }
     }
 
+    pub fn untie(&mut self, part : &BoundPart) {
+        match part {
+            BoundPart::Neck => self.bound_neck = 0,
+            BoundPart::Arm => self.bound_arm = 0,
+            BoundPart::Hang => self.bound_hang = 0,
+            BoundPart::Wrist => self.bound_wrist = 0,
+            BoundPart::Joint => self.bound_joint = 0,
+            BoundPart::Thigh => self.bound_thigh = 0,
+            BoundPart::Calve => self.bound_calve = 0,
+            BoundPart::Ankle => self.bound_ankle = 0,
+            BoundPart::Long => self.bound_long = 0,
+        }
+    }
+
+    pub fn loosen_to(&mut self, part : &BoundPart, num : i32) {
+        match part {
+            BoundPart::Neck => self.bound_neck = num,
+            BoundPart::Arm => self.bound_arm = num,
+            BoundPart::Hang => self.bound_hang = num,
+            BoundPart::Wrist => self.bound_wrist = num,
+            BoundPart::Joint => self.bound_joint = num,
+            BoundPart::Thigh => self.bound_thigh = num,
+            BoundPart::Calve => self.bound_calve = num,
+            BoundPart::Ankle => self.bound_ankle = num,
+            BoundPart::Long => self.bound_long = num,
+        }
+    }
+
     pub fn is_bound(&self, part : &BoundPart) -> bool {
         match part {
             BoundPart::Neck => self.bound_neck > 0,
@@ -97,6 +125,20 @@ impl BoundState {
             BoundPart::Calve => self.bound_calve> 0,
             BoundPart::Ankle => self.bound_ankle> 0,
             BoundPart::Long => self.bound_long> 0,
+        }
+    }
+
+    pub fn get_tightness(&self, part : &BoundPart) -> i32 {
+        match part {
+            BoundPart::Neck => self.bound_neck,
+            BoundPart::Arm => self.bound_arm,
+            BoundPart::Hang => self.bound_hang,
+            BoundPart::Wrist => self.bound_wrist,
+            BoundPart::Joint => self.bound_joint,
+            BoundPart::Thigh => self.bound_thigh,
+            BoundPart::Calve => self.bound_calve,
+            BoundPart::Ankle => self.bound_ankle,
+            BoundPart::Long => self.bound_long,
         }
     }
 
@@ -158,14 +200,14 @@ impl BoundState {
     pub fn can_untie_list(&self) -> Vec<BoundPart> {
         let mut list = vec!();
 
-        if self.is_bound_neck() {list.push(BoundPart::Neck);}
+        if self.is_bound_neck() && !self.is_bound_hang() && !self.is_bound_long() && !self.is_bound_arm() {list.push(BoundPart::Neck);}
         if self.is_bound_arm() {list.push(BoundPart::Arm);}
-        if self.is_bound_joint() {list.push(BoundPart::Joint);}
-        if self.is_bound_wrist() {list.push(BoundPart::Wrist);}
+        if self.is_bound_hang() {list.push(BoundPart::Hang);}
+        if self.is_bound_wrist() && !self.is_bound_hang() && !self.is_bound_joint() {list.push(BoundPart::Wrist);}
         if self.is_bound_joint() {list.push(BoundPart::Joint);}
         if self.is_bound_thigh() {list.push(BoundPart::Thigh);}
         if self.is_bound_calve() {list.push(BoundPart::Calve);}
-        if self.is_bound_ankle() {list.push(BoundPart::Ankle);}
+        if self.is_bound_ankle() && !self.is_bound_long() && !self.is_bound_joint() {list.push(BoundPart::Ankle);}
         if self.is_bound_long() {list.push(BoundPart::Long);}
         
         list

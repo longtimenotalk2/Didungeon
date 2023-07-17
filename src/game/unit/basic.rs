@@ -34,6 +34,10 @@ impl Unit {
     pub fn can_untie_list(&self) -> Vec<BoundPart> {
         self.bound.can_untie_list()
     }
+
+    pub fn get_tightness(&self, part : &BoundPart) -> i32 {
+        self.bound.get_tightness(part)
+    }
 }
 
 impl Unit {

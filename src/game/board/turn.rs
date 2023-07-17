@@ -24,7 +24,15 @@ pub enum Choose {
 impl Board {
     pub fn respond(&mut self, command : Command) -> Option<Vec<Choose>> {
         match command {
-            Command::Continue => self.continue_turn(),
+            Command::Continue => {
+                if self.temp_remained_bound_value > 0 {
+                    self.show(Some(self.temp_actor_now.unwrap()));
+                    println!();
+                    self.continue_tie()
+                }else{
+                    self.continue_turn()
+                }
+            }
             Command::Choose(choose) => {
                 match choose {
                     Choose::Pass => {
@@ -36,8 +44,8 @@ impl Board {
                         None
                     },
                     Choose::Tie(bound) => self.exe_tie(bound),
-                    Choose::Untie(_) => todo!(),
-                    Choose::PassTie => todo!(),
+                    Choose::Untie(bound) => self.exe_untie(bound),
+                    Choose::PassTie => {self.end_tie()},
                 }
             },
         }

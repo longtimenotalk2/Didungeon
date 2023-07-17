@@ -86,7 +86,7 @@ impl Unit {
         }
         
         let r = if self.is_bound(&BoundPart::Ankle) {
-            let mut r = Ratio::new(1, 1);
+            let mut r = Ratio::new(1, 2);
             if self.is_bound(&BoundPart::Thigh) {
                 r -= Ratio::new(1, 2);
             }

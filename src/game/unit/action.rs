@@ -101,4 +101,12 @@ impl Unit {
     pub fn tie(&mut self, bound : &BoundPart) {
         self.bound.tie(bound);
     }
+
+    pub fn untie(&mut self, bound : &BoundPart) {
+        self.bound.untie(bound);
+    }
+
+    pub fn loosen_to(&mut self, bound : &BoundPart, num : i32) {
+        self.bound.loosen_to(bound, num);
+    }
 }
