@@ -1,5 +1,6 @@
 use serde::{Serialize, Deserialize};
 
+#[derive(Clone, Debug)]
 pub enum BoundPart {
     Neck,
     Arm,
@@ -12,85 +13,89 @@ pub enum BoundPart {
     Long,
 }
 
+impl BoundPart {
+    pub fn name_tie(&self) -> &'static str {
+        match self {
+            BoundPart::Neck => "完成五花捆绑",
+            BoundPart::Arm => "完成大臂的束缚",
+            BoundPart::Hang => "将手腕悬高与后颈相连",
+            BoundPart::Wrist => "将手腕捆绑",
+            BoundPart::Joint => "将脚腕反弓拉至与手腕相连",
+            BoundPart::Thigh => "将大腿捆绑",
+            BoundPart::Calve => "将小腿捆绑",
+            BoundPart::Ankle => "将脚腕捆绑",
+            BoundPart::Long => "将脚腕反弓拉至与后颈相连",
+        }
+    }
+
+    pub fn name_untie(&self) -> &'static str {
+        match self {
+            BoundPart::Neck => "解除五花捆绑",
+            BoundPart::Arm => "解除大臂的束缚",
+            BoundPart::Hang => "解除手腕与后颈的连接",
+            BoundPart::Wrist => "解除手腕捆绑",
+            BoundPart::Joint => "解除脚腕与手腕的连接",
+            BoundPart::Thigh => "解除大腿捆绑",
+            BoundPart::Calve => "解除小腿捆绑",
+            BoundPart::Ankle => "解除脚腕捆绑",
+            BoundPart::Long => "解除脚腕与后颈的连接",
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct BoundState {
-    bound_neck : bool,
-    bound_arm : bool,
-    bound_hang : bool,
-    bound_wrist : bool,
-    bound_joint : bool,
-    bound_thigh : bool,
-    bound_calve : bool,
-    bound_ankle : bool,
-    bound_long : bool,
-
-    tie_process_neck : i32,
-    tie_process_arm : i32,
-    tie_process_hang : i32,
-    tie_process_wrist : i32,
-    tie_process_joint : i32,
-    tie_process_thigh : i32,
-    tie_process_calve : i32,
-    tie_process_ankle : i32,
-    tie_process_long : i32,
-
-    untie_process_neck : i32,
-    untie_process_arm : i32,
-    untie_process_hang : i32,
-    untie_process_wrist : i32,
-    untie_process_joint : i32,
-    untie_process_thigh : i32,
-    untie_process_calve : i32,
-    untie_process_ankle : i32,
-    untie_process_long : i32,
+    bound_neck : i32,
+    bound_arm : i32,
+    bound_hang : i32,
+    bound_wrist : i32,
+    bound_joint : i32,
+    bound_thigh : i32,
+    bound_calve : i32,
+    bound_ankle : i32,
+    bound_long : i32,
 }
 
 impl BoundState {
     pub fn new() -> Self {
         Self {
-            bound_neck : false,
-            bound_arm : false,
-            bound_hang : false,
-            bound_wrist : false,
-            bound_joint : false,
-            bound_thigh : false,
-            bound_calve : false,
-            bound_ankle : false,
-            bound_long : false,
+            bound_neck : 0,
+            bound_arm : 0,
+            bound_hang : 0,
+            bound_wrist : 0,
+            bound_joint : 0,
+            bound_thigh : 0,
+            bound_calve : 0,
+            bound_ankle : 0,
+            bound_long : 0,
+        }
+    }
 
-            tie_process_neck : 0,
-            tie_process_arm : 0,
-            tie_process_hang : 0,
-            tie_process_wrist : 0,
-            tie_process_joint : 0,
-            tie_process_thigh : 0,
-            tie_process_calve : 0,
-            tie_process_ankle : 0,
-            tie_process_long : 0,
-
-            untie_process_neck : 0,
-            untie_process_arm : 0,
-            untie_process_hang : 0,
-            untie_process_wrist : 0,
-            untie_process_joint : 0,
-            untie_process_thigh : 0,
-            untie_process_calve : 0,
-            untie_process_ankle : 0,
-            untie_process_long : 0,
+    pub fn tie(&mut self, part : &BoundPart) {
+        match part {
+            BoundPart::Neck => self.bound_neck = 100,
+            BoundPart::Arm => self.bound_arm = 100,
+            BoundPart::Hang => self.bound_hang = 100,
+            BoundPart::Wrist => self.bound_wrist = 100,
+            BoundPart::Joint => self.bound_joint = 100,
+            BoundPart::Thigh => self.bound_thigh = 100,
+            BoundPart::Calve => self.bound_calve = 100,
+            BoundPart::Ankle => self.bound_ankle = 100,
+            BoundPart::Long => self.bound_long = 100,
         }
     }
 
     pub fn is_bound(&self, part : &BoundPart) -> bool {
         match part {
-            BoundPart::Neck => self.bound_neck,
-            BoundPart::Arm => self.bound_arm,
-            BoundPart::Hang => self.bound_hang,
-            BoundPart::Wrist => self.bound_wrist,
-            BoundPart::Joint => self.bound_joint,
-            BoundPart::Thigh => self.bound_thigh,
-            BoundPart::Calve => self.bound_calve,
-            BoundPart::Ankle => self.bound_ankle,
-            BoundPart::Long => self.bound_long,
+            BoundPart::Neck => self.bound_neck > 0,
+            BoundPart::Arm => self.bound_arm> 0,
+            BoundPart::Hang => self.bound_hang> 0,
+            BoundPart::Wrist => self.bound_wrist> 0,
+            BoundPart::Joint => self.bound_joint> 0,
+            BoundPart::Thigh => self.bound_thigh> 0,
+            BoundPart::Calve => self.bound_calve> 0,
+            BoundPart::Ankle => self.bound_ankle> 0,
+            BoundPart::Long => self.bound_long> 0,
         }
     }
 
@@ -102,21 +107,49 @@ impl BoundState {
         !(self.is_bound(&BoundPart::Thigh) || self.is_bound(&BoundPart::Calve) || self.is_bound(&BoundPart::Ankle))
     }
 
+    fn is_bound_neck(&self) -> bool {
+        self.bound_neck > 0
+    }
+    fn is_bound_arm(&self) -> bool {
+        self.bound_arm > 0
+    }
+    fn is_bound_hang(&self) -> bool {
+        self.bound_hang > 0
+    }
+    fn is_bound_wrist(&self) -> bool {
+        self.bound_wrist > 0
+    }
+    fn is_bound_joint(&self) -> bool {
+        self.bound_joint > 0
+    }
+    fn is_bound_thigh(&self) -> bool {
+        self.bound_thigh > 0
+    }
+    fn is_bound_calve(&self) -> bool {
+        self.bound_calve > 0
+    }
+    fn is_bound_ankle(&self) -> bool {
+        self.bound_ankle > 0
+    }
+    fn is_bound_long(&self) -> bool {
+        self.bound_long > 0
+    }
+
     pub fn is_bound_bow(&self) -> bool {
-        self.bound_joint || self.bound_long
+        self.is_bound_joint() || self.is_bound_long()
     }
 
     pub fn can_tie_list(&self) -> Vec<BoundPart> {
         let mut list = vec!();
-        if !self.bound_neck {list.push(BoundPart::Neck);}
-        if !self.bound_arm && self.bound_neck {list.push(BoundPart::Arm);}
-        if !self.bound_hang && !self.bound_joint && self.bound_neck && self.bound_wrist {list.push(BoundPart::Hang);}
-        if !self.bound_wrist {list.push(BoundPart::Wrist);}
-        if !self.bound_joint && !self.bound_hang && self.bound_wrist && self.bound_ankle {list.push(BoundPart::Joint);}
-        if !self.bound_thigh {list.push(BoundPart::Thigh);}
-        if !self.bound_calve {list.push(BoundPart::Calve);}
-        if !self.bound_ankle {list.push(BoundPart::Ankle);}
-        if !self.bound_long && self.bound_neck && self.bound_ankle {list.push(BoundPart::Long);}
+        if !self.is_bound_neck() {list.push(BoundPart::Neck);}
+        if !self.is_bound_arm() && self.is_bound_neck() {list.push(BoundPart::Arm);}
+        if !self.is_bound_hang() && !self.is_bound_joint() && self.is_bound_neck() && self.is_bound_wrist() {list.push(BoundPart::Hang);}
+        if !self.is_bound_wrist() {list.push(BoundPart::Wrist);}
+        if !self.is_bound_joint() && !self.is_bound_hang() && self.is_bound_wrist() && self.is_bound_ankle() {list.push(BoundPart::Joint);}
+        if !self.is_bound_thigh() {list.push(BoundPart::Thigh);}
+        if !self.is_bound_calve() {list.push(BoundPart::Calve);}
+        if !self.is_bound_ankle() {list.push(BoundPart::Ankle);}
+        if !self.is_bound_long() && self.is_bound_neck() && self.is_bound_ankle() {list.push(BoundPart::Long);}
 
         list
     }
@@ -124,20 +157,20 @@ impl BoundState {
     pub fn can_untie_list(&self) -> Vec<BoundPart> {
         let mut list = vec!();
 
-        if self.bound_neck {list.push(BoundPart::Neck);}
-        if self.bound_arm {list.push(BoundPart::Arm);}
-        if self.bound_wrist {list.push(BoundPart::Wrist);}
-        if self.bound_thigh {list.push(BoundPart::Thigh);}
-        if self.bound_calve {list.push(BoundPart::Calve);}
-        if self.bound_ankle {list.push(BoundPart::Ankle);}
+        if self.is_bound_neck() {list.push(BoundPart::Neck);}
+        if self.is_bound_arm() {list.push(BoundPart::Arm);}
+        if self.is_bound_wrist() {list.push(BoundPart::Wrist);}
+        if self.is_bound_thigh() {list.push(BoundPart::Thigh);}
+        if self.is_bound_calve() {list.push(BoundPart::Calve);}
+        if self.is_bound_ankle() {list.push(BoundPart::Ankle);}
         
         list
     }
 
     pub fn next_force_upper(&self) -> Option<BoundPart> {
-        if self.bound_wrist {
+        if self.is_bound_wrist() {
             Some(BoundPart::Wrist)
-        }else if self.bound_arm {
+        }else if self.is_bound_arm() {
             Some(BoundPart::Arm)
         }else {
             None
@@ -145,9 +178,9 @@ impl BoundState {
     }
 
     pub fn next_force_lower(&self) -> Option<BoundPart> {
-        if self.bound_ankle {
+        if self.is_bound_ankle() {
             Some(BoundPart::Ankle)
-        }else if self.bound_calve {
+        }else if self.is_bound_calve() {
             Some(BoundPart::Calve)
         }else{
             None
@@ -155,28 +188,28 @@ impl BoundState {
     }
 
     pub fn show(&self) {
-        let upper_type = if self.bound_hang && self.bound_long {
+        let upper_type = if self.is_bound_hang() && self.is_bound_long() {
             "="
-        } else if !(self.bound_hang || self.bound_long) {
+        } else if !(self.is_bound_hang() || self.is_bound_long()) {
             " "
         } else {
             "-"
         };
-        let lower_type = if self.bound_joint && self.bound_long  {
+        let lower_type = if self.is_bound_joint() && self.is_bound_long()  {
             "="
-        } else if !(self.bound_joint || self.bound_long) {
+        } else if !(self.is_bound_joint() || self.is_bound_long()) {
             " "
         } else {
             "-"
         };
-        let neck = if self.bound_neck {"@"} else {" "};
-        let arm = if self.bound_arm  {"O"} else {upper_type};
+        let neck = if self.is_bound_neck() {"@"} else {" "};
+        let arm = if self.is_bound_arm()  {"O"} else {upper_type};
         let hang = upper_type;
-        let wrist = if self.bound_wrist {"@"} else {" "};
+        let wrist = if self.is_bound_wrist() {"@"} else {" "};
         let joint = lower_type;
-        let thigh = if self.bound_thigh  {"0"} else {lower_type} ;
-        let calve = if self.bound_calve  {"O"} else {lower_type} ;
-        let ankle = if self.bound_ankle {"@"} else {" "};
+        let thigh = if self.is_bound_thigh()  {"0"} else {lower_type} ;
+        let calve = if self.is_bound_calve()  {"O"} else {lower_type} ;
+        let ankle = if self.is_bound_ankle() {"@"} else {" "};
         print!("[{neck}{arm}{hang}{wrist}{joint}{thigh}{calve}{ankle}]")
     }
 }

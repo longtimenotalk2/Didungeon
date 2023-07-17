@@ -1,6 +1,6 @@
 use crate::game::skill::Skill;
 
-use super::{Unit, Id, Dir, Pos};
+use super::{Unit, Id, Dir, Pos, bound::BoundPart};
 
 impl Unit {
     pub fn get_id(&self) -> Id {
@@ -21,6 +21,18 @@ impl Unit {
 
     pub fn is_human(&self) -> bool {
         self.you
+    }
+
+    pub fn get_catch_with(&self) -> Option<Id> {
+        self.catch_left.or(self.catch_right)
+    }
+
+    pub fn can_tie_list(&self) -> Vec<BoundPart> {
+        self.bound.can_tie_list()
+    }
+
+    pub fn can_untie_list(&self) -> Vec<BoundPart> {
+        self.bound.can_untie_list()
     }
 }
 

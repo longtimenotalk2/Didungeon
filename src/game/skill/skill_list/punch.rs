@@ -1,8 +1,5 @@
-use crate::game::{board::Board, unit::{Id, Dir, Unit}};
+use crate::game::{board::Board, unit::{Id, Dir, Unit}, skill::{helper, Skillize, Skill}};
 
-use super::{Skillize, Skill};
-
-use super::helper as helper;
 
 pub struct Punch {
     basic_hit : i32,

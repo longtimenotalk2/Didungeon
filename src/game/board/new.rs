@@ -20,7 +20,9 @@ impl Board {
             pos_min: 0,
             pos_length: length,
             turn : 1,
-            actor: None,
+            temp_actor_now: None,
+            temp_target_now : None,
+            temp_remained_bound_value: 0,
         }
     }
 

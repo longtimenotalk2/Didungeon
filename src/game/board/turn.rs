@@ -1,34 +1,44 @@
 use colorful::Color;
 use colorful::Colorful;
 
+use crate::game::unit::bound::BoundPart;
 use crate::{game::{skill::Skill, unit::{Id, Dir}}, common};
 
 use super::Board;
 
+#[derive(Clone, Debug)]
 pub enum Command {
     Continue,
-    Pass,
     Choose(Choose),
 }
 
-#[derive(Clone)]
-pub struct Choose {
-    skill : Skill,
-    it : Id,
-    dir : Dir,
+#[derive(Clone, Debug)]
+pub enum Choose {
+    Pass,
+    Skill {skill : Skill, it : Id, dir : Dir,},
+    Tie(BoundPart),
+    Untie(BoundPart),
+    PassTie,
 }
 
 impl Board {
     pub fn respond(&mut self, command : Command) -> Option<Vec<Choose>> {
         match command {
             Command::Continue => self.continue_turn(),
-            Command::Pass => {
-                self.exe_choose(self.actor.unwrap(), None);
-                None
-            },
-            Command::Choose(c) => {
-                self.exe_choose(self.actor.unwrap(), Some(c));
-                None
+            Command::Choose(choose) => {
+                match choose {
+                    Choose::Pass => {
+                        self.exe_pass();
+                        None
+                    },
+                    Choose::Skill { skill, it, dir } => {
+                        self.exe_skill(skill, it, dir);
+                        None
+                    },
+                    Choose::Tie(bound) => self.exe_tie(bound),
+                    Choose::Untie(_) => todo!(),
+                    Choose::PassTie => todo!(),
+                }
             },
         }
     }
@@ -51,31 +61,43 @@ impl Board {
 
         // 生成回合人
         let id = ido.unwrap();
-        self.actor = Some(id);
+        self.temp_actor_now = Some(id);
         let actor = self.get_unit(id);
         println!("{} 的回合", actor.identity());
         println!();
 
         // 自动行动
-        if self.auto_action(id) {
-            println!();
-            self.show(ido);
-            println!();
+        match self.auto_action(id) {
+            Some(chooses) => {
+                Some(chooses)
+            },
+            None => self.create_choose(),
         }
+    }
 
+    pub fn create_choose(&mut self) -> Option<Vec<Choose>>{
         // 生成选择
+        let id = self.temp_actor_now.unwrap();
         let actor = self.get_unit(id);
         let skills = actor.get_skills();
         
         let chooses = self.calc_chooses(id, skills);
 
         println!("当前可选择的指令：");
-        println!("  [{:^3}] : {}", 0, "跳过回合");
-        let mut choose_count = 1;
+        
+        let mut choose_count = 0;
         for choose in &chooses {
-            let Choose {skill, it, dir} = choose;
-            println!("  [{:^3}] : {}{} -> {}", choose_count, skill.name(), dir.notice(), self.get_unit(*it).identity());
-            choose_count += 1;
+            match choose {
+                Choose::Pass => {
+                    println!("  [{:^3}] : {}", choose_count, "跳过回合");
+                    choose_count += 1;
+                },
+                Choose::Skill { skill, it, dir } => {
+                    println!("  [{:^3}] : {}{} -> {}", choose_count, skill.name(), dir.notice(), self.get_unit(*it).identity());
+                    choose_count += 1;
+                },
+                _ => unreachable!(),
+            }
         }
         println!();
 
@@ -85,32 +107,40 @@ impl Board {
             Some(chooses)
         }else{
             let choose = self.ai_choose(id, chooses);
-            self.exe_choose(id, choose);
+            match choose {
+                Choose::Pass => self.exe_pass(),
+                Choose::Skill { skill, it, dir } => self.exe_skill(skill, it, dir),
+                _ => unreachable!(),
+            }
             None
         }
     }
 
-    fn auto_action(&mut self, id : Id) -> bool {
-        // 自动起身
-        if self.get_unit_mut(id).check_to_stand() {
-            println!("[自动起身]");
-            return true;
+    fn ai_choose(&self, _id : Id, chooses : Vec<Choose>) -> Choose {
+        match chooses.get(1) {
+            Some(c) => c.clone(),
+            None => chooses.get(0).unwrap().clone(),
         }
-        false
     }
 
-    fn ai_choose(&self, _id : Id, chooses : Vec<Choose>) -> Option<Choose>{
-        chooses.get(0).map(|a| a.clone())
-    }
+    pub fn exe_pass(&mut self) {
+        let id = self.temp_actor_now.unwrap();
+        println!("跳过回合");
+        println!();
 
-    pub fn exe_choose(&mut self, id : Id, choose : Option<Choose>) {
-        // 执行行动
-        match choose {
-            Some(Choose {skill, it, dir}) => skill.exe(self, id, it, &dir),
-            None => println!("跳过回合"),
-        }
         self.get_unit_mut(id).end_action();
-        self.actor = None;
+        self.temp_actor_now = None;
+        // 结束
+        println!("按任意键继续……")
+    }
+
+    pub fn exe_skill(&mut self, skill : Skill, it : Id, dir : Dir) {
+        // 执行行动
+        let id = self.temp_actor_now.unwrap();
+        skill.exe(self, id, it, &dir);
+
+        self.get_unit_mut(id).end_action();
+        self.temp_actor_now = None;
         println!();
 
         // 结果图
@@ -129,10 +159,10 @@ impl Board {
     }
 
     fn calc_chooses(&self, id : Id, skills : &[Skill]) -> Vec<Choose> {
-        let mut list = vec!();
+        let mut list = vec!(Choose::Pass);
         for skill in skills {
             for (it, dir) in skill.get_targets(self, id) {
-                list.push(Choose { skill: skill.clone(), it, dir })
+                list.push(Choose::Skill { skill: skill.clone(), it, dir })
             }
         }
         list

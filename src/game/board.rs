@@ -3,6 +3,7 @@ mod find;
 pub mod new;
 mod show;
 pub mod turn;
+mod action;
 
 use std::collections::HashMap;
 
@@ -20,5 +21,7 @@ pub struct Board {
     pos_min : i32,
     pos_length : i32,
     turn : i32,
-    actor : Option<Id>,
+    temp_actor_now : Option<Id>,
+    temp_target_now : Option<Id>,
+    temp_remained_bound_value : i32,
 }

@@ -34,7 +34,7 @@ impl Game {
                     },
                     "load" => {
                         self.load();
-                        self.board.respond(Command::Continue);
+                        result = self.board.respond(Command::Continue);
                     },
                     _ => (),
                 }
@@ -53,12 +53,7 @@ impl Game {
                                 if i > num {
                                     println!("数值越界！")
                                 }else {
-                                    if i == 0 {
-                                        self.board.respond(Command::Pass);
-                                    }else{
-                                        self.board.respond(Command::Choose(chooses[i-1].clone()));
-                                    }
-                                    result = None;
+                                    result = self.board.respond(Command::Choose(chooses[i].clone()));
                                 }
                             }, 
                         }
