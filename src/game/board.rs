@@ -20,4 +20,5 @@ pub struct Board {
     pos_min : i32,
     pos_length : i32,
     turn : i32,
+    actor : Option<Id>,
 }

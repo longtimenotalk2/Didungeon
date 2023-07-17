@@ -4,24 +4,35 @@ use super::Board;
 
 pub enum Command {
     Continue,
+    Pass,
+    Choose(Choose),
 }
 
-struct Choose {
+#[derive(Clone)]
+pub struct Choose {
     skill : Skill,
     it : Id,
     dir : Dir,
 }
 
 impl Board {
-    pub fn respond(&mut self, command : Command) {
+    pub fn respond(&mut self, command : Command) -> Option<Vec<Choose>> {
         match command {
             Command::Continue => self.continue_turn(),
+            Command::Pass => {
+                self.exe_choose(self.actor.unwrap(), None);
+                None
+            },
+            Command::Choose(c) => {
+                self.exe_choose(self.actor.unwrap(), Some(c));
+                None
+            },
         }
     }
 }
 
 impl Board {
-    fn continue_turn(&mut self) {
+    fn continue_turn(&mut self) -> Option<Vec<Choose>> {
         // 找当前可动的速度最快的角色行动
         let mut id: Option<u32> = self.find_next_actor();
         if let None = id {
@@ -36,6 +47,7 @@ impl Board {
 
         // 生成回合人
         let id = id.unwrap();
+        self.actor = Some(id);
         let actor = self.get_unit(id);
         println!("{} 的回合", actor.identity());
         println!();
@@ -45,8 +57,9 @@ impl Board {
         
         let chooses = self.calc_chooses(id, skills);
 
-        println!("当前可选择的指令");
-        let mut choose_count = 0;
+        println!("当前可选择的指令：");
+        println!("  [{:^3}] : {}", 0, "跳过回合");
+        let mut choose_count = 1;
         for choose in &chooses {
             let Choose {skill, it, dir} = choose;
             println!("  [{:^3}] : {}{} -> {}", choose_count, skill.name(), dir.notice(), self.get_unit(*it).identity());
@@ -54,12 +67,29 @@ impl Board {
         }
         println!();
 
+        // 分支，如果是玩家，返回行动，否则自动选择行动执行
+        if actor.is_human() {
+            println!("请选择 : ");
+            Some(chooses)
+        }else{
+            let choose = self.ai_choose(id, chooses);
+            self.exe_choose(id, choose);
+            None
+        }
+    }
+
+    fn ai_choose(&self, _id : Id, chooses : Vec<Choose>) -> Option<Choose>{
+        chooses.get(0).map(|a| a.clone())
+    }
+
+    pub fn exe_choose(&mut self, id : Id, choose : Option<Choose>) {
         // 执行行动
-        match chooses.get(0) {
-            Some(Choose {skill, it, dir}) => skill.exe(self, id, *it, dir),
-            None => println!("无法行动"),
+        match choose {
+            Some(Choose {skill, it, dir}) => skill.exe(self, id, it, &dir),
+            None => println!("跳过回合"),
         }
         self.get_unit_mut(id).end_action();
+        self.actor = None;
         println!();
 
         // 结果图

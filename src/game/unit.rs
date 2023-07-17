@@ -15,7 +15,7 @@ mod action;
 pub type Id = u32;
 pub type Pos = i32;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum Dir {
     Left,
     Right,

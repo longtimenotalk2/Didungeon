@@ -20,14 +20,13 @@ impl Game {
     }
 
     pub fn main_loop(&mut self) {
-        self.board.respond(Command::Continue);
-        loop {
+        let mut result = self.board.respond(Command::Continue);
+        loop  {
             let mut input = String::new();
             io::stdin().read_line(&mut input).expect("Failed to read line");
             let strs: Vec<&str> = input.split_whitespace().collect();
-            if strs.len() == 0 {
-                self.board.respond(Command::Continue);
-            }else{
+
+            if strs.len() > 0 {
                 match strs[0] {
                     "save" => {
                         self.save();
@@ -39,6 +38,35 @@ impl Game {
                     },
                     _ => (),
                 }
+            }
+
+            match &result {
+                Some(chooses) => {
+                    if strs.len() == 0 {
+                        println!("请输入选项对应的数字！");
+                    }else{
+                        let i = strs[0];
+                        match i.parse::<usize>() {
+                            Err(_) => println!("请输入一个自然数！"),
+                            Ok(i) => {
+                                let num = chooses.len();
+                                if i > num {
+                                    println!("数值越界！")
+                                }else {
+                                    if i == 0 {
+                                        self.board.respond(Command::Pass);
+                                    }else{
+                                        self.board.respond(Command::Choose(chooses[i-1].clone()));
+                                    }
+                                    result = None;
+                                }
+                            }, 
+                        }
+                    }
+                },
+                None => {
+                    result = self.board.respond(Command::Continue);
+                },
             }
         }
     }

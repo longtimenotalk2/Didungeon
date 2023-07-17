@@ -20,6 +20,7 @@ impl Board {
             pos_min: 0,
             pos_length: length,
             turn : 1,
+            actor: None,
         }
     }
 

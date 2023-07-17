@@ -18,6 +18,10 @@ impl Unit {
     pub fn get_skills(&self) -> &[Skill] {
         &self.skills
     }
+
+    pub fn is_human(&self) -> bool {
+        self.you
+    }
 }
 
 impl Unit {
