@@ -1,7 +1,11 @@
+
 use super::Unit;
 
 use colorful::Color;
 use colorful::Colorful;
+use colorful::core::color_string::CString;
+
+const IDENTY: usize = 26;
 
 fn remove0(num : i32) -> String {
     if num > 0 {
@@ -16,7 +20,10 @@ fn spaces(intend : usize) -> String {
 }
 
 impl Unit {
-    pub fn show(&self) {
+    pub fn show(&self, is_act : bool) {
+        Self::is_act(is_act);
+        print!(" ");
+        self.action();
         self.identity_for_pure_chinese();
         print!(" ");
         self.state();
@@ -24,18 +31,18 @@ impl Unit {
         self.bound();
         print!(" ");
         self.attr();
-        print!("End\n");
+        print!("\n");
     }
 
-    pub fn show_title1(intend : usize) {
-        println!("{}{}", spaces(intend), Self::title_1());
+    pub fn show_title1() {
+        println!("{}{}", spaces(IDENTY), Self::title_1());
     }
 
-    pub fn show_title2(intend : usize) {
-        println!("{}{}", spaces(intend), Self::title_2());
+    pub fn show_title2() {
+        println!("{}{}", spaces(IDENTY), Self::title_2());
     }
 
-    pub fn show_identity(&self) {
+    pub fn identity(&self) -> CString {
         let name_color = match self.you {
             true => Color::Green,
             false => match self.ally {
@@ -43,7 +50,18 @@ impl Unit {
                 false => Color::Red,
             },
         };
-        print!("{}", self.name.clone().color(name_color));
+        self.name.clone().color(name_color)
+    }
+
+    pub fn show_identity(&self) {
+        print!("{}", self.identity())
+    }
+
+    fn is_act(is_act : bool) {
+        match is_act {
+            true => print!(">"),
+            false => print!(" "),
+        }
     }
 
     fn identity_for_pure_chinese(&self) {
@@ -53,12 +71,15 @@ impl Unit {
         print!("{}", adder);
     }
 
-    fn state(&self) {
+    fn action(&self) {
         if self.action {
             print!("|");
         }else{
             print!(" ");
         }
+    }
+
+    fn state(&self) {
         if self.is_stun() {
             print!("💫")
         }else if self.is_sleep() {

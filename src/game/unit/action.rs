@@ -11,4 +11,8 @@ impl Unit {
         self.fall = true;
         self.action = false;
     }
+
+    pub fn end_action(&mut self) {
+        self.action = false;
+    }
 }

@@ -2,6 +2,8 @@ use serde::{Serialize, Deserialize};
 
 use self::bound::BoundState;
 
+use super::skill::Skill;
+
 pub mod bound;
 pub mod new;
 mod state;
@@ -35,6 +37,7 @@ pub struct Unit {
     ally : bool,
     you : bool,
     pos : Pos,
+    skills : Vec<Skill>,
     
     str_max : i32,
     dex_max : i32,

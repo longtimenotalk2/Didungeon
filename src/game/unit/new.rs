@@ -1,3 +1,5 @@
+use crate::game::skill::Skill;
+
 use super::{Unit, Id, bound::BoundState, Dir, Pos};
 
 impl Unit {
@@ -50,6 +52,7 @@ impl Unit {
             catch_right: None,
             catched_left: None,
             catched_right: None,
+            skills: Skill::basic_set(),
         }
     }
 }

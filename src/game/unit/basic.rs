@@ -1,3 +1,5 @@
+use crate::game::skill::Skill;
+
 use super::{Unit, Id, Dir, Pos};
 
 impl Unit {
@@ -11,6 +13,10 @@ impl Unit {
 
     pub fn get_inj(&self) -> i32 {
         self.inj
+    }
+
+    pub fn get_skills(&self) -> &[Skill] {
+        &self.skills
     }
 }
 
@@ -33,4 +39,10 @@ impl Unit {
     pub fn set_fall(&mut self, r : bool) {
         self.fall = r;
     }
+
+    pub fn set_action(&mut self, r : bool) {
+        self.action = r;
+    }
+
+    
 }

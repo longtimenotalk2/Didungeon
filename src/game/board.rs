@@ -1,5 +1,8 @@
 mod basic;
-mod action;
+mod find;
+pub mod new;
+mod show;
+pub mod turn;
 
 use std::collections::HashMap;
 
@@ -14,4 +17,7 @@ pub struct Board {
     indexs : HashMap<Id, usize>,
     units : Vec<Unit>,
     dice : Dice,
+    pos_min : i32,
+    pos_length : i32,
+    turn : i32,
 }

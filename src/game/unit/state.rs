@@ -21,6 +21,10 @@ impl Unit {
         self.bound.is_bound(part)
     }
 
+    pub fn is_action(&self) -> bool {
+        self.action
+    }
+
     pub fn free_upper(&self) -> bool {
         self.bound.free_upper()
     }

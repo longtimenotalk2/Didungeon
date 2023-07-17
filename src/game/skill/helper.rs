@@ -19,9 +19,7 @@ pub fn show_announce(
     dir : &Dir, 
     skill : &Skill,
 ) {
-    actor.show_identity();
-    print!(" {}{} ", skill.name(), dir.notice());
-    target.show_identity()
+    println!("{} {}{} {}", actor.identity(), skill.name(), dir.notice(), target.identity());
 }
 
 pub fn hit_check(hit : i32, dice : &mut Dice) -> (bool, Option<i32>) {
@@ -49,7 +47,7 @@ pub fn show_hit(
 ) {
     print!("{name} : {hit}%");
     if let Some(hit_dice) = hit_dice {
-        print!("(🎲 = {})", 
+        print!(" (🎲 = {})", 
             match is_hit {
                 true => hit_dice.to_string().color(Color::Green),
                 false => hit_dice.to_string().color(Color::Red),
@@ -57,11 +55,12 @@ pub fn show_hit(
         );
     }
     match is_hit {
-        true => print!("{}", name_hit.to_string().color(Color::Green)),
-        false => print!("{}", name_miss.to_string().color(Color::Red)),
+        true => print!(" -> {}", name_hit.to_string().color(Color::Green)),
+        false => print!(" -> {}", name_miss.to_string().color(Color::Red)),
     }
+    println!()
 }
 
 pub fn show_dmg(dmg : i32, inj_old : i32, inj_new : i32) {
-    print!("造成伤害 : {dmg} (负伤 : {inj_old} -> {})", inj_new.to_string().color(Color::Red))
+    println!("造成伤害 : {dmg} (负伤 : {inj_old} -> {})", inj_new.to_string().color(Color::Red))
 }

@@ -25,7 +25,7 @@ impl Unit {
 
         let coef = self.walk_coefficient().max(self.jump_coefficient());
         let r = Ratio::from_integer(self.agi()) * coef;
-        (r / 5).ceil().to_integer()
+        (r / 5).floor().to_integer()
     }
 
     pub fn hand_str(&self) -> i32 {
@@ -80,6 +80,10 @@ impl Unit {
         // 如果反弓，额外/2
         // 对于解绑小腿
         // 基础概率50%，如果大腿被绑再/2
+
+        if self.free_lower() {
+            return self.str();
+        }
         
         let r = if self.is_bound(&BoundPart::Ankle) {
             let mut r = Ratio::new(1, 1);

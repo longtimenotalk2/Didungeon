@@ -52,7 +52,7 @@ impl Skillize for Punch {
          }
     }
 
-    fn exe(&self, board : &mut Board, id : Id, it : Id, dir : Dir) {
+    fn exe(&self, board : &mut Board, id : Id, it : Id, dir : &Dir) {
         let actor = board.get_unit(id);
         let target = board.get_unit(it);
 

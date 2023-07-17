@@ -1,4 +1,4 @@
-use crate::{game::unit::{Id, Dir, Pos, Unit}, wyrand::Dice};
+use crate::{game::unit::{Id, Pos, Unit}, wyrand::Dice};
 
 use super::Board;
 
@@ -28,16 +28,5 @@ impl Board {
             }
         }
         None
-    }
-
-    pub fn find_adjs(&self, id : Id) -> Vec<(Id, Dir)> {
-        let pos = self.get_pos(id);
-        let mut list = vec!();
-        for (pos, dir) in [(pos-1, Dir::Left), (pos+1, Dir::Right)] {
-            if let Some(id) = self.get_id_from_pos(pos) {
-                list.push((id, dir));
-            }
-        }
-        list
     }
 }
