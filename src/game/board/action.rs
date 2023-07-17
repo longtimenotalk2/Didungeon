@@ -43,11 +43,15 @@ impl Board {
                     choose_count += 1;
                 },
                 Choose::Tie(bound) => {
-                    println!("  [{:^3}] : 对 {} {}",choose_count, target.identity(), bound.name_tie());
+                    print!("  [{:^3}] : 对 {} ",choose_count, target.identity());
+                    target.show_bound_with_change(bound, true);
+                    println!(" {}", bound.name_tie());
                     choose_count += 1;
                 },
                 Choose::Untie(bound) => {
-                    println!("  [{:^3}] : 对 {} {}",choose_count, target.identity(), bound.name_untie());
+                    print!("  [{:^3}] : 对 {} ",choose_count, target.identity());
+                    target.show_bound_with_change(bound, false);
+                    println!(" {}", bound.name_untie());
                     choose_count += 1;
                 }
                 _ => unreachable!(),

@@ -1,6 +1,7 @@
+use colorful::{Color, Colorful};
 use serde::{Serialize, Deserialize};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum BoundPart {
     Neck,
     Arm,
@@ -43,7 +44,7 @@ impl BoundPart {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct BoundState {
     bound_neck : i32,
     bound_arm : i32,
@@ -159,10 +160,13 @@ impl BoundState {
 
         if self.is_bound_neck() {list.push(BoundPart::Neck);}
         if self.is_bound_arm() {list.push(BoundPart::Arm);}
+        if self.is_bound_joint() {list.push(BoundPart::Joint);}
         if self.is_bound_wrist() {list.push(BoundPart::Wrist);}
+        if self.is_bound_joint() {list.push(BoundPart::Joint);}
         if self.is_bound_thigh() {list.push(BoundPart::Thigh);}
         if self.is_bound_calve() {list.push(BoundPart::Calve);}
         if self.is_bound_ankle() {list.push(BoundPart::Ankle);}
+        if self.is_bound_long() {list.push(BoundPart::Long);}
         
         list
     }
@@ -210,6 +214,114 @@ impl BoundState {
         let thigh = if self.is_bound_thigh()  {"0"} else {lower_type} ;
         let calve = if self.is_bound_calve()  {"O"} else {lower_type} ;
         let ankle = if self.is_bound_ankle() {"@"} else {" "};
+        print!("[{neck}{arm}{hang}{wrist}{joint}{thigh}{calve}{ankle}]")
+    }
+
+    pub fn show_change(&self, part : &BoundPart, is_tie : bool) {
+        let color = match is_tie {
+            true => Color::Green,
+            false => Color::Red,
+        };
+        let default = Color::White;
+        let mut new = self.clone();
+        if is_tie {
+            new.tie(part);
+        }
+
+        let upper_type = if new.is_bound_hang() && new.is_bound_long() {
+            "="
+        } else if !(new.is_bound_hang() || new.is_bound_long()) {
+            " "
+        } else {
+            "-"
+        };
+        let lower_type = if new.is_bound_joint() && new.is_bound_long()  {
+            "="
+        } else if !(new.is_bound_joint() || new.is_bound_long()) {
+            " "
+        } else {
+            "-"
+        };
+        let neck = if new.is_bound_neck() {
+            if BoundPart::Neck == *part {
+                "@".color(color)
+            }else {
+                "@".color(default)
+            }
+        } else {
+            " ".to_string().color(default)
+        };
+        let arm = if new.is_bound_arm()  {
+            if BoundPart::Arm == *part {
+                "O".color(color)
+            }else {
+                "O".color(default)
+            }
+        } else {
+            if BoundPart::Hang == *part || BoundPart::Long == *part {
+                upper_type.color(color)
+            }else {
+                upper_type.color(default)
+            }
+        };
+        let hang = if BoundPart::Hang == *part || BoundPart::Long == *part {
+            upper_type.color(color)
+        }else {
+            upper_type.color(default)
+        };
+        let wrist = if new.is_bound_wrist() {
+            if BoundPart::Wrist == *part {
+                "@".color(color)
+            }else {
+                "@".color(default)
+            }
+        } else {
+            " ".to_string().color(default)
+        };
+        let joint = if BoundPart::Joint == *part || BoundPart::Long == *part {
+            lower_type.color(color)
+        }else {
+            lower_type.color(default)
+        };
+
+        let thigh = if new.is_bound_thigh()  {
+            if BoundPart::Thigh == *part {
+                "0".color(color)
+            }else {
+                "0".color(default)
+            }
+        } else {
+            if BoundPart::Joint == *part || BoundPart::Long == *part {
+                lower_type.color(color)
+            }else {
+                lower_type.color(default)
+            }
+        };
+
+        let calve = if new.is_bound_calve()  {
+            if BoundPart::Calve == *part {
+                "O".color(color)
+            }else {
+                "O".color(default)
+            }
+        } else {
+            if BoundPart::Joint == *part || BoundPart::Long == *part {
+                lower_type.color(color)
+            }else {
+                lower_type.color(default)
+            }
+        };
+        
+        let ankle = if new.is_bound_ankle() {
+            if BoundPart::Ankle == *part {
+                "@".color(color)
+            }else {
+                "@".color(default)
+            }
+        } else {
+            " ".to_string().color(default)
+        };
+
         print!("[{neck}{arm}{hang}{wrist}{joint}{thigh}{calve}{ankle}]")
     }
 }

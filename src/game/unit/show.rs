@@ -1,5 +1,6 @@
 
 use super::Unit;
+use super::bound::BoundPart;
 
 use colorful::Color;
 use colorful::Colorful;
@@ -97,6 +98,10 @@ impl Unit {
 
     fn bound(&self) {
         self.bound.show()
+    }
+
+    pub fn show_bound_with_change(&self, part : &BoundPart, is_tie : bool) {
+        self.bound.show_change(part, is_tie);
     }
 
     pub fn attr(&self) {
