@@ -27,6 +27,18 @@ impl Unit {
         self.catch_left.or(self.catch_right)
     }
 
+    pub fn get_catched_with(&self) -> Vec<Id> {
+        let mut list = vec!();
+        if let Some(it) = self.catched_left {
+            list.push(it);
+        }
+        if let Some(it) = self.catched_right {
+            list.push(it);
+        }
+        list
+        
+    }
+
     pub fn is_catched(&self) -> bool {
         self.catched_left.is_some() || self.catched_right.is_some()
     }

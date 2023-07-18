@@ -22,6 +22,10 @@ pub enum Dir {
 }
 
 impl Dir {
+    pub fn all() -> Vec<Self> {
+        vec!(Self::Left, Self::Right)
+    }
+
     pub fn notice(&self) -> &'static str {
         match self {
             Dir::Left => "↑",
