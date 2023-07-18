@@ -7,7 +7,7 @@ impl Unit {
     pub fn awake(&mut self) {
         if self.sleep {
             self.sleep = false;
-            println!("{} {}！", self.identity(), "苏醒".to_string().color(Color::Yellow))
+            println!("{} {}!", self.identity(), "苏醒".to_string().color(Color::Yellow))
         }
         
     }
@@ -75,7 +75,7 @@ impl Unit {
     }
 
     pub fn check_to_stand(&mut self) -> bool {
-        if self.can_stand() {
+        if self.can_stand() && !self.is_catched(){
             if self.fall {
                 self.fall = false;
                 return true;

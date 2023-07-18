@@ -246,6 +246,18 @@ impl BoundState {
         print!("[{neck}{arm}{hang}{wrist}{joint}{thigh}{calve}{ankle}]")
     }
 
+    pub fn identity_tightness(&self, bound : &BoundPart) -> String {
+        let tightness = self.get_tightness(bound);
+        if 0 < tightness && tightness < 100 {
+            let a = format!("({}%)", tightness);
+            let mut s = String::new();
+            write!(&mut s, "{}", a.color(Color::Red)).unwrap();
+            s
+        }else{
+            String::new()
+        }
+    }
+
     pub fn identity_change(&self, part : &BoundPart, is_tie : bool) -> String {
         let color = match is_tie {
             true => Color::Green,

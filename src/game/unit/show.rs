@@ -106,6 +106,10 @@ impl Unit {
         self.bound.identity_change(part, is_tie)
     }
 
+    pub fn identity_tightness(&self, part : &BoundPart) -> String {
+        self.bound.identity_tightness(part)
+    }
+
     pub fn attr(&self) {
         let can_stand = if self.can_stand() {"ok "} else {"no "};
         

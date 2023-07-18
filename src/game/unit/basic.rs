@@ -27,6 +27,10 @@ impl Unit {
         self.catch_left.or(self.catch_right)
     }
 
+    pub fn is_catched(&self) -> bool {
+        self.catched_left.is_some() || self.catched_right.is_some()
+    }
+
     pub fn can_tie_list(&self) -> Vec<BoundPart> {
         self.bound.can_tie_list()
     }

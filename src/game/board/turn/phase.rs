@@ -48,6 +48,8 @@ impl Board {
         if need_fresh {
             self.show(Some(id));
             println!();
+            println!("按任意键继续……");
+            return None;
         }
 
         self.phase = Phase::Main {id};
@@ -77,7 +79,7 @@ impl Board {
                     choose.push(ChooseTie::Tie(bound));
                 },
                 false => {
-                    print!("  [{:^3}] : 解绑 {} {} {}", count, target.identity(), target.bound_identity_change(&bound, false), bound.name());
+                    print!("  [{:^3}] : 解绑 {} {}{} {}", count, target.identity(), target.bound_identity_change(&bound, false), target.identity_tightness(&bound), bound.name());
                     match Tie::new().untie_get_cost_or_rate(bound_point, &bound, target) {
                         Ok(cost) => println!(" (消耗捆绑点 = {})", cost.to_string().color(Color::Yellow)),
                         Err(hit) => println!(" (消耗全部捆绑点，成功率 = {}%)", hit.to_string().color(Color::Yellow)),
@@ -100,16 +102,15 @@ impl Board {
                 },
                 None => ChooseTie::Pass,
             };
-            self.response_tie(choose)
+            self.response_tie(choose, true)
         }
     }
 
-    pub fn response_tie(&mut self, choose : ChooseTie) -> Option<Vec<Choose>> {
+    pub fn response_tie(&mut self, choose : ChooseTie, stop : bool) -> Option<Vec<Choose>> {
         if let Phase::Tie { id, it, bound_point } = self.phase {
             let remain = match choose {
                 ChooseTie::Pass => {
-                    println!("结束捆绑");
-                    println!();
+                    Tie::new().exe_pass(self, id, it);
                     0
                 },
                 ChooseTie::Tie(bound) => {
@@ -121,10 +122,13 @@ impl Board {
             };
             if remain > 0 {
                 self.phase = Phase::Tie { id, it, bound_point : remain };
-                self.continue_turn()
+                if stop {
+                    println!("按任意键继续……");
+                    None
+                } else {
+                    self.continue_turn()
+                }
             }else{
-                // self.get_unit_mut(id).cancel_catch_with(it);
-                // self.get_unit_mut(it).cancel_catched_with(id);
                 self.phase = Phase::Main { id };
                 // 结束
                 println!("按任意键继续……");

@@ -3,7 +3,6 @@ mod find;
 pub mod new;
 mod show;
 pub mod turn;
-mod action;
 
 use std::collections::HashMap;
 

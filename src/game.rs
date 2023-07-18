@@ -31,6 +31,7 @@ impl Game {
                     "save" => {
                         self.save();
                         println!("保存成功！");
+                        continue;
                     },
                     "load" => {
                         self.load();
