@@ -5,7 +5,10 @@ use crate::game::{skill::Skill, unit::{Id, Dir}};
 use super::Board;
 use super::Phase;
 
-mod phase;
+mod main;
+mod start;
+mod auto;
+mod tie;
 
 #[derive(Clone, Debug)]
 pub enum ChooseSkill {
