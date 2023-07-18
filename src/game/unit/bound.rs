@@ -16,6 +16,20 @@ pub enum BoundPart {
 }
 
 impl BoundPart {
+    pub fn all() -> Vec<Self> {
+        vec![
+            BoundPart::Neck,
+            BoundPart::Arm,
+            BoundPart::Hang,
+            BoundPart::Wrist,
+            BoundPart::Joint,
+            BoundPart::Thigh,
+            BoundPart::Calve,
+            BoundPart::Ankle,
+            BoundPart::Long,
+        ]
+    }
+
     pub fn name(&self) -> &'static str {
         match self {
             BoundPart::Neck => "五花",
@@ -87,7 +101,7 @@ impl BoundState {
         }
     }
 
-    pub fn loosen_to(&mut self, part : &BoundPart, num : i32) {
+    pub fn tightness_change_to(&mut self, part : &BoundPart, num : i32) {
         match part {
             BoundPart::Neck => self.bound_neck = num,
             BoundPart::Arm => self.bound_arm = num,

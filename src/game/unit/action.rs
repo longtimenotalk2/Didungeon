@@ -110,7 +110,7 @@ impl Unit {
         self.bound.untie(bound);
     }
 
-    pub fn loosen_to(&mut self, bound : &BoundPart, num : i32) {
-        self.bound.loosen_to(bound, num);
+    pub fn tightness_change_to(&mut self, bound : &BoundPart, num : i32) {
+        self.bound.tightness_change_to(bound, num);
     }
 }

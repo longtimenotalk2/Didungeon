@@ -9,6 +9,12 @@ pub struct Tie {
     basic_dex_rate : i32
 }
 
+pub enum TieWay {
+    Tight,
+    Tie,
+    Untie,
+}
+
 impl Tie {
     pub fn new() -> Self {
         Self {
@@ -22,13 +28,20 @@ impl Tie {
         actor.hand_dex() * self.basic_dex_rate
     }
 
-    pub fn tie_choose(&self, target : &Unit) -> Vec<(BoundPart, bool)> {
+    pub fn tie_choose(&self, target : &Unit) -> Vec<(BoundPart, TieWay)> {
         let mut list = vec!();
+        for bound in BoundPart::all() {
+            let tight = target.get_tightness(&bound);
+            if 0 < tight && tight < 100 {
+                list.push((bound, TieWay::Tight));
+            }
+        }
+
         for b in target.can_tie_list() {
-            list.push((b, true));
+            list.push((b, TieWay::Tie));
         }
         for b in target.can_untie_list() {
-            list.push((b, false));
+            list.push((b, TieWay::Untie));
         }
         list
     }
@@ -79,10 +92,68 @@ impl Tie {
         }
     }
 
+    pub fn tight_get_cost_or_rate(&self, bound_point : i32, bound : &BoundPart, target : &Unit) -> Result<i32, i32> {
+        let ramain_tightness = target.get_tightness(bound);
+        let cost = 100 - ramain_tightness;
+        if cost < bound_point {
+            return Ok(cost)
+        }else{
+            return Err(bound_point + ramain_tightness)
+        }
+    }
+
     pub fn exe_pass(&self, board : &mut Board, id : Id, it : Id) {
         board.get_unit_mut(id).cancel_catch_with(it);
         board.get_unit_mut(it).cancel_catched_with(id);
         board.get_unit_mut(it).awake();
+    }
+
+    pub fn exe_tight(&self, bound : BoundPart, bound_point : i32, board : &mut Board, id : Id, it : Id) -> i32 {
+        let target = board.get_unit(it);
+
+        match self.tight_get_cost_or_rate(bound_point, &bound, target) {
+            Ok(cost) => {
+                println!("尝试加固 {} {} {}", target.identity(), target.bound_identity_change(&bound, true), bound.name());
+                println!("加固成功率 : 100% -> {}", "成功".to_string().color(Color::Green));
+                board.get_unit_mut(it).tightness_change_to(&bound, 100);
+                println!();
+                board.show(Some(id));
+                println!();
+                bound_point - cost
+            },
+            Err(hit) => {
+                // 命中判定
+                let is_hit = if hit == 100{
+                    println!("加固成功率 : 100% -> {}", "成功".to_string().color(Color::Green));
+                    true
+                }else if hit == 0{
+                    println!("加固成功率 : 0% -> {}", "失败".to_string().color(Color::Red));
+                    false
+                }else{
+                    let (is_hit, hit_dice) = helper::hit_check(hit, board.get_dice());
+                    helper::show_hit(hit, is_hit, hit_dice, "加固成功率", "成功", "失败");
+                    is_hit
+                };
+
+                if is_hit {
+                    board.get_unit_mut(it).untie(&bound);
+                }else{
+                    let target = board.get_unit(it);
+                    let tight = target.get_tightness(&bound);
+                    let new_tight = hit;
+                    println!("绳索强度 : {} -> {}", tight, new_tight.to_string().color(Color::Green));
+                    board.get_unit_mut(it).tightness_change_to(&bound, hit);
+                    
+                }
+                board.get_unit_mut(id).cancel_catch_with(it);
+                board.get_unit_mut(it).cancel_catched_with(id);
+                board.get_unit_mut(it).awake();
+                println!();
+                board.show(Some(id));
+                println!();
+                0
+            },
+        }
     }
 
     pub fn exe_untie(&self, bound : BoundPart, bound_point : i32, board : &mut Board, id : Id, it : Id) -> i32 {
@@ -120,7 +191,7 @@ impl Tie {
                     let tight = target.get_tightness(&bound);
                     let new_tight = 100 - hit;
                     println!("绳索强度 : {} -> {}", tight, new_tight.to_string().color(Color::Green));
-                    board.get_unit_mut(it).loosen_to(&bound, new_tight);
+                    board.get_unit_mut(it).tightness_change_to(&bound, new_tight);
                     
                 }
                 board.get_unit_mut(id).cancel_catch_with(it);

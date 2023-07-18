@@ -16,6 +16,7 @@ pub enum ChooseSkill {
 #[derive(Clone, Debug)]
 pub enum ChooseTie {
     Pass,
+    Tight(BoundPart),
     Tie(BoundPart),
     Untie(BoundPart),
 }

@@ -2,7 +2,7 @@
 
 use colorful::{Color, Colorful};
 
-use crate::{game::{unit::Id, board::{Phase, Board, turn::{ChooseSkill, ChooseTie}}, skill::skill_list::tie::Tie}, common};
+use crate::{game::{unit::Id, board::{Phase, Board, turn::{ChooseSkill, ChooseTie}}, skill::skill_list::tie::{Tie, TieWay}}, common};
 
 use super::Choose;
 
@@ -70,7 +70,15 @@ impl Board {
 
         for (bound, is_tie) in Tie::new().tie_choose(target) {
             match is_tie {
-                true => {
+                TieWay::Tight => {
+                    print!("  [{:^3}] : {} {} {}{} {}", count, "加固".to_string().color(Color::Yellow), target.identity(), target.bound_identity_change(&bound, true), target.identity_tightness(&bound), bound.name());
+                    match Tie::new().tight_get_cost_or_rate(bound_point, &bound, target) {
+                        Ok(cost) => println!(" (消耗捆绑点 = {})", cost.to_string().color(Color::Yellow)),
+                        Err(hit) => println!(" (消耗全部捆绑点，成功率 = {}%)", hit.to_string().color(Color::Yellow)),
+                    }
+                    choose.push(ChooseTie::Untie(bound));
+                },
+                TieWay::Tie => {
                     print!("  [{:^3}] : 捆绑 {} {} {}", count, target.identity(), target.bound_identity_change(&bound, true), bound.name());
                     match Tie::new().tie_get_cost_or_rate(bound_point, &bound, actor, target) {
                         Ok(cost) => println!(" (消耗捆绑点 = {})", cost.to_string().color(Color::Yellow)),
@@ -78,7 +86,7 @@ impl Board {
                     }
                     choose.push(ChooseTie::Tie(bound));
                 },
-                false => {
+                TieWay::Untie => {
                     print!("  [{:^3}] : 解绑 {} {}{} {}", count, target.identity(), target.bound_identity_change(&bound, false), target.identity_tightness(&bound), bound.name());
                     match Tie::new().untie_get_cost_or_rate(bound_point, &bound, target) {
                         Ok(cost) => println!(" (消耗捆绑点 = {})", cost.to_string().color(Color::Yellow)),
@@ -113,6 +121,7 @@ impl Board {
                     Tie::new().exe_pass(self, id, it);
                     0
                 },
+                ChooseTie::Tight(_) => todo!(),
                 ChooseTie::Tie(bound) => {
                     Tie::new().exe_tie(bound, bound_point, self, id, it)
                 },
