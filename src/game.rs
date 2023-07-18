@@ -2,7 +2,7 @@ use std::io;
 
 use crate::common;
 
-use self::board::{Board, turn::Command};
+use self::board::Board;
 
 pub mod unit;
 pub mod board;
@@ -20,7 +20,7 @@ impl Game {
     }
 
     pub fn main_loop(&mut self) {
-        let mut result = self.board.respond(Command::Continue);
+        let mut result = self.board.continue_turn();
         loop  {
             let mut input = String::new();
             io::stdin().read_line(&mut input).expect("Failed to read line");
@@ -34,7 +34,7 @@ impl Game {
                     },
                     "load" => {
                         self.load();
-                        result = self.board.respond(Command::Continue);
+                        result = self.board.continue_turn();
                     },
                     _ => (),
                 }
@@ -53,14 +53,14 @@ impl Game {
                                 if i > num {
                                     println!("数值越界！")
                                 }else {
-                                    result = self.board.respond(Command::Choose(chooses[i].clone()));
+                                    result = self.board.response_choose(chooses[i].clone());
                                 }
                             }, 
                         }
                     }
                 },
                 None => {
-                    result = self.board.respond(Command::Continue);
+                    result = self.board.continue_turn();
                 },
             }
         }

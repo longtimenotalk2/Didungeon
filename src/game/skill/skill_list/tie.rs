@@ -18,7 +18,7 @@ impl Tie {
         }
     }
 
-    pub fn bound_num(&self, actor : &Unit) -> i32 {
+    pub fn bound_point(&self, actor : &Unit) -> i32 {
         actor.hand_dex() * self.basic_dex_rate
     }
 
@@ -53,7 +53,7 @@ impl Tie {
         helper::to_hit(self.basic_effi + self.effi_rate * (acc - evd))
     }
 
-    pub fn tie_get_cost_or_rate(&self, bound_num : i32, bound : &BoundPart, actor : &Unit, target : &Unit) -> Result<i32, i32> {
+    pub fn tie_get_cost_or_rate(&self, bound_point : i32, bound : &BoundPart, actor : &Unit, target : &Unit) -> Result<i32, i32> {
         let effi = self.get_effi(&bound, actor, target);
         if effi == 0 {
             return Err(0);
@@ -61,35 +61,35 @@ impl Tie {
         let effi = Ratio::new(effi, 100);
         let cost = Ratio::from_integer(100) / effi;
         let cost = cost.ceil().to_integer();
-        if cost < bound_num {
+        if cost < bound_point {
             return Ok(cost);
         }else{
-            let hit = Ratio::new(bound_num * 100, cost).ceil().to_integer();
+            let hit = Ratio::new(bound_point * 100, cost).ceil().to_integer();
             return Err(hit);
         }
     }
 
-    pub fn untie_get_cost_or_rate(&self, bound_num : i32, bound : &BoundPart, target : &Unit) -> Result<i32, i32> {
+    pub fn untie_get_cost_or_rate(&self, bound_point : i32, bound : &BoundPart, target : &Unit) -> Result<i32, i32> {
         let ramain_tightness = target.get_tightness(bound);
         let cost = ramain_tightness;
-        if cost < bound_num {
+        if cost < bound_point {
             return Ok(cost)
         }else{
-            return Err(100 + bound_num - ramain_tightness)
+            return Err(100 + bound_point - ramain_tightness)
         }
     }
 
-    pub fn exe_untie(&self, bound : BoundPart, bound_num : i32, board : &mut Board, id : Id, it : Id) -> i32 {
+    pub fn exe_untie(&self, bound : BoundPart, bound_point : i32, board : &mut Board, id : Id, it : Id) -> i32 {
         let target = board.get_unit(it);
 
-        match self.untie_get_cost_or_rate(bound_num, &bound, target) {
+        match self.untie_get_cost_or_rate(bound_point, &bound, target) {
             Ok(cost) => {
-                println!("解绑 {} {}", target.identity(), bound.name_untie(), );
+                println!("解绑 {} {}", target.identity(), bound.name(), );
                 board.get_unit_mut(it).untie(&bound);
                 println!();
                 board.show(Some(id));
                 println!();
-                bound_num - cost
+                bound_point - cost
             },
             Err(hit) => {
                 // 命中判定
@@ -106,13 +106,13 @@ impl Tie {
 
                 if is_hit {
                     let target = board.get_unit(it);
-                    println!("解绑 {} {}", target.identity(), bound.name_untie());
+                    println!("解绑 {} {}", target.identity(), bound.name());
                     board.get_unit_mut(it).untie(&bound);
                 }else{
                     let target = board.get_unit(it);
                     let tight = target.get_tightness(&bound);
                     let new_tight = 100 - hit;
-                    println!("解绑 {} {} {}, 进度推进 {} -> {}", target.identity(), bound.name_untie(), "失败".to_string().color(Color::Red), tight, new_tight.to_string().color(Color::Green));
+                    println!("解绑 {} {} {}, 进度推进 {} -> {}", target.identity(), bound.name(), "失败".to_string().color(Color::Red), tight, new_tight.to_string().color(Color::Green));
                     board.get_unit_mut(it).loosen_to(&bound, new_tight);
                     
                 }
@@ -127,25 +127,28 @@ impl Tie {
         }
     }
 
-    pub fn exe_tie(&self, bound : BoundPart, bound_num : i32, board : &mut Board, id : Id, it : Id) -> i32 {
+    pub fn exe_tie(&self, bound : BoundPart, bound_point : i32, board : &mut Board, id : Id, it : Id) -> i32 {
         let actor = board.get_unit(id);
         let target = board.get_unit(it);
 
-        match self.tie_get_cost_or_rate(bound_num, &bound, actor, target) {
+        match self.tie_get_cost_or_rate(bound_point, &bound, actor, target) {
             Ok(cost) => {
-                println!("捆绑 {} {}", target.identity(), bound.name_tie(), );
+                println!("尝试捆绑 {} {}", target.identity(), bound.name());
+                println!("捆绑成功率 : 100% -> {}", "成功".to_string().color(Color::Green));
                 board.get_unit_mut(it).tie(&bound);
                 println!();
                 board.show(Some(id));
                 println!();
-                bound_num - cost
+                bound_point - cost
             },
             Err(hit) => {
+                println!("尝试捆绑 {} {}", target.identity(), bound.name());
                 // 命中判定
-                let is_hit = if hit == 100{
+                let is_hit = if hit == 100 {
+                    println!("捆绑成功率 : 100% -> {}", "成功".to_string().color(Color::Green));
                     true
                 }else if hit == 0{
-                    println!("捆绑失败！");
+                    println!("捆绑成功率 : 0% -> {}", "失败".to_string().color(Color::Red));
                     false
                 }else{
                     let (is_hit, hit_dice) = helper::hit_check(hit, board.get_dice());
@@ -154,8 +157,6 @@ impl Tie {
                 };
 
                 if is_hit {
-                    let target = board.get_unit(it);
-                    println!("对 {} {}", target.identity(), bound.name_tie());
                     board.get_unit_mut(it).tie(&bound);
                 }
                 board.get_unit_mut(id).cancel_catch_with(it);

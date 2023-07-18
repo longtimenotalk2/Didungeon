@@ -1,10 +1,10 @@
 
 use super::Unit;
 use super::bound::BoundPart;
+use std::fmt::Write;
 
 use colorful::Color;
 use colorful::Colorful;
-use colorful::core::color_string::CString;
 
 const IDENTY: usize = 26;
 
@@ -43,7 +43,7 @@ impl Unit {
         println!("{}{}", spaces(IDENTY), Self::title_2());
     }
 
-    pub fn identity(&self) -> CString {
+    pub fn identity(&self) -> String {
         let name_color = match self.you {
             true => Color::Green,
             false => match self.ally {
@@ -51,7 +51,9 @@ impl Unit {
                 false => Color::Red,
             },
         };
-        self.name.clone().color(name_color)
+        let mut s = String::new();
+        write!(&mut s, "{}", self.name.clone().color(name_color)).unwrap();
+        s
     }
 
     pub fn show_identity(&self) {
@@ -100,8 +102,8 @@ impl Unit {
         self.bound.show()
     }
 
-    pub fn show_bound_with_change(&self, part : &BoundPart, is_tie : bool) {
-        self.bound.show_change(part, is_tie);
+    pub fn bound_identity_change(&self, part : &BoundPart, is_tie : bool) -> String {
+        self.bound.identity_change(part, is_tie)
     }
 
     pub fn attr(&self) {

@@ -1,5 +1,9 @@
 
 
+use std::fmt::Write;
+
+use colorful::{Color, Colorful};
+
 use crate::{game::{unit::{Unit, Dir}, board::Board}, common};
 
 
@@ -48,4 +52,12 @@ fn test_save() {
     let path = "assets/saves/save_0.ddg";
     let data = "hello2".to_string();
     let _result = common::save_file(path, data);
+}
+
+#[test]
+#[ignore]
+fn test_color_txt() {
+    let mut s = String::new();
+    write!(&mut s, "Hello {}", "World".to_string().color(Color::Yellow)).unwrap();
+    println!("{}", s);
 }

@@ -38,6 +38,10 @@ impl Unit {
     pub fn get_tightness(&self, part : &BoundPart) -> i32 {
         self.bound.get_tightness(part)
     }
+
+    pub fn ai_tie_choice(&self) -> Option<(BoundPart, bool)> {
+        self.bound.ai_tie_choice()
+    }
 }
 
 impl Unit {

@@ -30,6 +30,10 @@ impl Unit {
         self.action = false;
     }
 
+    pub fn take_fall(&mut self) {
+        self.fall = true;
+    }
+
     pub fn catch_with(&mut self, id : Id, dir : &Dir) {
         match dir {
             Dir::Left => self.catch_left = Some(id),

@@ -35,6 +35,6 @@ impl Skillize for Catch {
         // 结算
         board.get_unit_mut(id).catch_with(it, dir);
         board.get_unit_mut(it).catched_with(id, dir);
-        
+        board.get_unit_mut(it).take_fall();
     }
 }

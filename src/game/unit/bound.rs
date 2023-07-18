@@ -1,5 +1,6 @@
 use colorful::{Color, Colorful};
 use serde::{Serialize, Deserialize};
+use std::fmt::Write;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum BoundPart {
@@ -15,31 +16,17 @@ pub enum BoundPart {
 }
 
 impl BoundPart {
-    pub fn name_tie(&self) -> &'static str {
+    pub fn name(&self) -> &'static str {
         match self {
-            BoundPart::Neck => "完成五花捆绑",
-            BoundPart::Arm => "完成大臂的束缚",
-            BoundPart::Hang => "将手腕悬高与后颈相连",
-            BoundPart::Wrist => "将手腕捆绑",
-            BoundPart::Joint => "将脚腕反弓拉至与手腕相连",
-            BoundPart::Thigh => "将大腿捆绑",
-            BoundPart::Calve => "将小腿捆绑",
-            BoundPart::Ankle => "将脚腕捆绑",
-            BoundPart::Long => "将脚腕反弓拉至与后颈相连",
-        }
-    }
-
-    pub fn name_untie(&self) -> &'static str {
-        match self {
-            BoundPart::Neck => "解除五花捆绑",
-            BoundPart::Arm => "解除大臂的束缚",
-            BoundPart::Hang => "解除手腕与后颈的连接",
-            BoundPart::Wrist => "解除手腕捆绑",
-            BoundPart::Joint => "解除脚腕与手腕的连接",
-            BoundPart::Thigh => "解除大腿捆绑",
-            BoundPart::Calve => "解除小腿捆绑",
-            BoundPart::Ankle => "解除脚腕捆绑",
-            BoundPart::Long => "解除脚腕与后颈的连接",
+            BoundPart::Neck => "五花",
+            BoundPart::Arm => "大臂",
+            BoundPart::Hang => "手腕<-->后颈",
+            BoundPart::Wrist => "手腕",
+            BoundPart::Joint => "脚腕<-->手腕",
+            BoundPart::Thigh => "大腿",
+            BoundPart::Calve => "小腿",
+            BoundPart::Ankle => "脚腕",
+            BoundPart::Long => "脚腕<-->后颈",
         }
     }
 }
@@ -259,7 +246,7 @@ impl BoundState {
         print!("[{neck}{arm}{hang}{wrist}{joint}{thigh}{calve}{ankle}]")
     }
 
-    pub fn show_change(&self, part : &BoundPart, is_tie : bool) {
+    pub fn identity_change(&self, part : &BoundPart, is_tie : bool) -> String {
         let color = match is_tie {
             true => Color::Green,
             false => Color::Red,
@@ -364,6 +351,34 @@ impl BoundState {
             " ".to_string().color(default)
         };
 
-        print!("[{neck}{arm}{hang}{wrist}{joint}{thigh}{calve}{ankle}]")
+        let mut s = String::new();
+        write!(s, "[{neck}{arm}{hang}{wrist}{joint}{thigh}{calve}{ankle}]").unwrap();
+        s
+    }
+
+    pub fn ai_tie_choice(&self) -> Option<(BoundPart, bool)> {
+        if !self.is_bound_wrist() {
+            Some((BoundPart::Wrist, true))
+        }else if !self.is_bound_ankle() {
+            Some((BoundPart::Ankle, true))
+        }else if !self.is_bound_hang() && self.is_bound_neck() && !self.is_bound_joint() {
+            Some((BoundPart::Hang, true))
+        }else if !self.is_bound_long() && self.is_bound_neck() {
+            Some((BoundPart::Long, true))
+        }else if !self.is_bound_joint() && !self.is_bound_hang() {
+            Some((BoundPart::Joint, true))
+        }else if !self.is_bound_neck() {
+            Some((BoundPart::Neck, true))
+        }else if !self.is_bound_arm() {
+            Some((BoundPart::Arm, true))
+        }else if !self.is_bound_calve() {
+            Some((BoundPart::Calve, true))
+        }else if !self.is_bound_thigh() {
+            Some((BoundPart::Thigh, true))
+        }else if !self.is_bound_hang() {
+            Some((BoundPart::Joint, false))
+        }else{
+            None
+        }
     }
 }

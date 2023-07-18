@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::{game::unit::Unit, wyrand::Dice};
 
-use super::Board;
+use super::{Board, Phase};
 
 impl Board {
     pub fn new_noal_vs_kuinuo(seed : u64) -> Self {
@@ -20,9 +20,7 @@ impl Board {
             pos_min: 0,
             pos_length: length,
             turn : 1,
-            temp_actor_now: None,
-            temp_target_now : None,
-            temp_remained_bound_value: 0,
+            phase : Phase::Start,
         }
     }
 
