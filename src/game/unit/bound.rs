@@ -2,7 +2,7 @@ use colorful::{Color, Colorful};
 use serde::{Serialize, Deserialize};
 use std::fmt::Write;
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum BoundPart {
     Neck,
     Arm,
@@ -115,6 +115,16 @@ impl BoundState {
         }
     }
 
+    pub fn has_bound(&self) -> bool {
+        let mut r = false;
+        for b in BoundPart::all(){
+            if self.is_bound(&b) {
+                r = true;
+            }
+        }
+        r
+    }
+
     pub fn is_bound(&self, part : &BoundPart) -> bool {
         match part {
             BoundPart::Neck => self.bound_neck > 0,
@@ -215,21 +225,33 @@ impl BoundState {
     }
 
     pub fn next_force_upper(&self) -> Option<BoundPart> {
-        if self.is_bound_wrist() {
+        if self.is_bound_hang() {
+            Some(BoundPart::Hang)
+        }else if self.is_bound_joint() {
+            Some(BoundPart::Joint)
+        }else if self.is_bound_wrist() {
             Some(BoundPart::Wrist)
         }else if self.is_bound_arm() {
             Some(BoundPart::Arm)
+        }else if self.is_bound_neck() {
+            Some(BoundPart::Neck)
         }else {
             None
         }
     }
 
     pub fn next_force_lower(&self) -> Option<BoundPart> {
-        if self.is_bound_ankle() {
+        if self.is_bound_long() {
+            Some(BoundPart::Long)
+        }else if self.is_bound_joint() {
+            Some(BoundPart::Joint)
+        }else if self.is_bound_ankle() {
             Some(BoundPart::Ankle)
         }else if self.is_bound_calve() {
             Some(BoundPart::Calve)
-        }else{
+        }else if self.is_bound_thigh() {
+            Some(BoundPart::Thigh)
+        }else {
             None
         }
     }

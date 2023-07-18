@@ -1,6 +1,6 @@
 use colorful::{Color, Colorful};
 
-use crate::game::{board::{Board, Phase}, unit::Id, skill::skill_list::struggle::Struggle};
+use crate::game::{board::{Board, Phase}, unit::Id, skill::skill_list::{struggle::Struggle, force_unbound::ForceUnbound}};
 
 use super::Choose;
 
@@ -11,6 +11,12 @@ impl Board {
         if self.get_unit(id).is_catched() {
             need_fresh = true;
             Struggle::new().exe(self, id);
+        }
+
+        // 自动挣脱
+        if self.get_unit(id).has_bound() {
+            need_fresh = true;
+            ForceUnbound::new().exe(self, id)
         }
 
         // 自动起身

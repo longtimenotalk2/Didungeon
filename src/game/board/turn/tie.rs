@@ -24,7 +24,7 @@ impl Board {
                         Ok(cost) => println!(" (消耗捆绑点 = {})", cost.to_string().color(Color::Yellow)),
                         Err(hit) => println!(" (消耗全部捆绑点，成功率 = {}%)", hit.to_string().color(Color::Yellow)),
                     }
-                    choose.push(ChooseTie::Untie(bound));
+                    choose.push(ChooseTie::Tight(bound));
                 },
                 TieWay::Tie => {
                     print!("  [{:^3}] : 捆绑 {} {} {}", count, target.identity(), target.bound_identity_change(&bound, true), bound.name());
@@ -69,7 +69,9 @@ impl Board {
                     Tie::new().exe_pass(self, id, it);
                     0
                 },
-                ChooseTie::Tight(_) => todo!(),
+                ChooseTie::Tight(bound) => {
+                    Tie::new().exe_tight(bound, bound_point, self, id, it)
+                },
                 ChooseTie::Tie(bound) => {
                     Tie::new().exe_tie(bound, bound_point, self, id, it)
                 },

@@ -58,6 +58,18 @@ impl Unit {
     pub fn ai_tie_choice(&self) -> Option<(BoundPart, bool)> {
         self.bound.ai_tie_choice()
     }
+
+    pub fn next_force_upper(&self) -> Option<BoundPart> {
+        self.bound.next_force_upper()
+    }
+
+    pub fn next_force_lower(&self) -> Option<BoundPart> {
+        self.bound.next_force_lower()
+    }
+
+    pub fn has_bound(&self) -> bool{
+        self.bound.has_bound()
+    }
 }
 
 impl Unit {

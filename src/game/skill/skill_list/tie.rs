@@ -136,7 +136,7 @@ impl Tie {
                 };
 
                 if is_hit {
-                    board.get_unit_mut(it).untie(&bound);
+                    board.get_unit_mut(it).tie(&bound);
                 }else{
                     let target = board.get_unit(it);
                     let tight = target.get_tightness(&bound);
@@ -192,7 +192,6 @@ impl Tie {
                     let new_tight = 100 - hit;
                     println!("绳索强度 : {} -> {}", tight, new_tight.to_string().color(Color::Green));
                     board.get_unit_mut(it).tightness_change_to(&bound, new_tight);
-                    
                 }
                 board.get_unit_mut(id).cancel_catch_with(it);
                 board.get_unit_mut(it).cancel_catched_with(id);

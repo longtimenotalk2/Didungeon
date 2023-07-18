@@ -1,6 +1,6 @@
 use colorful::{Color, Colorful};
 
-use crate::game::{unit::{Unit, Id, Dir}, skill::helper, board::Board};
+use crate::game::{unit::{Unit, Id}, skill::helper, board::Board};
 
 pub struct Struggle {
     basic_hit : i32,
