@@ -3,7 +3,7 @@ use serde::{Serialize, Deserialize};
 #[allow(warnings)]
 
 //#[repr(transparent)]
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 struct WyRand {
     state: u64,
 }
@@ -26,7 +26,7 @@ impl WyRand {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Dice {
     wy : WyRand,
 }

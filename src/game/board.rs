@@ -12,7 +12,7 @@ use crate::wyrand::Dice;
 
 use super::unit::{Unit, Id};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 enum Phase {
     Start,
     Prepare {id : Id},
@@ -21,7 +21,7 @@ enum Phase {
     Main {id : Id}, 
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Board {
     indexs : HashMap<Id, usize>,
     units : Vec<Unit>,

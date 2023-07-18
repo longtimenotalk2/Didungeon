@@ -10,12 +10,14 @@ pub mod skill;
 
 pub struct Game {
     board : Board,
+    history : Vec<Board>,
 }
 
 impl Game {
     pub fn new() -> Self {
         Self {
             board: Board::new_noal_vs_kuinuo(114514),
+            history: vec![],
         }
     }
 
@@ -35,8 +37,18 @@ impl Game {
                     },
                     "load" => {
                         self.load();
+                        self.history = vec!();
                         result = self.board.continue_turn();
                     },
+                    "undo" => {
+                        if let Some(b) = self.history.pop() 
+                        {
+                            self.board = b;
+                            result = self.board.continue_turn();
+                        }else{
+                            println!("初始状态，撤销失败");
+                        }
+                    }
                     _ => (),
                 }
             }
@@ -54,6 +66,7 @@ impl Game {
                                 if i > num {
                                     println!("数值越界！")
                                 }else {
+                                    self.history.push(self.board.clone());
                                     result = self.board.response_choose(chooses[i].clone());
                                 }
                             }, 

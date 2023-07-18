@@ -30,7 +30,7 @@ impl Dir {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Unit {
     id : Id,
     name : String,
