@@ -38,12 +38,12 @@ impl Skill {
         self.create().get_targets(board, id)
     }
 
-    pub fn exe(&self, board : &mut Board, id : Id, it : Id, dir : &Dir) {
-        self.create().exe(board, id, it, dir);
+    pub fn exe(&self, s: &mut String, board : &mut Board, id : Id, it : Id, dir : &Dir) {
+        self.create().exe(s, board, id, it, dir);
     }
 }
 
 pub trait Skillize {
     fn get_targets(&self, board : &Board, id : Id) -> Vec<(Id, Dir)>;
-    fn exe(&self, board : &mut Board, id : Id, it : Id, dir : &Dir);
+    fn exe(&self, s : &mut String, board : &mut Board, id : Id, it : Id, dir : &Dir);
 }

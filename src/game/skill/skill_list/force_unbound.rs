@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use colorful::{Color, Colorful};
 
 use crate::game::{board::Board, unit::{Id, bound::BoundPart, Unit}, skill::helper};
-
+use std::fmt::Write;
 pub struct ForceUnbound {
     basic_hit : i32,
     hit_rate : i32,
@@ -25,7 +25,8 @@ impl ForceUnbound {
         helper::to_hit(self.basic_hit + self.hit_rate * acc)
     }
 
-    pub fn exe(&self, board : &mut Board, id : Id) {
+    pub fn exe(&self, s : &mut String, board : &mut Board, id : Id) {
+
         let mut unbound_hash : HashMap<BoundPart, i32> = HashMap::new();
 
         let actor = board.get_unit(id);
@@ -42,30 +43,38 @@ impl ForceUnbound {
 
         for (bound, hit) in unbound_hash {
             let actor = board.get_unit(id);
+
             let tight = actor.get_tightness(&bound);
             let hit = (hit + 100 - tight).min(100);
-            println!("尝试挣脱 {} {}", actor.bound_identity_change(&bound, false), bound.name());
-            let is_hit = if hit == 100{
-                println!("挣脱成功率 : 100% -> {}", "成功".to_string().color(Color::Green));
-                true
-            }else if hit == 0{
-                println!("挣脱成功率 : 0% -> {}", "失败".to_string().color(Color::Red));
-                false
-            }else{
-                let (is_hit, hit_dice) = helper::hit_check(hit, board.get_dice());
-                helper::show_hit(hit, is_hit, hit_dice, "挣脱成功率", "成功", "失败");
-                is_hit
-            };
-            if is_hit {
-                board.get_unit_mut(id).untie(&bound);
-            } else {
-                let actor = board.get_unit(id);
-                let tight = actor.get_tightness(&bound);
-                let new_tight = 100 - hit;
-                if tight != new_tight {
-                    println!("绳索强度 : {} -> {}", tight, new_tight.to_string().color(Color::Green));
+
+            if hit > 0{
+                // 挣脱 [...](67%) 手腕 成功 (消耗点数 : 33)
+                // 挣脱 [...](50%) 手腕 (30%成功率 → 🎲 : 71) 挣脱至 → 30% (消耗点数 : 67)
+                let bound_idy = actor.bound_identity_change(&bound, false);
+                let tight_idy = actor.identity_tightness(&bound);
+                let bound_name_idy = bound.name();
+                write!(s, "[挣脱] {bound_idy}{tight_idy} {bound_name_idy} ").unwrap();
+
+                let is_hit = if hit == 100{
+                    true
+                }else{
+                    let (is_hit, hit_dice) = helper::hit_check(hit, board.get_dice());
+                    helper::write_hit_small(s, hit, is_hit, hit_dice.unwrap_or(0));
+                    write!(s, " ").unwrap();
+                    is_hit
+                };
+                if is_hit {
+                    board.get_unit_mut(id).untie(&bound);
+                    writeln!(s, "{}", "成功".to_string().color(Color::Green)).unwrap();
+                } else {
+                    let new_tight = 100 - hit;
+                    if tight != new_tight {
+                        writeln!(s, "挣脱至 -> {}", new_tight.to_string().color(Color::Yellow)).unwrap();
+                    }else{
+                        writeln!(s, "{}", "失败".to_string().color(Color::Red)).unwrap();
+                    }
+                    board.get_unit_mut(id).tightness_change_to(&bound, new_tight);
                 }
-                board.get_unit_mut(id).tightness_change_to(&bound, new_tight);
             }
         }
     }

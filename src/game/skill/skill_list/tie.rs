@@ -1,7 +1,25 @@
 use colorful::{Color, Colorful};
 use num_rational::Ratio;
+use std::fmt::Write;
 
 use crate::game::{unit::{Unit, bound::BoundPart, Id}, board::Board, skill::helper};
+
+fn deal_with_hit(s : &mut String, board : &mut Board, bound_point : i32, cost_or_hit : Result<i32, i32>) -> (i32, i32, bool) {
+    let (hit, cost, is_success) = match cost_or_hit {
+        Ok(cost) => (100, cost, true),
+        Err(hit) => {
+            if hit == 100 {
+                (hit, bound_point, true)
+            }else{
+                let (is_hit, hit_dice) = helper::hit_check(hit, board.get_dice());
+                helper::write_hit_small(s, hit, is_hit, hit_dice.unwrap_or(0));
+                write!(s, " ").unwrap();
+                (hit, bound_point, is_hit)
+            }
+        },
+    };
+    (hit, cost, is_success)
+}
 
 pub struct Tie {
     basic_effi : i32,
@@ -28,7 +46,7 @@ impl Tie {
         actor.hand_dex() * self.basic_dex_rate
     }
 
-    pub fn tie_choose(&self, target : &Unit) -> Vec<(BoundPart, TieWay)> {
+    pub fn tie_choose(&self, actor : &Unit, target : &Unit) -> Vec<(BoundPart, TieWay)> {
         let mut list = vec!();
         for bound in BoundPart::all() {
             let tight = target.get_tightness(&bound);
@@ -38,7 +56,10 @@ impl Tie {
         }
 
         for b in target.can_tie_list() {
-            list.push((b, TieWay::Tie));
+            let effi = self.get_effi(&b, actor, target);
+            if effi > 0 {
+                list.push((b, TieWay::Tie));
+            }
         }
         for b in target.can_untie_list() {
             list.push((b, TieWay::Untie));
@@ -102,148 +123,93 @@ impl Tie {
         }
     }
 
-    pub fn exe_pass(&self, board : &mut Board, id : Id, it : Id) {
-        board.get_unit_mut(id).cancel_catch_with(it);
-        board.get_unit_mut(it).cancel_catched_with(id);
-        board.get_unit_mut(it).awake();
-    }
-
-    pub fn exe_tight(&self, bound : BoundPart, bound_point : i32, board : &mut Board, id : Id, it : Id) -> i32 {
+    pub fn exe_tight(&self, s : &mut String, bound : BoundPart, bound_point : i32, board : &mut Board, it : Id) -> i32 {
         let target = board.get_unit(it);
 
-        match self.tight_get_cost_or_rate(bound_point, &bound, target) {
-            Ok(cost) => {
-                println!("尝试加固 {} {} {}", target.identity(), target.bound_identity_change(&bound, true), bound.name());
-                println!("加固成功率 : 100% -> {}", "成功".to_string().color(Color::Green));
-                board.get_unit_mut(it).tightness_change_to(&bound, 100);
-                println!();
-                board.show(Some(id));
-                println!();
-                bound_point - cost
-            },
-            Err(hit) => {
-                // 命中判定
-                let is_hit = if hit == 100{
-                    println!("加固成功率 : 100% -> {}", "成功".to_string().color(Color::Green));
-                    true
-                }else if hit == 0{
-                    println!("加固成功率 : 0% -> {}", "失败".to_string().color(Color::Red));
-                    false
-                }else{
-                    let (is_hit, hit_dice) = helper::hit_check(hit, board.get_dice());
-                    helper::show_hit(hit, is_hit, hit_dice, "加固成功率", "成功", "失败");
-                    is_hit
-                };
+        // 扎紧 [...](67%) 手腕 成功 (消耗点数 : 33)
+        // 扎紧 [...](10%) 手臂 (30%成功率 -> 🎲 : 71) 扎紧至 -> 30% (消耗点数 : 67)
+        let bound_idy = target.bound_identity_change(&bound, true);
+        let tight_idy = target.identity_tightness(&bound);
+        let bound_name_idy = bound.name();
+        write!(s, "扎紧 {bound_idy}{tight_idy} {bound_name_idy} ").unwrap();
 
-                if is_hit {
-                    board.get_unit_mut(it).tie(&bound);
-                }else{
-                    let target = board.get_unit(it);
-                    let tight = target.get_tightness(&bound);
-                    let new_tight = hit;
-                    println!("绳索强度 : {} -> {}", tight, new_tight.to_string().color(Color::Green));
-                    board.get_unit_mut(it).tightness_change_to(&bound, hit);
-                    
-                }
-                board.get_unit_mut(id).cancel_catch_with(it);
-                board.get_unit_mut(it).cancel_catched_with(id);
-                board.get_unit_mut(it).awake();
-                println!();
-                board.show(Some(id));
-                println!();
-                0
+        let (hit, cost, is_success) = deal_with_hit(s, board, bound_point, self.tight_get_cost_or_rate(bound_point, &bound, target));
+
+        match is_success {
+            true => {
+                board.get_unit_mut(it).tie(&bound);
+                write!(s, "{} ", "成功".to_string().color(Color::Green)).unwrap();
+            },
+            false => {
+                let new_tight = hit;
+                board.get_unit_mut(it).tightness_change_to(&bound, new_tight);
+                write!(s, "绳索强度 -> {} ", new_tight.to_string().color(Color::Yellow)).unwrap();
             },
         }
+        write!(s, "消耗点数 : {}\n", cost.to_string().color(Color::Yellow)).unwrap();
+        bound_point - cost
     }
 
-    pub fn exe_untie(&self, bound : BoundPart, bound_point : i32, board : &mut Board, id : Id, it : Id) -> i32 {
+    pub fn exe_untie(&self, s : &mut String, bound : BoundPart, bound_point : i32, board : &mut Board, it : Id) -> i32 {
 
         let target = board.get_unit(it);
 
-        match self.untie_get_cost_or_rate(bound_point, &bound, target) {
-            Ok(cost) => {
-                println!("尝试解绑 {} {} {}", target.identity(), target.bound_identity_change(&bound, false), bound.name());
-                println!("解绑成功率 : 100% -> {}", "成功".to_string().color(Color::Green));
+        // 解绑 [...](67%) 手腕 成功 (消耗点数 : 33)
+        // 解绑 [...](80%) 手臂 (70%成功率 -> 🎲 : 71) 解绑至 -> 30% (消耗点数 : 67)
+        let bound_idy = target.bound_identity_change(&bound, false);
+        let tight_idy = target.identity_tightness(&bound);
+        let bound_name_idy = bound.name();
+        write!(s, "解绑 {bound_idy}{tight_idy} {bound_name_idy} ").unwrap();
+
+        let (hit, cost, is_success) = deal_with_hit(s, board, bound_point, self.untie_get_cost_or_rate(bound_point, &bound, target));
+
+        match is_success {
+            true => {
                 board.get_unit_mut(it).untie(&bound);
-                println!();
-                board.show(Some(id));
-                println!();
-                bound_point - cost
+                write!(s, "{} ", "成功".to_string().color(Color::Green)).unwrap();
             },
-            Err(hit) => {
-                // 命中判定
-                let is_hit = if hit == 100{
-                    println!("解绑成功率 : 100% -> {}", "成功".to_string().color(Color::Green));
-                    true
-                }else if hit == 0{
-                    println!("解绑成功率 : 0% -> {}", "失败".to_string().color(Color::Red));
-                    false
-                }else{
-                    let (is_hit, hit_dice) = helper::hit_check(hit, board.get_dice());
-                    helper::show_hit(hit, is_hit, hit_dice, "解绑成功率", "成功", "失败");
-                    is_hit
-                };
-
-                if is_hit {
-                    board.get_unit_mut(it).untie(&bound);
-                }else{
-                    let target = board.get_unit(it);
-                    let tight = target.get_tightness(&bound);
-                    let new_tight = 100 - hit;
-                    println!("绳索强度 : {} -> {}", tight, new_tight.to_string().color(Color::Green));
-                    board.get_unit_mut(it).tightness_change_to(&bound, new_tight);
-                }
-                board.get_unit_mut(id).cancel_catch_with(it);
-                board.get_unit_mut(it).cancel_catched_with(id);
-                board.get_unit_mut(it).awake();
-                println!();
-                board.show(Some(id));
-                println!();
-                0
+            false => {
+                let new_tight = 100 - hit;
+                board.get_unit_mut(it).tightness_change_to(&bound, new_tight);
+                write!(s, "解绑至 -> {} ", new_tight.to_string().color(Color::Yellow)).unwrap();
             },
         }
+        write!(s, "消耗点数 : {}\n", cost.to_string().color(Color::Yellow)).unwrap();
+        bound_point - cost
     }
 
-    pub fn exe_tie(&self, bound : BoundPart, bound_point : i32, board : &mut Board, id : Id, it : Id) -> i32 {
+    pub fn exe_tie(&self, s: &mut String, bound : BoundPart, bound_point : i32, board : &mut Board, id : Id, it : Id) -> i32 {
+        
         let actor = board.get_unit(id);
         let target = board.get_unit(it);
 
-        match self.tie_get_cost_or_rate(bound_point, &bound, actor, target) {
-            Ok(cost) => {
-                println!("尝试捆绑 {} {} {}", target.identity(), target.bound_identity_change(&bound, true), bound.name());
-                println!("捆绑成功率 : 100% -> {}", "成功".to_string().color(Color::Green));
-                board.get_unit_mut(it).tie(&bound);
-                println!();
-                board.show(Some(id));
-                println!();
-                bound_point - cost
-            },
-            Err(hit) => {
-                println!("尝试捆绑 {} {} {}", target.identity(), target.bound_identity_change(&bound, true), bound.name());
-                // 命中判定
-                let is_hit = if hit == 100 {
-                    println!("捆绑成功率 : 100% -> {}", "成功".to_string().color(Color::Green));
-                    true
-                }else if hit == 0{
-                    println!("捆绑成功率 : 0% -> {}", "失败".to_string().color(Color::Red));
-                    false
-                }else{
-                    let (is_hit, hit_dice) = helper::hit_check(hit, board.get_dice());
-                    helper::show_hit(hit, is_hit, hit_dice, "捆绑成功率", "成功", "失败");
-                    is_hit
-                };
+        // 捆绑 [...] 手腕 成功 (消耗点数 : 33)
+        // 捆绑 [...] 手臂 (30%成功率 -> 🎲 : 71) 失败 (消耗点数 : 67)
+        let bound_idy = target.bound_identity_change(&bound, true);
+        let bound_name_idy = bound.name();
+        write!(s, "捆绑 {bound_idy} {bound_name_idy} ").unwrap();
 
-                if is_hit {
-                    board.get_unit_mut(it).tie(&bound);
-                }
-                board.get_unit_mut(id).cancel_catch_with(it);
-                board.get_unit_mut(it).cancel_catched_with(id);
-                board.get_unit_mut(it).awake();
-                println!();
-                board.show(Some(id));
-                println!();
-                0
-            }
+        let (_hit, cost, is_success) = deal_with_hit(s, board, bound_point, self.tie_get_cost_or_rate(bound_point, &bound, actor, target));
+
+        match is_success {
+            true => {
+                board.get_unit_mut(it).tie(&bound);
+                write!(s, "{} ", "成功".to_string().color(Color::Green)).unwrap();
+            },
+            false => {
+                write!(s, "{} ", "失败".to_string().color(Color::Red)).unwrap();
+            },
+        }
+        write!(s, "消耗点数 : {}\n", cost.to_string().color(Color::Yellow)).unwrap();
+        bound_point - cost
+    }
+
+    pub fn end(&self, s: &mut String, board : &mut Board, id : Id, it : Id) {
+        board.get_unit_mut(id).cancel_catch_with(it);
+        board.get_unit_mut(it).cancel_catched_with(id);
+        let is_awake = board.get_unit_mut(it).awake();
+        if is_awake {
+            writeln!(s, "{} {}!", board.get_unit(it).identity(), "惊醒".to_string().color(Color::Yellow)).unwrap();
         }
     }
 }

@@ -1,42 +1,41 @@
-use colorful::{Color, Colorful};
-
 use crate::game::{board::{Board, Phase}, unit::Id, skill::skill_list::{struggle::Struggle, force_unbound::ForceUnbound}};
 
-use super::Choose;
+use super::Return;
+
+use std::fmt::Write;
 
 impl Board {
-    pub fn turn_auto(&mut self, id : Id) -> Option<Vec<Choose>> {
-        let mut need_fresh = false;
+    pub fn turn_auto(&mut self, id : Id) -> Return {
+        let mut str = String::new();
+        let s = &mut str;
+
+        // 解除眩晕
+        if self.get_unit(id).is_stun() {
+            self.get_unit_mut(id).recover_stun();
+            write!(s, "从眩晕中恢复\n").unwrap();
+        }
+
         // 自动挣扎
         if self.get_unit(id).is_catched() {
-            need_fresh = true;
-            Struggle::new().exe(self, id);
+            Struggle::new().exe(s, self, id);
         }
 
         // 自动挣脱
         if self.get_unit(id).has_bound() {
-            need_fresh = true;
-            ForceUnbound::new().exe(self, id)
+            ForceUnbound::new().exe(s, self, id)
         }
 
         // 自动起身
         if self.get_unit(id).is_fall() {
-            need_fresh = true;
+            // [起身]
             if self.get_unit_mut(id).check_to_stand() {
-                println!("[尝试起身] {}", "成功".to_string().color(Color::Green));
-            } else {
-                println!("[尝试起身] {}", "失败".to_string().color(Color::Red));
-            }
+                write!(s, "[起身]\n").unwrap();
+            } 
         }
 
         self.phase = Phase::Main {id};
-        
-        if need_fresh {
-            self.show(Some(id));
-            println!();
-            println!("按任意键继续……");
-            return None;
-        }
+        self.string_cache += &str;
+
         self.continue_turn()
     }
 }

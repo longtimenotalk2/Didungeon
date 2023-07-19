@@ -2,43 +2,48 @@ use colorful::{Color, Colorful};
 
 use crate::game::{unit::Id, board::{Phase, Board, turn::ChooseTie}, skill::skill_list::tie::{Tie, TieWay}};
 
-use super::Choose;
+use super::{Choose, Return};
+
+use std::fmt::Write;
 
 impl Board {
-    pub fn turn_tie(&mut self, id : Id, it : Id, bound_point : i32) -> Option<Vec<Choose>> {
+    pub fn turn_tie(&mut self, id : Id, it : Id, bound_point : i32) -> Return {        
+        let mut show = String::new();
+        let sh = &mut show;
         
         // 生成选择
-        println!("当前可选择的捆绑指令(剩余捆绑点 = {}) : ", bound_point.to_string().color(Color::Yellow));
-
-        let mut choose = vec!(ChooseTie::Pass);
-        println!("  [{:^3}] : {}", 0, "放弃捆绑");
-        let mut count = 1;
         let actor = self.get_unit(id);
         let target = self.get_unit(it);
+        writeln!(sh, "捆绑 {} 的选择 (剩余捆绑点 = {}) : \n",target.identity() , bound_point.to_string().color(Color::Yellow)).unwrap();
 
-        for (bound, is_tie) in Tie::new().tie_choose(target) {
+        let mut choose = vec!(ChooseTie::Pass);
+        writeln!(sh, "[{:^3}] : {}", 0, "放弃捆绑").unwrap();
+        let mut count = 1;
+        
+
+        for (bound, is_tie) in Tie::new().tie_choose(actor, target) {
             match is_tie {
                 TieWay::Tight => {
-                    print!("  [{:^3}] : {} {} {}{} {}", count, "加固".to_string().color(Color::Yellow), target.identity(), target.bound_identity_change(&bound, true), target.identity_tightness(&bound), bound.name());
+                    write!(sh, "[{:^3}] : {} {}{} {}", count, "扎紧".to_string().color(Color::Yellow), target.bound_identity_change(&bound, true), target.identity_tightness(&bound), bound.name()).unwrap();
                     match Tie::new().tight_get_cost_or_rate(bound_point, &bound, target) {
-                        Ok(cost) => println!(" (消耗捆绑点 = {})", cost.to_string().color(Color::Yellow)),
-                        Err(hit) => println!(" (消耗全部捆绑点，成功率 = {}%)", hit.to_string().color(Color::Yellow)),
+                        Ok(cost) => writeln!(sh, " (消耗捆绑点 = {})", cost.to_string().color(Color::Yellow)).unwrap(),
+                        Err(hit) => writeln!(sh, " (消耗全部捆绑点，成功率 : {}%)", hit.to_string().color(Color::Yellow)).unwrap(),
                     }
                     choose.push(ChooseTie::Tight(bound));
                 },
                 TieWay::Tie => {
-                    print!("  [{:^3}] : 捆绑 {} {} {}", count, target.identity(), target.bound_identity_change(&bound, true), bound.name());
+                    write!(sh, "[{:^3}] : {} {} {}", count, "捆绑".to_string().color(Color::Green), target.bound_identity_change(&bound, true), bound.name()).unwrap();
                     match Tie::new().tie_get_cost_or_rate(bound_point, &bound, actor, target) {
-                        Ok(cost) => println!(" (消耗捆绑点 = {})", cost.to_string().color(Color::Yellow)),
-                        Err(hit) => println!(" (消耗全部捆绑点，成功率 = {}%)", hit.to_string().color(Color::Yellow)),
+                        Ok(cost) => writeln!(sh, " (消耗捆绑点 : {})", cost.to_string().color(Color::Yellow)).unwrap(),
+                        Err(hit) => writeln!(sh, " (消耗全部捆绑点，成功率 : {}%)", hit.to_string().color(Color::Yellow)).unwrap(),
                     }
                     choose.push(ChooseTie::Tie(bound));
                 },
                 TieWay::Untie => {
-                    print!("  [{:^3}] : 解绑 {} {}{} {}", count, target.identity(), target.bound_identity_change(&bound, false), target.identity_tightness(&bound), bound.name());
+                    write!(sh, "[{:^3}] : {} {}{} {}", count, "解绑".to_string().color(Color::Red), target.bound_identity_change(&bound, false), target.identity_tightness(&bound), bound.name()).unwrap();
                     match Tie::new().untie_get_cost_or_rate(bound_point, &bound, target) {
-                        Ok(cost) => println!(" (消耗捆绑点 = {})", cost.to_string().color(Color::Yellow)),
-                        Err(hit) => println!(" (消耗全部捆绑点，成功率 = {}%)", hit.to_string().color(Color::Yellow)),
+                        Ok(cost) => writeln!(sh, " (消耗捆绑点 : {})", cost.to_string().color(Color::Yellow)).unwrap(),
+                        Err(hit) => writeln!(sh, " (消耗全部捆绑点，成功率 : {}%)", hit.to_string().color(Color::Yellow)).unwrap(),
                     }
                     choose.push(ChooseTie::Untie(bound));
                 },
@@ -48,8 +53,14 @@ impl Board {
 
         // 分支，如果是玩家，返回行动，否则自动选择行动执行
         if actor.is_human() {
+            println!();
+            self.show(Some(id));
+            println!();
+            println!("{}", show);
             println!("{}", "请选择 : ".to_string().color(Color::Yellow));
-            Some(choose.into_iter().map(|a| Choose::Tie(a)).collect())
+            Return {
+                choose: Some(choose.into_iter().map(|a| Choose::Tie(a)).collect()),
+            }
         }else{
             let choose = match target.ai_tie_choice() {
                 Some((bound, is_tie)) => match is_tie {
@@ -58,41 +69,39 @@ impl Board {
                 },
                 None => ChooseTie::Pass,
             };
-            self.response_tie(choose, true)
+            self.response_tie(choose)
         }
     }
 
-    pub fn response_tie(&mut self, choose : ChooseTie, stop : bool) -> Option<Vec<Choose>> {
+    pub fn response_tie(&mut self, choose : ChooseTie) -> Return {
+        let mut str = String::new();
+        let s = &mut str;
         if let Phase::Tie { id, it, bound_point } = self.phase {
+            write!(s, "- ").unwrap();
             let remain = match choose {
                 ChooseTie::Pass => {
-                    Tie::new().exe_pass(self, id, it);
+                    writeln!(s, "放弃捆绑 (剩余点数 : {})", bound_point.to_string().color(Color::Yellow)).unwrap();
                     0
                 },
                 ChooseTie::Tight(bound) => {
-                    Tie::new().exe_tight(bound, bound_point, self, id, it)
+                    Tie::new().exe_tight(s, bound, bound_point, self, it)
                 },
                 ChooseTie::Tie(bound) => {
-                    Tie::new().exe_tie(bound, bound_point, self, id, it)
+                    Tie::new().exe_tie(s, bound, bound_point, self, id, it)
                 },
                 ChooseTie::Untie(bound) => {
-                    Tie::new().exe_untie(bound, bound_point, self, id, it)
+                    Tie::new().exe_untie(s, bound, bound_point, self, it)
                 },
             };
+            
             if remain > 0 {
                 self.phase = Phase::Tie { id, it, bound_point : remain };
-                if stop {
-                    println!("按任意键继续……");
-                    None
-                } else {
-                    self.continue_turn()
-                }
             }else{
+                Tie::new().end(s, self, id, it);
                 self.phase = Phase::Main { id };
-                // 结束
-                println!("按任意键继续……");
-                None
             }
+            self.string_cache += &str;
+            self.continue_turn()
         }else{
             unreachable!();
         }

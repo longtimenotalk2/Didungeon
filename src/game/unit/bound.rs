@@ -233,6 +233,8 @@ impl BoundState {
             Some(BoundPart::Wrist)
         }else if self.is_bound_arm() {
             Some(BoundPart::Arm)
+        }else if self.is_bound_long() {
+            Some(BoundPart::Long)
         }else if self.is_bound_neck() {
             Some(BoundPart::Neck)
         }else {
@@ -287,7 +289,7 @@ impl BoundState {
         if 0 < tightness && tightness < 100 {
             let a = format!("({}%)", tightness);
             let mut s = String::new();
-            write!(&mut s, "{}", a.color(Color::Red)).unwrap();
+            write!(&mut s, "{}", a.color(Color::Yellow)).unwrap();
             s
         }else{
             String::new()

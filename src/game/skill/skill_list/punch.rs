@@ -49,17 +49,18 @@ impl Skillize for Punch {
          }
     }
 
-    fn exe(&self, board : &mut Board, id : Id, it : Id, dir : &Dir) {
+    fn exe(&self, s : &mut String, board : &mut Board, id : Id, it : Id, dir : &Dir) {
+
         let actor = board.get_unit(id);
         let target = board.get_unit(it);
 
         // 宣言
-        helper::show_announce(actor, target, &dir, &Skill::Punch);
+        helper::write_announce(s, target, &dir, &Skill::Punch);
 
         // 命中判定
         let hit = self.hit(actor, target);
         let (is_hit, hit_dice) = helper::hit_check(hit, board.get_dice());
-        helper::show_hit(hit, is_hit, hit_dice, "命中率", "命中", "落空");
+        helper::write_hit(s, hit, is_hit, hit_dice, "命中率", "命中", "落空");
 
         // 命中结算
         if is_hit {
@@ -69,7 +70,7 @@ impl Skillize for Punch {
             let dmg = self.dmg(actor, target);
             let inj_old = target.get_inj();
             let inj_new = board.get_unit_mut(it).take_dmg(dmg);
-            helper::show_dmg(dmg, inj_old, inj_new);
+            helper::write_dmg(s, dmg, inj_old, inj_new);
 
             // 击晕
             let actor = board.get_unit(id);
@@ -79,7 +80,7 @@ impl Skillize for Punch {
             if is_stun {
                 board.get_unit_mut(it).take_stun();
             }
-            helper::show_hit(stun_rate, is_stun, stun_dice, "击晕率", "击晕", "落空");
+            helper::write_hit(s, stun_rate, is_stun, stun_dice, "击晕率", "击晕", "落空");
         }
     }
 }

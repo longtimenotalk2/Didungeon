@@ -53,7 +53,7 @@ impl Game {
                 }
             }
 
-            match &result {
+            match &result.choose {
                 Some(chooses) => {
                     if strs.len() == 0 {
                         println!("请输入选项对应的数字！");

@@ -30,8 +30,15 @@ pub enum Choose {
     Tie(ChooseTie),
 }
 
+#[derive(Clone, Debug)]
+pub struct Return {
+    pub choose : Option<Vec<Choose>>,
+}
+
 impl Board {
-    pub fn continue_turn(&mut self) -> Option<Vec<Choose>> {
+    pub fn continue_turn(&mut self) -> Return {
+        print!("{}", self.string_cache);
+
         match self.phase {
             Phase::Start => self.turn_start(),
             Phase::Prepare { id } => self.turn_prepare(id),
@@ -41,10 +48,12 @@ impl Board {
         }
     }
 
-    pub fn response_choose(&mut self, choose : Choose) -> Option<Vec<Choose>> {
+    pub fn response_choose(&mut self, choose : Choose) -> Return {
+        print!("{}", self.string_cache);
+
         match choose {
             Choose::Skill(skl) => self.response_main(skl),
-            Choose::Tie(tie) => self.response_tie(tie, false),
+            Choose::Tie(tie) => self.response_tie(tie),
         }
     }
 

@@ -1,15 +1,19 @@
-use colorful::{Color, Colorful};
 use num_rational::Ratio;
 
 use super::{Unit, Id, Dir, bound::BoundPart};
 
 impl Unit {
-    pub fn awake(&mut self) {
+    pub fn awake(&mut self) -> bool {
         if self.sleep {
             self.sleep = false;
-            println!("{} {}!", self.identity(), "苏醒".to_string().color(Color::Yellow))
+            true
+        }else{
+            false
         }
-        
+    }
+
+    pub fn recover_stun(&mut self) {
+        self.stun = false;
     }
 
     pub fn take_dmg(&mut self, dmg : i32) -> i32 {

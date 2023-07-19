@@ -30,5 +30,6 @@ pub struct Board {
     pos_length : i32,
     turn : i32,
     phase : Phase,
+    string_cache : String,
 }
 

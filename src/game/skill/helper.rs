@@ -4,6 +4,7 @@ use super::{super::unit::{Dir, Unit}, Skill};
 
 use colorful::Color;
 use colorful::Colorful;
+use std::fmt::Write;
 
 pub fn to_hit(h : i32) -> i32 {
     h.max(0).min(100)
@@ -13,13 +14,13 @@ pub fn to_dmg(dmg_o : i32, min_dmg_set : i32) -> i32 {
     dmg_o.max(min_dmg_set)
 }
 
-pub fn show_announce(
-    actor : &Unit, 
+pub fn write_announce(
+    s : &mut String, 
     target : &Unit, 
     dir : &Dir, 
     skill : &Skill,
 ) {
-    println!("{} {}{} {}", actor.identity(), skill.name(), dir.notice(), target.identity());
+    write!(s, "{}{} {}\n", skill.name(), dir.notice(), target.identity()).unwrap();
 }
 
 pub fn hit_check(hit : i32, dice : &mut Dice) -> (bool, Option<i32>) {
@@ -37,7 +38,8 @@ pub fn hit_check(hit : i32, dice : &mut Dice) -> (bool, Option<i32>) {
     }
 }
 
-pub fn show_hit(
+pub fn write_hit(
+    s : &mut String,
     hit : i32, 
     is_hit : bool, 
     hit_dice : Option<i32>,
@@ -45,22 +47,36 @@ pub fn show_hit(
     name_hit : &str,
     name_miss : &str,
 ) {
-    print!("{name} : {hit}%");
+    write!(s, "{name} : {hit}%").unwrap();
     if let Some(hit_dice) = hit_dice {
-        print!(" (🎲 = {})", 
+        write!(s, " (🎲 = {})", 
             match is_hit {
                 true => hit_dice.to_string().color(Color::Green),
                 false => hit_dice.to_string().color(Color::Red),
             }
-        );
+        ).unwrap();
     }
     match is_hit {
-        true => print!(" -> {}", name_hit.to_string().color(Color::Green)),
-        false => print!(" -> {}", name_miss.to_string().color(Color::Red)),
+        true => write!(s, " -> {}\n", name_hit.to_string().color(Color::Green)).unwrap(),
+        false => write!(s, " -> {}\n", name_miss.to_string().color(Color::Red)).unwrap(),
     }
     println!()
 }
 
-pub fn show_dmg(dmg : i32, inj_old : i32, inj_new : i32) {
-    println!("造成伤害 : {dmg} (负伤 : {inj_old} -> {})", inj_new.to_string().color(Color::Red))
+pub fn write_hit_small(
+    s : &mut String,
+    hit : i32, 
+    is_hit : bool, 
+    hit_dice : i32,
+) {
+    let hit_idy = hit.to_string().color(Color::Yellow);
+    let dice_idy = match is_hit {
+        true => hit_dice.to_string().color(Color::Green),
+        false => hit_dice.to_string().color(Color::Red),
+    };
+    write!(s, "({hit_idy}%成功率 -> 🎲 : {dice_idy})").unwrap()
+}
+
+pub fn write_dmg(s : &mut String, dmg : i32, inj_old : i32, inj_new : i32) {
+    writeln!(s, "造成伤害 : {dmg} (负伤 : {inj_old} -> {})", inj_new.to_string().color(Color::Red)).unwrap();
 }

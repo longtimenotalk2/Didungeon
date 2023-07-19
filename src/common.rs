@@ -1,9 +1,6 @@
 use std::{io, fs::{File, self}};
 
-
-pub fn clear_cmd() {
-    print!("\x1B[2J\x1B[1;1H");
-}
+pub const CLEAR : &str = "\x1B[2J\x1B[1;1H";
 
 pub fn save_file(save_path : &str, data : String) -> Result<(), io::Error> {    
     File::create(save_path)?;

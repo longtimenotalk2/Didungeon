@@ -25,12 +25,11 @@ impl Skillize for Catch {
         list
     }
 
-    fn exe(&self, board : &mut Board, id : Id, it : Id, dir : &Dir) {
-        let actor = board.get_unit(id);
+    fn exe(&self, s : &mut String, board : &mut Board, id : Id, it : Id, dir : &Dir) {
         let target = board.get_unit(it);
 
         // 宣言
-        helper::show_announce(actor, target, &dir, &Skill::Catch);
+        helper::write_announce(s, target, &dir, &Skill::Catch);
 
         // 结算
         board.get_unit_mut(id).catch_with(it, dir);

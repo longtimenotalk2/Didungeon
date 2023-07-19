@@ -72,38 +72,28 @@ impl Unit {
 
     pub fn unbound_force_lower(&self) -> i32 {
         // 下肢蛮力挣脱力
-        // 对于解绑脚腕
-        // 基础概率50%
         // 独立占比
-        // 大腿  小腿
-        // 50%   50%
+        // 大腿  小腿  脚腕
+        // 25%   25%   50%
         // 如果反弓，额外/2
-        // 对于解绑小腿
-        // 基础概率50%，如果大腿被绑再/2
 
         if self.free_lower() {
             return self.str();
         }
         
-        let r = if self.is_bound(&BoundPart::Ankle) {
-            let mut r = Ratio::new(1, 2);
-            if self.is_bound(&BoundPart::Thigh) {
-                r -= Ratio::new(1, 2);
-            }
-            if self.is_bound(&BoundPart::Calve) {
-                r -= Ratio::new(1, 2);
-            }
-            if self.is_bound_bow() {
-                r /= 2
-            }
-            r
-        }else{
-            let mut r = Ratio::new(1, 2);
-            if self.is_bound(&BoundPart::Thigh) {
-                r /= 2;
-            }
-            r
-        };
+        let mut r = Ratio::new(1, 1);
+        if self.is_bound(&BoundPart::Thigh) {
+            r -= Ratio::new(1, 4);
+        }
+        if self.is_bound(&BoundPart::Calve) {
+            r -= Ratio::new(1, 4);
+        }
+        if self.is_bound(&BoundPart::Ankle) {
+            r -= Ratio::new(1, 2);
+        }
+        if self.is_bound_bow() {
+            r /= 2
+        }
 
         let r = Ratio::from_integer(self.str()) * r;
         r.ceil().to_integer()

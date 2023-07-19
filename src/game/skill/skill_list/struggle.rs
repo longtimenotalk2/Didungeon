@@ -1,6 +1,7 @@
 use colorful::{Color, Colorful};
 
 use crate::game::{unit::{Unit, Id}, skill::helper, board::Board};
+use std::fmt::Write;
 
 pub struct Struggle {
     basic_hit : i32,
@@ -27,28 +28,39 @@ impl Struggle {
         helper::to_hit(self.basic_hit + self.hit_rate * (acc - evd))
     }
 
-    pub fn exe(&self, board : &mut Board, id : Id) {
+    pub fn exe(&self, s : &mut String, board : &mut Board, id : Id) {
         let actor = board.get_unit(id);
+
+        // [挣扎] (100%成功率) 成功
+        // [挣扎] (0%成功率) 失败
+        // (67%成功率 → 🎲 : 89) 失败
+
         for it in actor.get_catched_with() {
             let actor = board.get_unit(id);
             let target = board.get_unit(it);
             let hit = self.hit(actor, target);
             let is_hit = if hit == 100 {
-                println!("[尝试挣扎] {}", "成功".to_string().color(Color::Green));
+                write!(s, "[挣扎] (100%成功率) ").unwrap();
                 true
             }else if hit == 0 {
-                println!("[尝试挣扎] {}", "失败".to_string().color(Color::Red));
+                write!(s, "[挣扎] (0%成功率) ").unwrap();
                 false
             }else {
-                println!("[尝试挣扎]");
+                write!(s, "[挣扎] ").unwrap();
                 let (is_hit, hit_dice) = helper::hit_check(hit, board.get_dice());
-                helper::show_hit(hit, is_hit, hit_dice, "成功率", "成功", "失败");
+                helper::write_hit_small(s, hit, is_hit, hit_dice.unwrap_or(0));
+                write!(s, " ").unwrap();
                 is_hit
             };
-            if is_hit {
-                board.get_unit_mut(id).cancel_catched_with(it);
-                board.get_unit_mut(it).cancel_catch_with(id);
+            match is_hit {
+                true => {
+                    board.get_unit_mut(id).cancel_catched_with(it);
+                    board.get_unit_mut(it).cancel_catch_with(id);
+                    write!(s, "{}", "成功".to_string().color(Color::Green)).unwrap();
+                },
+                false => write!(s, "{}", "失败".to_string().color(Color::Red)).unwrap(),
             }
         }
+        write!(s, "\n").unwrap();
     }
 }
