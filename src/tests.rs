@@ -18,7 +18,15 @@ fn test_show_board() {
 }
 
 #[test]
-#[ignore]
+fn test_show_bound() {
+    // let s = "[\u{1b}[38;5;15m \u{1b}[0m]";
+    let s = "".color(Color::Red);
+    println!("{} {} {} {}", "💫", s, s, "A");
+    println!("{} {} {} {}", "🧎", s, s, "A");
+}
+
+#[test]
+// #[ignore]
 fn test_show_units() {
     let mut noel = Unit::new_noal(0, 0);
     let mut yelin = Unit::new_yelin(1, 2);
@@ -31,6 +39,7 @@ fn test_show_units() {
     Unit::show_title1();
     Unit::show_title2();
     noel.show(true);
+    yelin.show(false);
     kuinuo.show(false);
     yelin.show(false);
 }

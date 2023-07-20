@@ -128,7 +128,7 @@ impl Tie {
 
         // 扎紧 [...](67%) 手腕 成功 (消耗点数 : 33)
         // 扎紧 [...](10%) 手臂 (30%成功率 -> 🎲 : 71) 扎紧至 -> 30% (消耗点数 : 67)
-        let bound_idy = target.bound_identity_change(&bound, true);
+        let bound_idy = target.bound_identity(Some((&bound, true)), false);
         let tight_idy = target.identity_tightness(&bound);
         let bound_name_idy = bound.name();
         write!(s, "扎紧 {bound_idy}{tight_idy} {bound_name_idy} ").unwrap();
@@ -156,7 +156,7 @@ impl Tie {
 
         // 解绑 [...](67%) 手腕 成功 (消耗点数 : 33)
         // 解绑 [...](80%) 手臂 (70%成功率 -> 🎲 : 71) 解绑至 -> 30% (消耗点数 : 67)
-        let bound_idy = target.bound_identity_change(&bound, false);
+        let bound_idy = target.bound_identity(Some((&bound, false)), false);
         let tight_idy = target.identity_tightness(&bound);
         let bound_name_idy = bound.name();
         write!(s, "解绑 {bound_idy}{tight_idy} {bound_name_idy} ").unwrap();
@@ -185,7 +185,7 @@ impl Tie {
 
         // 捆绑 [...] 手腕 成功 (消耗点数 : 33)
         // 捆绑 [...] 手臂 (30%成功率 -> 🎲 : 71) 失败 (消耗点数 : 67)
-        let bound_idy = target.bound_identity_change(&bound, true);
+        let bound_idy = target.bound_identity(Some((&bound, true)), false);
         let bound_name_idy = bound.name();
         write!(s, "捆绑 {bound_idy} {bound_name_idy} ").unwrap();
 

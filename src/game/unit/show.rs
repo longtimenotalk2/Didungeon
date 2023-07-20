@@ -28,8 +28,7 @@ impl Unit {
         self.identity_for_pure_chinese();
         print!(" ");
         self.state();
-        print!(" ");
-        self.bound();
+        print!(" {}", self.bound());
         print!(" ");
         self.attr();
         print!("\n");
@@ -88,7 +87,7 @@ impl Unit {
         }else if self.is_sleep() {
             print!("💤")
         }else if self.is_fall() {
-            print!("🧎")
+            print!("倒‍")
         }else if let Some(_) = self.catch_left {
             print!("👆")
         }else if let Some(_) = self.catch_right {
@@ -98,12 +97,12 @@ impl Unit {
         }
     }
 
-    fn bound(&self) {
-        self.bound.show()
+    fn bound(&self) -> String {
+        self.bound.identity(None, true)
     }
 
-    pub fn bound_identity_change(&self, part : &BoundPart, is_tie : bool) -> String {
-        self.bound.identity_change(part, is_tie)
+    pub fn bound_identity(&self, bound_case : Option<(&BoundPart, bool)>, show_loose : bool) -> String {
+        self.bound.identity(bound_case, show_loose)
     }
 
     pub fn identity_tightness(&self, part : &BoundPart) -> String {

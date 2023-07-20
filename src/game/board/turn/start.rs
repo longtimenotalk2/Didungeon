@@ -7,6 +7,8 @@ use std::fmt::Write;
 
 impl Board {
     pub fn turn_start(&mut self) -> Return {
+        // 判断胜负
+
         // 找当前可动的速度最快的角色行动，如没有则进入下一回合
         let mut ido: Option<u32> = self.find_next_actor();
         if let None = ido {

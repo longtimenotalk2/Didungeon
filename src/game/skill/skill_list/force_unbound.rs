@@ -50,7 +50,7 @@ impl ForceUnbound {
             if hit > 0{
                 // 挣脱 [...](67%) 手腕 成功 (消耗点数 : 33)
                 // 挣脱 [...](50%) 手腕 (30%成功率 → 🎲 : 71) 挣脱至 → 30% (消耗点数 : 67)
-                let bound_idy = actor.bound_identity_change(&bound, false);
+                let bound_idy = actor.bound_identity(Some((&bound, false)), false);
                 let tight_idy = actor.identity_tightness(&bound);
                 let bound_name_idy = bound.name();
                 write!(s, "[挣脱] {bound_idy}{tight_idy} {bound_name_idy} ").unwrap();
