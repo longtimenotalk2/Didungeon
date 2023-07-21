@@ -1,14 +1,23 @@
+use colorful::{Color, Colorful};
+
 use crate::game::skill::Skill;
 
 use super::{Unit, Id, bound::{BoundState, BoundPart}, Dir, Pos};
 
 impl Unit {
     pub fn new_noal(id : Id, pos : Pos) -> Self {
-        Self::new(id, "诺艾尔".to_string(), true, true, pos, 10, 10, 10)
+        let color = Color::DodgerBlue3;
+        let name = "诺艾尔".to_string().color(color).to_string();
+        let name_fix_length = "诺艾尔  ".to_string().color(color).to_string();
+        Self::new(id, name, name_fix_length, true, true, pos, 10, 10, 10)
     }
 
     pub fn new_noal_bound(id : Id, pos : Pos) -> Self {
-        let mut noal = Self::new(id, "诺艾尔".to_string(), true, true, pos, 10, 10, 10);
+        let color = Color::DodgerBlue3;
+        let name = "诺艾尔".to_string().color(color).to_string();
+        let name_fix_length = "诺艾尔  ".to_string().color(color).to_string();
+        
+        let mut noal = Self::new(id, name, name_fix_length, true, true, pos, 10, 10, 10);
         noal.tie(&BoundPart::Neck);
         noal.tie(&BoundPart::Arm);
         noal.tie(&BoundPart::Wrist);
@@ -22,11 +31,18 @@ impl Unit {
 
 
     pub fn new_yelin(id : Id, pos : Pos) -> Self {
-        Self::new(id, "叶琳".to_string(), true, false, pos, 15, 12, 14)
+        let color = Color::Aquamarine1a;
+        let name = "叶琳".to_string().color(color).to_string();
+        let name_fix_length = "叶琳    ".to_string().color(color).to_string();
+        Self::new(id, name, name_fix_length, true, false, pos, 16, 12, 14)
+
     }
 
     pub fn new_kuinuo(id : Id, pos : Pos) -> Self {
-        let mut unit = Self::new(id, "奎诺".to_string(), false, false, pos, 16, 20, 18);
+        let color = Color::LightSalmon3b;
+        let name = "奎诺".to_string().color(color).to_string();
+        let name_fix_length = "奎诺    ".to_string().color(color).to_string();
+        let mut unit = Self::new(id, name, name_fix_length, false, false, pos, 16, 20, 18);
         unit.take_sleep();
         unit
     }
@@ -36,6 +52,7 @@ impl Unit {
     pub fn new(
         id : Id, 
         name : String, 
+        name_fix_length : String,
         ally : bool,
         you : bool,
         pos : Pos,
@@ -46,6 +63,7 @@ impl Unit {
         Self {
             id,
             name,
+            name_fix_length,
             ally,
             you, 
             pos,

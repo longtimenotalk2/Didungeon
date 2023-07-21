@@ -9,7 +9,8 @@ use super::{Choose, Return};
 use std::fmt::Write;
 
 impl Board {
-    pub fn turn_main(&mut self, id : Id) -> Return {
+    pub fn turn_main(&mut self, need_show : bool, id : Id) -> Return {
+
         let mut show = String::new();
         let sh = &mut show;
         // 生成选择
@@ -41,7 +42,7 @@ impl Board {
 
             // 只有一个选项时自动选择
             if chooses.len() == 1 {
-                self.response_choose(Choose::Skill(chooses[0].clone()))
+                self.response_choose(need_show, Choose::Skill(chooses[0].clone()))
             }else{
                 Return::new_with_choose(chooses.into_iter().map(|a| Choose::Skill(a)).collect())
             }
@@ -51,11 +52,11 @@ impl Board {
                 Some(_) => chooses[1].clone(),
                 None => chooses[0].clone(),
             };
-            self.response_main(choose)
+            self.response_main(need_show, choose)
         }
     }
 
-    pub fn response_main(&mut self, choose : ChooseSkill) -> Return {
+    pub fn response_main(&mut self, need_show : bool, choose : ChooseSkill) -> Return {
         let mut str = String::new();
         let s = &mut str;
         if let Phase::Main {id} = self.phase {
@@ -72,7 +73,7 @@ impl Board {
             
             self.string_cache += &str;
 
-            self.continue_turn()
+            self.continue_turn(need_show)
         }else{
             unreachable!();
         }

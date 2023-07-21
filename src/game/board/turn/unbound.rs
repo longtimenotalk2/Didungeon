@@ -11,7 +11,7 @@ impl Board {
         self.phase = Phase::Unbound { id, bound_point};
     }
 
-    pub fn turn_unbound(&mut self, id : Id, bound_point : i32) -> Return {
+    pub fn turn_unbound(&mut self, need_show : bool, id : Id, bound_point : i32) -> Return {
         let mut show = String::new();
         let sh = &mut show;
 
@@ -44,7 +44,7 @@ impl Board {
 
             // 只有一个选项时自动选择
             if choose.len() == 1 {
-                self.response_choose(Choose::Unbound(choose[0].clone()))
+                self.response_choose(need_show, Choose::Unbound(choose[0].clone()))
             }else{
                 Return::new_with_choose(choose.into_iter().map(|a| Choose::Unbound(a)).collect())
             }
@@ -53,11 +53,11 @@ impl Board {
                 Some(bound) => ChooseUnbound::Unbound(bound),
                 None => ChooseUnbound::Pass,
             };
-            self.response_unbound(choose)
+            self.response_unbound(need_show, choose)
         }
     }
 
-    pub fn response_unbound(&mut self, choose : ChooseUnbound) -> Return {
+    pub fn response_unbound(&mut self, need_show : bool,  choose : ChooseUnbound) -> Return {
         let mut str = String::new();
         let s = &mut str;
 
@@ -77,7 +77,7 @@ impl Board {
             
             if remain > 0 {
                 self.phase = Phase::Unbound { id, bound_point : remain };
-                self.continue_turn()
+                self.continue_turn(need_show)
             }else{
                 // 自动起身
                 if self.get_unit(id).is_fall() {
@@ -89,7 +89,7 @@ impl Board {
 
                 self.phase = Phase::End { id };
 
-                self.continue_turn()
+                self.continue_turn(need_show)
             }
             
             

@@ -5,7 +5,7 @@ use super::Return;
 use std::fmt::Write;
 
 impl Board {
-    pub fn turn_auto(&mut self, id : Id) -> Return {
+    pub fn turn_auto(&mut self, need_show : bool, id : Id) -> Return {
         let mut str = String::new();
         let s = &mut str;
 
@@ -36,6 +36,6 @@ impl Board {
         self.phase = Phase::Main {id};
         self.string_cache += &str;
 
-        self.continue_turn()
+        self.continue_turn(need_show)
     }
 }

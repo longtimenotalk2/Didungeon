@@ -1,10 +1,6 @@
 
 use super::Unit;
 use super::bound::BoundPart;
-use std::fmt::Write;
-
-use colorful::Color;
-use colorful::Colorful;
 
 const IDENTY: usize = 26;
 
@@ -43,16 +39,7 @@ impl Unit {
     }
 
     pub fn identity(&self) -> String {
-        let name_color = match self.you {
-            true => Color::Green,
-            false => match self.ally {
-                true => Color::Blue,
-                false => Color::Red,
-            },
-        };
-        let mut s = String::new();
-        write!(&mut s, "{}", self.name.clone().color(name_color)).unwrap();
-        s
+        self.name.clone()
     }
 
     pub fn show_identity(&self) {
@@ -67,10 +54,7 @@ impl Unit {
     }
 
     fn identity_for_pure_chinese(&self) {
-        let len = self.name.len();
-        let adder = " ".repeat(8-len/3*2);
-        self.show_identity();
-        print!("{}", adder);
+        print!("{}", self.name_fix_length)
     }
 
     fn action(&self) {

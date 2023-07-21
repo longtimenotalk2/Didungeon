@@ -61,7 +61,7 @@ pub fn write_hit(
         true => write!(s, " -> {}\n", name_hit.to_string().color(Color::Green)).unwrap(),
         false => write!(s, " -> {}\n", name_miss.to_string().color(Color::Red)).unwrap(),
     }
-    println!()
+    *s += "\n";
 }
 
 pub fn write_hit_small(

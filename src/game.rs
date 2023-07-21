@@ -14,6 +14,13 @@ pub struct Game {
 }
 
 impl Game {
+    pub fn new_solo_auto(seed : u64, str1 : i32, dex1 : i32, agi1 : i32, str2 : i32, dex2 : i32, agi2 : i32) -> Self {
+        Self {
+            board: Board::new_solo_auto(seed, str1, dex1, agi1, str2, dex2, agi2),
+            history : vec![],
+        }
+    }
+
     pub fn new() -> Self {
         Self {
             board: Board::new_noal_vs_kuinuo(114514),
@@ -21,8 +28,28 @@ impl Game {
         }
     }
 
+    pub fn main_auto(&mut self) -> Option<bool> {
+        let mut count = 0;
+        while self.board.get_turn() < 100 {
+            let result = self.board.continue_turn(false);
+
+            // 判断胜负
+            let winner = result.winner();
+            if winner.is_some() {
+                return winner
+            }
+
+            self.board.set_to_start();
+            count += 1;
+            if count > 1000 {
+                panic!("Too many loop!")
+            }
+        }
+        None
+    }
+
     pub fn main_loop(&mut self) -> Option<bool> {
-        let mut result = self.board.continue_turn();
+        let mut result = self.board.continue_turn(true);
 
         loop  {
             // 判断胜负
@@ -45,14 +72,14 @@ impl Game {
                     "load" => {
                         self.load();
                         self.history = vec!();
-                        result = self.board.continue_turn();
+                        result = self.board.continue_turn(true);
                         continue;
                     },
                     "undo" => {
                         while let Some((b, is_choose)) = self.history.pop() {
                             if is_choose {
                                 self.board = b;
-                                result = self.board.continue_turn();
+                                result = self.board.continue_turn(true);
                                 break;
                             }
                         }
@@ -62,7 +89,7 @@ impl Game {
                         if let Some((b, _)) = self.history.pop() 
                         {
                             self.board = b;
-                            result = self.board.continue_turn();
+                            result = self.board.continue_turn(true);
                         }else{
                             println!("初始状态，撤销失败");
                         }
@@ -86,7 +113,7 @@ impl Game {
                                     println!("数值越界！")
                                 }else {
                                     self.history.push((self.board.clone(), true));
-                                    result = self.board.response_choose(chooses[i].clone());
+                                    result = self.board.response_choose(true, chooses[i].clone());
                                 }
                             }, 
                         }
@@ -95,7 +122,7 @@ impl Game {
                 None => {
                     self.history.push((self.board.clone(), false));
                     self.board.set_to_start();
-                    result = self.board.continue_turn();
+                    result = self.board.continue_turn(true);
                 },
             }
         }

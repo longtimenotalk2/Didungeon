@@ -1,4 +1,4 @@
-
+pub mod solo;
 
 use std::fmt::Write;
 
@@ -7,7 +7,13 @@ use colorful::{Color, Colorful};
 use crate::{game::{unit::{Unit, Dir}, board::Board}, common};
 
 
-
+#[test]
+fn look_all_colors() {
+    for color in Color::iterator() {
+        print!("{}", "Sample".color(color.clone()));
+        dbg!(&color);
+    }
+}
 
 #[test]
 #[ignore]
@@ -18,6 +24,7 @@ fn test_show_board() {
 }
 
 #[test]
+#[ignore]
 fn test_show_bound() {
     // let s = "[\u{1b}[38;5;15m \u{1b}[0m]";
     let s = "".color(Color::Red);
@@ -26,7 +33,7 @@ fn test_show_bound() {
 }
 
 #[test]
-// #[ignore]
+#[ignore]
 fn test_show_units() {
     let mut noel = Unit::new_noal(0, 0);
     let mut yelin = Unit::new_yelin(1, 2);
@@ -47,12 +54,12 @@ fn test_show_units() {
 #[test]
 #[ignore]
 fn test_serde() {
-    let a = Unit::new(0, "诺艾尔".to_string(), true, true, 0, 10, 10, 10);
-    // Convert the Point to a JSON string.
-    let serialized = serde_json::to_string(&a).unwrap();
+    // let a = Unit::new(0, "诺艾尔".to_string(), true, true, 0, 10, 10, 10);
+    // // Convert the Point to a JSON string.
+    // let serialized = serde_json::to_string(&a).unwrap();
 
-    // Prints serialized = {"x":1,"y":2}
-    println!("serialized = {}", serialized);
+    // // Prints serialized = {"x":1,"y":2}
+    // println!("serialized = {}", serialized);
 }
 
 #[test]

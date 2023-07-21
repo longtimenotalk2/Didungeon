@@ -38,6 +38,7 @@ impl Dir {
 pub struct Unit {
     id : Id,
     name : String,
+    name_fix_length : String,
     ally : bool,
     you : bool,
     pos : Pos,

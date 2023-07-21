@@ -77,27 +77,36 @@ impl Return {
 }
 
 impl Board {
-    pub fn continue_turn(&mut self) -> Return {
-        print!("{}", self.string_cache);
+    pub fn continue_turn(&mut self, need_show : bool) -> Return {
+        if need_show {
+            print!("{}", self.string_cache);
+        }
+        
 
         match self.phase {
-            Phase::Start => self.turn_start(),
-            Phase::Prepare { id } => self.turn_prepare(id),
-            Phase::Tie { id, it, bound_point } => self.turn_tie(id, it, bound_point),
-            Phase::Auto { id } => self.turn_auto(id),
-            Phase::Main { id } => self.turn_main(id),
-            Phase::Unbound { id, bound_point } => self.turn_unbound(id, bound_point),
-            Phase::End {id} => self.turn_end(id),
+            Phase::Start => self.turn_start(need_show),
+            Phase::Prepare { id } => self.turn_prepare(need_show, id),
+            Phase::Tie { id, it, bound_point } => self.turn_tie(need_show, id, it, bound_point),
+            Phase::Auto { id } => self.turn_auto(need_show, id),
+            Phase::Main { id } => self.turn_main(need_show, id),
+            Phase::Unbound { id, bound_point } => self.turn_unbound(need_show, id, bound_point),
+            Phase::End {id} => self.turn_end(need_show, id),
         }
     }
 
-    pub fn response_choose(&mut self, choose : Choose) -> Return {
-        print!("{}", self.string_cache);
+    pub fn response_choose(&mut self, need_show : bool, choose : Choose) -> Return {
+        if need_show {
+            print!("{}", self.string_cache);
+        }
 
         match choose {
-            Choose::Skill(skl) => self.response_main(skl),
-            Choose::Tie(tie) => self.response_tie(tie),
-            Choose::Unbound(ubd) => self.response_unbound(ubd),
+            Choose::Skill(skl) => self.response_main(need_show, skl),
+            Choose::Tie(tie) => self.response_tie(need_show, tie),
+            Choose::Unbound(ubd) => self.response_unbound(need_show, ubd),
         }
+    }
+
+    pub fn get_turn(&self) -> i32 {
+        self.turn
     }
 }
