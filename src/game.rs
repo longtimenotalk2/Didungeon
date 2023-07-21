@@ -14,9 +14,24 @@ pub struct Game {
 }
 
 impl Game {
+    pub fn new_team(seed : u64) -> Self {
+        Self {
+            board: Board::new_team(seed),
+            history : vec![],
+        }
+    }
+
+
+    pub fn new_solo_human(seed : u64, str1 : i32, dex1 : i32, agi1 : i32, str2 : i32, dex2 : i32, agi2 : i32) -> Self {
+        Self {
+            board: Board::new_solo(seed, true, str1, dex1, agi1, str2, dex2, agi2),
+            history : vec![],
+        }
+    }
+
     pub fn new_solo_auto(seed : u64, str1 : i32, dex1 : i32, agi1 : i32, str2 : i32, dex2 : i32, agi2 : i32) -> Self {
         Self {
-            board: Board::new_solo_auto(seed, str1, dex1, agi1, str2, dex2, agi2),
+            board: Board::new_solo(seed, false, str1, dex1, agi1, str2, dex2, agi2),
             history : vec![],
         }
     }

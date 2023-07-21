@@ -2,8 +2,8 @@
 use didungeon::game::Game;
 
 fn main() {
-    let mut game = Game::new();
-    game.main_loop();
+    // let mut game = Game::new();
+    
 
     // let str1 = 10;
     // let dex1 = 10;
@@ -12,9 +12,11 @@ fn main() {
     // let dex2 = 10;
     // let agi2 = 10;
 
-    // let seed = 0;
+    let seed = 0;
 
-    // let mut game = Game::new_solo_auto(seed, str1, dex1, agi1, str2, dex2, agi2);
-    // game.main_loop();
+    // let mut game = Game::new_solo_human(seed, str1, dex1, agi1, str2, dex2, agi2);
+    let mut game = Game::new_team(seed);
+
+    game.main_loop();
 
 }

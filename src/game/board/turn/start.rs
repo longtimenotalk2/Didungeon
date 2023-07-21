@@ -16,6 +16,7 @@ impl Board {
         let mut ido: Option<u32> = self.find_next_actor();
         if let None = ido {
             self.next_turn();
+            self.acted_ids = vec![];
             ido = self.find_next_actor();
         }
 
@@ -25,8 +26,16 @@ impl Board {
         let s = &mut str;
         // 当前回合信息
         write!(s, "回合 : {}\n", self.turn).unwrap();
+        // 已动角色信息
+        *s += "行动次序 : ";
+        for id in &self.acted_ids {
+            *s += &self.get_unit(*id).identity().to_string();
+            *s += " -> ";
+        }
         // 生成回合人
         let id = ido.unwrap();
+        *s += &self.get_unit(id).identity().to_string();
+        *s += "\n";
         write!(s, "{} 的回合\n", self.get_unit(id).identity()).unwrap();
 
         //进入准备阶段
@@ -60,6 +69,9 @@ impl Board {
 
         // 回合结束，进入下回合并按任意键继续
         self.get_unit_mut(id).end_action();
+        if !self.acted_ids.contains(&id) {
+            self.acted_ids.push(id);
+        }
 
         if need_show {
             // 最终输出Cache

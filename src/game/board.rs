@@ -21,7 +21,6 @@ enum Phase {
     Main {id : Id}, 
     Unbound {id : Id, bound_point : i32},
     End {id : Id},
-    // Finish,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -34,5 +33,6 @@ pub struct Board {
     turn : i32,
     phase : Phase,
     string_cache : String,
+    acted_ids : Vec<Id>,
 }
 
