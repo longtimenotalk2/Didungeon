@@ -71,7 +71,7 @@ impl Unit {
             dex_max: dex,
             agi_max: agi,
             inj_coefficient: 5,
-            restore_rate: 10,
+            restore_rate: 25,
             bound: BoundState::new(),
             fall: false,
             stun: false,
