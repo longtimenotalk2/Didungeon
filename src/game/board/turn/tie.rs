@@ -20,10 +20,10 @@ impl Board {
         writeln!(sh, "[{:^3}] : {}", 0, "放弃捆绑").unwrap();
         let mut count = 1;
         
-
         for (bound, is_tie) in Tie::new().tie_choose(actor, target) {
             match is_tie {
                 TieWay::Tight => {
+                    // [ 1 ] : 扎紧 [@--@---@](80%) 脚腕<-->后颈 (消耗捆绑点 = 20)
                     write!(sh, "[{:^3}] : {} {}{} {}", count, "扎紧".to_string().color(Color::Yellow), target.bound_identity(Some((&bound, true)), false), target.identity_tightness(&bound), bound.name()).unwrap();
                     match Tie::new().tight_get_cost_or_rate(bound_point, &bound, target) {
                         Ok(cost) => writeln!(sh, " (消耗捆绑点 = {})", cost.to_string().color(Color::Yellow)).unwrap(),
@@ -32,6 +32,7 @@ impl Board {
                     choose.push(ChooseTie::Tight(bound));
                 },
                 TieWay::Tie => {
+                    // [ 2 ] : 捆绑 [@O-@---@] 大臂 (消耗捆绑点 : 100)
                     write!(sh, "[{:^3}] : {} {} {}", count, "捆绑".to_string().color(Color::Green), target.bound_identity(Some((&bound, true)), false), bound.name()).unwrap();
                     match Tie::new().tie_get_cost_or_rate(bound_point, &bound, actor, target) {
                         Ok(cost) => writeln!(sh, " (消耗捆绑点 : {})", cost.to_string().color(Color::Yellow)).unwrap(),
@@ -40,6 +41,7 @@ impl Board {
                     choose.push(ChooseTie::Tie(bound));
                 },
                 TieWay::Untie => {
+                    // [ 7 ] : 解绑 [@--@---@] 手腕 (消耗捆绑点 : 100)
                     write!(sh, "[{:^3}] : {} {}{} {}", count, "解绑".to_string().color(Color::Red), target.bound_identity(Some((&bound, false)), false), target.identity_tightness(&bound), bound.name()).unwrap();
                     match Tie::new().untie_get_cost_or_rate(bound_point, &bound, target) {
                         Ok(cost) => writeln!(sh, " (消耗捆绑点 : {})", cost.to_string().color(Color::Yellow)).unwrap(),

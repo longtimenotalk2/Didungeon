@@ -9,11 +9,18 @@ mod main;
 mod start;
 mod auto;
 mod tie;
+mod unbound;
 
 #[derive(Clone, Debug)]
 pub enum ChooseSkill {
     Pass,
     Skill {skill : Skill, it : Id, dir : Dir,}
+}
+
+#[derive(Clone, Debug)]
+pub enum ChooseUnbound {
+    Pass,
+    Unbound(BoundPart),
 }
 
 #[derive(Clone, Debug)]
@@ -28,6 +35,7 @@ pub enum ChooseTie {
 pub enum Choose {
     Skill(ChooseSkill),
     Tie(ChooseTie),
+    Unbound(ChooseUnbound),
 }
 
 
@@ -46,6 +54,7 @@ impl Board {
             Phase::Tie { id, it, bound_point } => self.turn_tie(id, it, bound_point),
             Phase::Auto { id } => self.turn_auto(id),
             Phase::Main { id } => self.turn_main(id),
+            Phase::Unbound { id, bound_point } => self.turn_unbound(id, bound_point),
         }
     }
 
@@ -64,4 +73,8 @@ impl Board {
             unit.end_turn()
         }
     }
+
+    pub fn set_phase(&mut self, phase : Phase) {
+
+    } 
 }

@@ -11,6 +11,10 @@ impl Unit {
         self.pos
     }
 
+    pub fn get_dir(&self) -> Dir {
+        self.dir.clone()
+    }
+
     pub fn get_inj(&self) -> i32 {
         self.inj
     }
@@ -57,6 +61,10 @@ impl Unit {
 
     pub fn ai_tie_choice(&self) -> Option<(BoundPart, bool)> {
         self.bound.ai_tie_choice()
+    }
+
+    pub fn ai_unbound_choice(&self) -> Option<BoundPart> {
+        self.bound.ai_unbound_choice()
     }
 
     pub fn next_force_upper(&self) -> Option<BoundPart> {

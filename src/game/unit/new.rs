@@ -4,7 +4,7 @@ use super::{Unit, Id, bound::BoundState, Dir, Pos};
 
 impl Unit {
     pub fn new_noal(id : Id, pos : Pos) -> Self {
-        Self::new(id, "诺艾尔".to_string(), true, true, pos, 90, 12, 10)
+        Self::new(id, "诺艾尔".to_string(), true, true, pos, 10, 10, 10)
     }
 
     pub fn new_yelin(id : Id, pos : Pos) -> Self {

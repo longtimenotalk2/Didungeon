@@ -19,6 +19,7 @@ enum Phase {
     Tie {id : Id, it : Id, bound_point : i32},
     Auto {id : Id},
     Main {id : Id}, 
+    Unbound {id : Id, bound_point : i32},
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
