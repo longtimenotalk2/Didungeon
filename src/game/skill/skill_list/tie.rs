@@ -128,10 +128,11 @@ impl Tie {
 
         // 扎紧 [...](67%) 手腕 成功 (消耗点数 : 33)
         // 扎紧 [...](10%) 手臂 (30%成功率 -> 🎲 : 71) 扎紧至 -> 30% (消耗点数 : 67)
+        let name = "扎紧".color(Color::Yellow);
         let bound_idy = target.bound_identity(Some((&bound, true)), false);
         let tight_idy = target.identity_tightness(&bound);
         let bound_name_idy = bound.name();
-        write!(s, "扎紧 {bound_idy}{tight_idy} {bound_name_idy} ").unwrap();
+        write!(s, "{name} {bound_idy}{tight_idy} {bound_name_idy} ").unwrap();
 
         let (hit, cost, is_success) = deal_with_hit(s, board, bound_point, self.tight_get_cost_or_rate(bound_point, &bound, target));
 
@@ -156,10 +157,11 @@ impl Tie {
 
         // 解绑 [...](67%) 手腕 成功 (消耗点数 : 33)
         // 解绑 [...](80%) 手臂 (70%成功率 -> 🎲 : 71) 解绑至 -> 30% (消耗点数 : 67)
+        let name = "解绑".color(Color::Red);
         let bound_idy = target.bound_identity(Some((&bound, false)), false);
         let tight_idy = target.identity_tightness(&bound);
         let bound_name_idy = bound.name();
-        write!(s, "解绑 {bound_idy}{tight_idy} {bound_name_idy} ").unwrap();
+        write!(s, "{name} {bound_idy}{tight_idy} {bound_name_idy} ").unwrap();
 
         let (hit, cost, is_success) = deal_with_hit(s, board, bound_point, self.untie_get_cost_or_rate(bound_point, &bound, target));
 
@@ -185,9 +187,10 @@ impl Tie {
 
         // 捆绑 [...] 手腕 成功 (消耗点数 : 33)
         // 捆绑 [...] 手臂 (30%成功率 -> 🎲 : 71) 失败 (消耗点数 : 67)
+        let name = "捆绑".color(Color::Green);
         let bound_idy = target.bound_identity(Some((&bound, true)), false);
         let bound_name_idy = bound.name();
-        write!(s, "捆绑 {bound_idy} {bound_name_idy} ").unwrap();
+        write!(s, "{name} {bound_idy} {bound_name_idy} ").unwrap();
 
         let (_hit, cost, is_success) = deal_with_hit(s, board, bound_point, self.tie_get_cost_or_rate(bound_point, &bound, actor, target));
 

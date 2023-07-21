@@ -70,7 +70,7 @@ impl Board {
                 }
             }
         }else{
-            // 优先加固
+            // 优先加固（除非到解绑阶段）
             if let Some(chic) = choose.get(1) {
                 if let ChooseTie::Tight(_) = chic {
                     return self.response_tie(chic.clone());
