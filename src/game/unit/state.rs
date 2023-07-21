@@ -36,4 +36,8 @@ impl Unit {
     pub fn is_bound_bow(&self) -> bool {
         self.bound.is_bound_bow()
     }
+
+    pub fn is_defeated(&self) -> bool {
+        self.bound.is_defeated()
+    }
 }

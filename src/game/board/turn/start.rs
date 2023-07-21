@@ -11,7 +11,6 @@ impl Board {
     }
 
     pub fn turn_start(&mut self) -> Return {
-        // 判断胜负
 
         // 找当前可动的速度最快的角色行动，如没有则进入下一回合
         let mut ido: Option<u32> = self.find_next_actor();
@@ -67,11 +66,49 @@ impl Board {
         // 结果图
         self.show(None);
         println!();
-        // 结束
-        println!("按任意键继续……");
 
-        Return {
-            choose: None,
+        // 判断胜负
+        if let Some(a) = self.is_ally_win() {
+            match a {
+                true => println!("胜利"),
+                false => println!("失败"),
+            }
+            Return::new_with_winner(a)
+        }else{
+            // 结束
+            println!("按任意键继续……");
+            Return::new()
+        }
+    
+        
+    }
+}
+
+impl Board {
+    fn next_turn(&mut self) {
+        self.turn += 1;
+        for unit in &mut self.units {
+            unit.end_turn()
+        }
+    }
+
+    fn is_ally_win(&self) -> Option<bool> {
+        let mut remain_ally = 0;
+        let mut remain_enemy = 0;
+        for unit in &self.units {
+            if !unit.is_defeated() {
+                match unit.get_ally() {
+                    true => remain_ally += 1,
+                    false => remain_enemy += 1,
+                }
+            }
+        }
+        if remain_enemy == 0{
+            Some(true)
+        }else if remain_ally == 0{
+            Some(false)
+        }else{
+            None
         }
     }
 }

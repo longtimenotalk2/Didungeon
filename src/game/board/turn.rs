@@ -41,7 +41,39 @@ pub enum Choose {
 
 #[derive(Clone, Debug)]
 pub struct Return {
-    pub choose : Option<Vec<Choose>>,
+    choose : Option<Vec<Choose>>,
+    winner : Option<bool>,
+}
+
+impl Return {
+    fn new() -> Self {
+        Self {
+            choose: None,
+            winner: None,
+        }
+    }
+
+    fn new_with_choose(choose : Vec<Choose>) -> Self {
+        Self {
+            choose : Some(choose),
+            winner: None,
+        }
+    }
+
+    fn new_with_winner(is_ally_win : bool) -> Self {
+        Self {
+            choose: None,
+            winner: Some(is_ally_win),
+        }
+    }
+
+    pub fn winner(&self) -> Option<bool> {
+        self.winner.clone()
+    }
+
+    pub fn get_choose(&self) -> Option<&Vec<Choose>> {
+        self.choose.as_ref()
+    }
 }
 
 impl Board {
@@ -66,13 +98,6 @@ impl Board {
             Choose::Skill(skl) => self.response_main(skl),
             Choose::Tie(tie) => self.response_tie(tie),
             Choose::Unbound(ubd) => self.response_unbound(ubd),
-        }
-    }
-
-    fn next_turn(&mut self) {
-        self.turn += 1;
-        for unit in &mut self.units {
-            unit.end_turn()
         }
     }
 }

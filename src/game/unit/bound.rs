@@ -219,6 +219,10 @@ impl BoundState {
         self.is_bound_joint() || self.is_bound_long()
     }
 
+    pub fn is_defeated(&self) -> bool {
+        self.is_bound_neck() && self.is_bound_arm() && self.is_bound_wrist() && self.is_bound_hang() && self.is_bound_thigh() && self.is_bound_calve() && self.is_bound_ankle() && self.is_bound_long()
+    }
+
     pub fn can_tie_list(&self) -> Vec<BoundPart> {
         let mut list = vec!();
         if !self.is_bound_neck() {list.push(Neck);}

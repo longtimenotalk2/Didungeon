@@ -46,9 +46,7 @@ impl Board {
             if choose.len() == 1 {
                 self.response_choose(Choose::Unbound(choose[0].clone()))
             }else{
-                Return {
-                    choose: Some(choose.into_iter().map(|a| Choose::Unbound(a)).collect()),
-                }
+                Return::new_with_choose(choose.into_iter().map(|a| Choose::Unbound(a)).collect())
             }
         }else{
             let choose = match actor.ai_unbound_choice() {

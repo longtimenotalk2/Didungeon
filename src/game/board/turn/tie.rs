@@ -65,9 +65,7 @@ impl Board {
             if choose.len() == 1 {
                 self.response_choose(Choose::Tie(choose[0].clone()))
             }else{
-                Return {
-                    choose: Some(choose.into_iter().map(|a| Choose::Tie(a)).collect()),
-                }
+                Return::new_with_choose(choose.into_iter().map(|a| Choose::Tie(a)).collect())
             }
         }else{
             // 优先加固（除非到解绑阶段）

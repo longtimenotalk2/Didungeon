@@ -43,9 +43,7 @@ impl Board {
             if chooses.len() == 1 {
                 self.response_choose(Choose::Skill(chooses[0].clone()))
             }else{
-                Return {
-                    choose: Some(chooses.into_iter().map(|a| Choose::Skill(a)).collect()),
-                }
+                Return::new_with_choose(chooses.into_iter().map(|a| Choose::Skill(a)).collect())
             }
         }else{
             // AI自动按顺序选择

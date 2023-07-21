@@ -82,7 +82,9 @@ impl Unit {
     }
 
     fn state(&self) {
-        if self.is_stun() {
+        if self.is_defeated() {
+            print!("寄")
+        }else if self.is_stun() {
             print!("💫")
         }else if self.is_sleep() {
             print!("💤")

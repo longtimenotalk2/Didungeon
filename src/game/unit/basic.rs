@@ -6,6 +6,10 @@ impl Unit {
     pub fn get_id(&self) -> Id {
         self.id
     }
+    
+    pub fn get_ally(&self) -> bool {
+        self.ally
+    }
 
     pub fn get_pos(&self) -> Pos {
         self.pos

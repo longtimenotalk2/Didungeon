@@ -21,10 +21,16 @@ impl Game {
         }
     }
 
-    pub fn main_loop(&mut self) {
+    pub fn main_loop(&mut self) -> Option<bool> {
         let mut result = self.board.continue_turn();
 
         loop  {
+            // 判断胜负
+            let winner = result.winner();
+            if winner.is_some() {
+                return winner
+            }
+
             let mut input = String::new();
             io::stdin().read_line(&mut input).expect("Failed to read line");
             let strs: Vec<&str> = input.split_whitespace().collect();
@@ -66,7 +72,7 @@ impl Game {
                 }
             }
 
-            match &result.choose {
+            match result.get_choose() {
                 Some(chooses) => {
                     if strs.len() == 0 {
                         println!("请输入选项对应的数字！");
