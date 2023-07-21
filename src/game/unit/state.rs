@@ -40,4 +40,8 @@ impl Unit {
     pub fn is_defeated(&self) -> bool {
         self.bound.is_defeated()
     }
+
+    pub fn can_block(&self) -> bool {
+        !self.fall
+    }
 }

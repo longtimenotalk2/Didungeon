@@ -73,7 +73,7 @@ impl Board {
         }
     }
 
-    fn insert_unit(&mut self, unit : Unit) {
+    pub fn insert_unit(&mut self, unit : Unit) {
         let id = unit.get_id();
         self.units.push(unit);
         let index_now = self.units.len() - 1;

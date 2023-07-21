@@ -6,6 +6,26 @@ use colorful::{Color, Colorful};
 
 use crate::{game::{unit::{Unit, Dir}, board::Board}, common};
 
+#[test]
+fn test_find_target() {
+    let mut board = Board::new(114514, 8);
+    let id = 0;
+    let pos = 3;
+    board.insert_unit(Unit::new_noal(id, pos));
+    board.insert_unit(Unit::new_any(1, 5, true));
+    board.insert_unit(Unit::new_any(2, 6, false));
+    board.show(None);
+
+    let range = 3;
+    let list = board.find_target_with_range(0, range);
+
+    println!("{} (处于位置 {}) 距离 {} 以内的目标 : ", board.get_unit(0).identity(), pos, range);
+    for (it, _) in list {
+        print!("{}, ", board.get_unit(it).get_pos()) 
+    }
+
+}
+
 
 #[test]
 fn look_all_colors() {

@@ -46,6 +46,28 @@ impl Unit {
         unit.take_sleep();
         unit
     }
+
+    pub fn new_any(id : Id, pos : Pos, ally : bool) -> Self {
+        let color = match ally {
+            true => Color::Blue,
+            false => Color::Red,
+        };
+        let name = "某人".to_string().color(color).to_string();
+        let name_fix_length = "某人    ".to_string().color(color).to_string();
+        Self::new(id, name, name_fix_length, ally, false, pos, 10, 10, 10)
+    }
+
+    pub fn new_any_fall(id : Id, pos : Pos, ally : bool) -> Self {
+        let color = match ally {
+            true => Color::Blue,
+            false => Color::Red,
+        };
+        let name = "某人".to_string().color(color).to_string();
+        let name_fix_length = "某人    ".to_string().color(color).to_string();
+        let mut unit = Self::new(id, name, name_fix_length, ally, false, pos, 10, 10, 10);
+        unit.take_fall();
+        unit
+    }
 }
 
 impl Unit {
