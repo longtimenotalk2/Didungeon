@@ -6,13 +6,17 @@ use super::Return;
 use std::fmt::Write;
 
 impl Board {
+    pub fn set_to_start(&mut self) {
+        self.phase = Phase::Start;
+    }
+
     pub fn turn_start(&mut self) -> Return {
         // 判断胜负
 
         // 找当前可动的速度最快的角色行动，如没有则进入下一回合
         let mut ido: Option<u32> = self.find_next_actor();
         if let None = ido {
-            self.turn_end();
+            self.next_turn();
             ido = self.find_next_actor();
         }
 
@@ -46,6 +50,28 @@ impl Board {
         } else {
             self.phase = Phase::Auto { id };
             self.continue_turn()
+        }
+    }
+
+    pub fn set_to_end(&mut self, id : Id) {
+        self.phase = Phase::End {id};
+    }
+
+    pub fn turn_end(&mut self, id : Id) -> Return {
+        // 回合结束，进入下回合并按任意键继续
+        self.get_unit_mut(id).end_action();
+
+
+        // 最终输出Cache
+        println!("{}", self.string_cache);
+        // 结果图
+        self.show(None);
+        println!();
+        // 结束
+        println!("按任意键继续……");
+
+        Return {
+            choose: None,
         }
     }
 }

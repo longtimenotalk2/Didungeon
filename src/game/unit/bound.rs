@@ -259,8 +259,6 @@ impl BoundState {
             Some(Wrist)
         }else if self.is_bound_arm() {
             Some(Arm)
-        }else if self.is_bound_long() {
-            Some(Long)
         }else {
             None
         }

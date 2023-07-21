@@ -7,7 +7,7 @@ use super::{Board, Phase};
 impl Board {
     pub fn new_noal_vs_kuinuo(seed : u64) -> Self {
         let mut board = Self::new(seed, 2);
-        board.insert_unit(Unit::new_noal(0, 0));
+        board.insert_unit(Unit::new_noal_bound(0, 0));
         board.insert_unit(Unit::new_kuinuo(1, 1));
         board
     }

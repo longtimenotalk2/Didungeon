@@ -1,5 +1,4 @@
 use crate::game::{unit::{Unit, Id, Dir}, skill::{Skillize, Skill, helper}, board::Board};
-
 pub struct Catch {
 
 }
@@ -29,11 +28,27 @@ impl Skillize for Catch {
         let target = board.get_unit(it);
 
         // 宣言
-        helper::write_announce(s, target, &dir, &Skill::Catch);
+        *s += &helper::write_announce(target, &dir, &Skill::Catch);
 
         // 结算
         board.get_unit_mut(id).catch_with(it, dir);
         board.get_unit_mut(it).catched_with(id, dir);
         board.get_unit_mut(it).take_fall();
+
+        board.set_to_end(id);
+    }
+
+    fn choice_show(&self, board : &Board, _id : Id, it : Id, dir : &Dir) -> String {
+        let mut st = String::new();
+
+        let target = board.get_unit(it);
+        st += &helper::write_announce( target, dir, &Skill::Catch);
+
+        if !target.is_fall() {
+            st += " (扑倒)";
+        }
+
+        st += " -> 捆绑";
+        st
     }
 }

@@ -55,6 +55,7 @@ impl Board {
             Phase::Auto { id } => self.turn_auto(id),
             Phase::Main { id } => self.turn_main(id),
             Phase::Unbound { id, bound_point } => self.turn_unbound(id, bound_point),
+            Phase::End {id} => self.turn_end(id),
         }
     }
 
@@ -64,17 +65,14 @@ impl Board {
         match choose {
             Choose::Skill(skl) => self.response_main(skl),
             Choose::Tie(tie) => self.response_tie(tie),
+            Choose::Unbound(ubd) => self.response_unbound(ubd),
         }
     }
 
-    fn turn_end(&mut self) {
+    fn next_turn(&mut self) {
         self.turn += 1;
         for unit in &mut self.units {
             unit.end_turn()
         }
     }
-
-    pub fn set_phase(&mut self, phase : Phase) {
-
-    } 
 }

@@ -1,11 +1,25 @@
 use crate::game::skill::Skill;
 
-use super::{Unit, Id, bound::BoundState, Dir, Pos};
+use super::{Unit, Id, bound::{BoundState, BoundPart}, Dir, Pos};
 
 impl Unit {
     pub fn new_noal(id : Id, pos : Pos) -> Self {
         Self::new(id, "诺艾尔".to_string(), true, true, pos, 10, 10, 10)
     }
+
+    pub fn new_noal_bound(id : Id, pos : Pos) -> Self {
+        let mut noal = Self::new(id, "诺艾尔".to_string(), true, true, pos, 10, 10, 10);
+        noal.tie(&BoundPart::Neck);
+        noal.tie(&BoundPart::Arm);
+        noal.tie(&BoundPart::Wrist);
+        noal.tie(&BoundPart::Thigh);
+        noal.tie(&BoundPart::Calve);
+        noal.tie(&BoundPart::Ankle);
+        noal.tie(&BoundPart::Long);
+        noal.take_fall();
+        noal
+    }
+
 
     pub fn new_yelin(id : Id, pos : Pos) -> Self {
         Self::new(id, "叶琳".to_string(), true, false, pos, 15, 12, 14)

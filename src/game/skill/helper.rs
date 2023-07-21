@@ -14,13 +14,14 @@ pub fn to_dmg(dmg_o : i32, min_dmg_set : i32) -> i32 {
     dmg_o.max(min_dmg_set)
 }
 
-pub fn write_announce(
-    s : &mut String, 
+pub fn write_announce (
     target : &Unit, 
     dir : &Dir, 
     skill : &Skill,
-) {
-    write!(s, "{}{} {}\n", skill.name(), dir.notice(), target.identity()).unwrap();
+) -> String  {
+    let mut s = String::new();
+    write!(&mut s, "{}{} {}", skill.name(), dir.notice(), target.identity()).unwrap();
+    s
 }
 
 pub fn hit_check(hit : i32, dice : &mut Dice) -> (bool, Option<i32>) {

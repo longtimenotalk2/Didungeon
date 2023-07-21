@@ -10,19 +10,20 @@ pub mod skill;
 
 pub struct Game {
     board : Board,
-    history : Vec<Board>,
+    history : Vec<(Board, bool)>,
 }
 
 impl Game {
     pub fn new() -> Self {
         Self {
             board: Board::new_noal_vs_kuinuo(114514),
-            history: vec![],
+            history : vec![],
         }
     }
 
     pub fn main_loop(&mut self) {
         let mut result = self.board.continue_turn();
+
         loop  {
             let mut input = String::new();
             io::stdin().read_line(&mut input).expect("Failed to read line");
@@ -39,15 +40,27 @@ impl Game {
                         self.load();
                         self.history = vec!();
                         result = self.board.continue_turn();
+                        continue;
                     },
                     "undo" => {
-                        if let Some(b) = self.history.pop() 
+                        while let Some((b, is_choose)) = self.history.pop() {
+                            if is_choose {
+                                self.board = b;
+                                result = self.board.continue_turn();
+                                break;
+                            }
+                        }
+                        continue;
+                    }
+                    "back" => {
+                        if let Some((b, _)) = self.history.pop() 
                         {
                             self.board = b;
                             result = self.board.continue_turn();
                         }else{
                             println!("初始状态，撤销失败");
                         }
+                        continue;
                     }
                     _ => (),
                 }
@@ -66,7 +79,7 @@ impl Game {
                                 if i > num {
                                     println!("数值越界！")
                                 }else {
-                                    self.history.push(self.board.clone());
+                                    self.history.push((self.board.clone(), true));
                                     result = self.board.response_choose(chooses[i].clone());
                                 }
                             }, 
@@ -74,6 +87,8 @@ impl Game {
                     }
                 },
                 None => {
+                    self.history.push((self.board.clone(), false));
+                    self.board.set_to_start();
                     result = self.board.continue_turn();
                 },
             }

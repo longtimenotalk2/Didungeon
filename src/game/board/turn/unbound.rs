@@ -41,8 +41,14 @@ impl Board {
             println!();
             println!("{}", show);
             println!("{}", "请选择 : ".to_string().color(Color::Yellow));
-            Return {
-                choose: Some(choose.into_iter().map(|a| Choose::Unbound(a)).collect()),
+
+            // 只有一个选项时自动选择
+            if choose.len() == 1 {
+                self.response_choose(Choose::Unbound(choose[0].clone()))
+            }else{
+                Return {
+                    choose: Some(choose.into_iter().map(|a| Choose::Unbound(a)).collect()),
+                }
             }
         }else{
             let choose = match actor.ai_unbound_choice() {
@@ -53,6 +59,46 @@ impl Board {
         }
     }
 
-    pub fn response_unbound(&mut self, choose : ChooseTie) -> Return {
+    pub fn response_unbound(&mut self, choose : ChooseUnbound) -> Return {
+        let mut str = String::new();
+        let s = &mut str;
+
+        if let Phase::Unbound { id, bound_point } = self.phase {
+            write!(s, "- ").unwrap();
+            let remain = match choose {
+                ChooseUnbound::Pass => {
+                    writeln!(s, "放弃解绑 (剩余点数 : {})", bound_point.to_string().color(Color::Yellow)).unwrap();
+                    0
+                },
+                ChooseUnbound::Unbound(bound) => {
+                    Unbound::new().exe_unbound(s, bound, bound_point, self, id)
+                },
+            };
+
+            self.string_cache += &str;
+            
+            if remain > 0 {
+                self.phase = Phase::Unbound { id, bound_point : remain };
+                self.continue_turn()
+            }else{
+                // 自动起身
+                if self.get_unit(id).is_fall() {
+                    // [起身]
+                    if self.get_unit_mut(id).check_to_stand() {
+                        write!(&mut self.string_cache, "[起身]\n").unwrap();
+                    } 
+                }
+
+                self.phase = Phase::End { id };
+
+                self.continue_turn()
+            }
+            
+            
+        }else{
+            unimplemented!()
+        }
+
+        
     }
 }

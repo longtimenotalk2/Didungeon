@@ -1,5 +1,6 @@
 use std::{io, fs::{File, self}};
 
+// pub const CLEAR : &str = "";
 pub const CLEAR : &str = "\x1B[2J\x1B[1;1H";
 
 pub fn save_file(save_path : &str, data : String) -> Result<(), io::Error> {    

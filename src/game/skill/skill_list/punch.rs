@@ -1,6 +1,8 @@
+use colorful::{Color, Colorful};
+
 use crate::game::{board::Board, unit::{Id, Dir, Unit}, skill::{helper, Skillize, Skill}};
 
-
+use std::fmt::Write;
 pub struct Punch {
     basic_hit : i32,
     hit_rate : i32,
@@ -55,7 +57,8 @@ impl Skillize for Punch {
         let target = board.get_unit(it);
 
         // 宣言
-        helper::write_announce(s, target, &dir, &Skill::Punch);
+        *s += &helper::write_announce(target, &dir, &Skill::Punch);
+        *s += "\n";
 
         // 命中判定
         let hit = self.hit(actor, target);
@@ -82,5 +85,23 @@ impl Skillize for Punch {
             }
             helper::write_hit(s, stun_rate, is_stun, stun_dice, "击晕率", "击晕", "落空");
         }
+
+        board.set_to_end(id);
+    }
+
+    fn choice_show(&self, board : &Board, id : Id, it : Id, dir : &Dir) -> String {
+        let mut st = String::new();
+        let s = &mut st;
+
+        let actor = board.get_unit(id);
+        let target = board.get_unit(it);
+        *s += &helper::write_announce( target, dir, &Skill::Punch);
+
+        let hit = self.hit(actor, target);
+        let dmg = self.dmg(actor, target);
+        let stun = self.stun_rate(actor, target);
+
+        write!(s, " (命中率 : {}, 伤害 : {}, 击晕率 : {})", hit.to_string().color(Color::Yellow), dmg.to_string().color(Color::Yellow), stun.to_string().color(Color::Yellow)).unwrap();
+        st
     }
 }

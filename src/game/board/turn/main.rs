@@ -24,7 +24,7 @@ impl Board {
         let mut count = 1;
         for skill in skills {
             for (it, dir) in skill.get_targets(self, id) {
-                writeln!(sh, "  [{:^3}] : {}{} -> {}", count, skill.name(), dir.notice(), self.get_unit(it).identity()).unwrap();
+                writeln!(sh, "  [{:^3}] : {}", count, skill.choice_show(self, id, it, &dir)).unwrap();
                 count += 1;
                 chooses.push(ChooseSkill::Skill { skill: skill.clone(), it, dir });
             }
@@ -65,26 +65,16 @@ impl Board {
                 ChooseSkill::Pass => {
                     writeln!(s, "跳过回合").unwrap();
                     writeln!(s).unwrap();
+                    self.set_to_end(id);
                 },
                 ChooseSkill::Skill { skill, it, dir } => {
                     skill.exe(s, self, id, it, &dir);
                 },
             }
-            self.get_unit_mut(id).end_action();
-            self.phase = Phase::Start;
+            
             self.string_cache += &str;
 
-            // 最终输出Cache
-            println!("{}", self.string_cache);
-            // 结果图
-            self.show(None);
-            println!();
-            // 结束
-            println!("按任意键继续……");
-            
-            Return {
-                choose: None,
-            }
+            self.continue_turn()
         }else{
             unreachable!();
         }

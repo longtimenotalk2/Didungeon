@@ -60,10 +60,23 @@ impl Board {
             println!();
             println!("{}", show);
             println!("{}", "请选择 : ".to_string().color(Color::Yellow));
-            Return {
-                choose: Some(choose.into_iter().map(|a| Choose::Tie(a)).collect()),
+
+            // 只有一个选项时自动选择
+            if choose.len() == 1 {
+                self.response_choose(Choose::Tie(choose[0].clone()))
+            }else{
+                Return {
+                    choose: Some(choose.into_iter().map(|a| Choose::Tie(a)).collect()),
+                }
             }
         }else{
+            // 优先加固
+            if let Some(chic) = choose.get(1) {
+                if let ChooseTie::Tight(_) = chic {
+                    return self.response_tie(chic.clone());
+                }
+            }
+            
             let choose = match target.ai_tie_choice() {
                 Some((bound, is_tie)) => match is_tie {
                     true => ChooseTie::Tie(bound),
