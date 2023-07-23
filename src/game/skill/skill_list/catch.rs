@@ -25,6 +25,7 @@ impl Skillize for Catch {
                 list.push((it, dir));
             }
         }
+        
         list
     }
 

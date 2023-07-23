@@ -14,7 +14,7 @@ impl Board {
         board.insert_unit(Unit::new_ailisha(2, 2));
         board.insert_unit(Unit::new_yilisi(3, 0));
 
-        board.insert_unit(Unit::new_kuinuo_sleep(4, 7));
+        board.insert_unit(Unit::new_kuinuo(4, 7));
         board
     }
 
