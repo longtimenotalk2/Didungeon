@@ -1,4 +1,4 @@
-use crate::game::unit::{Id, Dir};
+use crate::game::unit::{Id, Dir, Pos};
 
 use super::Board;
 
@@ -34,6 +34,35 @@ impl Board {
                 list.push((id, dir));
             }
         }
+        list
+    }
+
+    // 寻找合法的移动格
+    pub fn find_dest_with_range(&self, id : Id, range : i32) -> Vec<Pos> {
+        let mut list = vec!();
+        let pos = self.get_pos(id);
+        let target_is_enemy = self.get_unit(id).get_ally();
+
+        for dir in Dir::all() {
+            for dx in 1..(range+1) {
+                let pos = match dir {
+                    Dir::Left => pos - dx,
+                    Dir::Right => pos + dx,
+                };
+                let it = self.get_id_from_pos(pos);
+                if let Some(it) = it {
+                    let target = self.get_unit(it);
+                    if target.get_ally() == !target_is_enemy && target.can_block() {
+                        break;
+                    }else{
+                        list.push(pos);
+                    }
+                }else{
+                    list.push(pos);
+                }
+            }
+        }
+
         list
     }
 

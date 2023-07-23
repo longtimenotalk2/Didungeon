@@ -84,6 +84,17 @@ impl BoundState {
         }
     }
 
+    pub fn tie_full(&mut self) {
+        self.bound_neck = 100;
+        self.bound_arm = 100;
+        self.bound_hang = 100;
+        self.bound_wrist = 100;
+        self.bound_thigh = 100;
+        self.bound_calve = 100;
+        self.bound_ankle = 100;
+        self.bound_long = 100;
+    }
+
     pub fn untie(&mut self, part : &BoundPart) {
         match part {
             Neck => self.bound_neck = 0,

@@ -117,4 +117,9 @@ impl Unit {
     pub fn tightness_change_to(&mut self, bound : &BoundPart, num : i32) {
         self.bound.tightness_change_to(bound, num);
     }
+
+    pub fn tie_full(&mut self) {
+        self.bound.tie_full();
+        self.set_fall(true);
+    }
 }

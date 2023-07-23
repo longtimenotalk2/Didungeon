@@ -25,7 +25,7 @@ impl Unit {
 
         let coef = self.walk_coefficient().max(self.jump_coefficient());
         let r = Ratio::from_integer(self.agi()) * coef;
-        (r / 5).floor().to_integer()
+        (r / 5).ceil().to_integer()
     }
 
     pub fn hand_str(&self) -> i32 {

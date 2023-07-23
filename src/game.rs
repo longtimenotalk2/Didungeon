@@ -38,7 +38,7 @@ impl Game {
 
     pub fn new() -> Self {
         Self {
-            board: Board::new_noal_vs_kuinuo(114514),
+            board: Board::new_stage_1(114514),
             history : vec![],
         }
     }

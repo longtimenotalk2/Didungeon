@@ -24,6 +24,14 @@ fn test_find_target() {
         print!("{}, ", board.get_unit(it).get_pos()) 
     }
 
+    println!();
+
+    let list = board.find_dest_with_range(0, range);
+
+    println!("{} (处于位置 {}) 距离 {} 以内的可移动位置 : ", board.get_unit(0).identity(), pos, range);
+    for it in list {
+        print!("{}, ", it) 
+    }
 }
 
 
@@ -36,9 +44,8 @@ fn look_all_colors() {
 }
 
 #[test]
-#[ignore]
 fn test_show_board() {
-    let board = Board::new_noal_vs_kuinuo(114514);
+    let board = Board::new_stage_1(114514);
     board.show(Some(0));
     // print!("\x1B[2J\x1B[1;1H");
 }
