@@ -12,12 +12,8 @@ impl Unit {
         Self::new(id, name, name_fix_length, true, true, pos, 10, 10, 10)
     }
 
-    pub fn new_noal_bound(id : Id, pos : Pos) -> Self {
-        let color = Color::DodgerBlue3;
-        let name = "诺艾尔".to_string().color(color).to_string();
-        let name_fix_length = "诺艾尔  ".to_string().color(color).to_string();
-        
-        let mut noal = Self::new(id, name, name_fix_length, true, true, pos, 10, 10, 10);
+    pub fn new_noal_bound(id : Id, pos : Pos) -> Self {        
+        let mut noal = Unit::new_noal(id, pos);
         noal.tie(&BoundPart::Neck);
         noal.tie(&BoundPart::Arm);
         noal.tie(&BoundPart::Wrist);
@@ -29,22 +25,43 @@ impl Unit {
         noal
     }
 
-
     pub fn new_yelin(id : Id, pos : Pos) -> Self {
         let color = Color::Aquamarine1a;
         let name = "叶琳".to_string().color(color).to_string();
         let name_fix_length = "叶琳    ".to_string().color(color).to_string();
-        let mut unit = Self::new(id, name, name_fix_length, true, false, pos, 16, 12, 14);
+        Self::new(id, name, name_fix_length, true, false, pos, 16, 12, 14)
+    }
+
+
+    pub fn new_yelin_tie(id : Id, pos : Pos) -> Self {
+        let mut unit = Self::new_yelin(id, pos);
         unit.tie_full();
         unit
+    }
 
+    pub fn new_ailisha(id : Id, pos : Pos) -> Self {
+        let color = Color::Purple1a;
+        let name = "艾莉莎".to_string().color(color).to_string();
+        let name_fix_length = "艾莉莎  ".to_string().color(color).to_string();
+        Self::new(id, name, name_fix_length, true, false, pos, 11, 15, 16)
+    }
+
+    pub fn new_yilisi(id : Id, pos : Pos) -> Self {
+        let color = Color::LightSeaGreen;
+        let name = "伊莉丝".to_string().color(color).to_string();
+        let name_fix_length = "伊莉丝  ".to_string().color(color).to_string();
+        Self::new(id, name, name_fix_length, true, false, pos, 13, 16, 13)
     }
 
     pub fn new_kuinuo(id : Id, pos : Pos) -> Self {
         let color = Color::LightSalmon3b;
         let name = "奎诺".to_string().color(color).to_string();
         let name_fix_length = "奎诺    ".to_string().color(color).to_string();
-        let mut unit = Self::new(id, name, name_fix_length, false, false, pos, 16, 20, 18);
+        Self::new(id, name, name_fix_length, false, false, pos, 16, 20, 18)
+    }
+
+    pub fn new_kuinuo_sleep(id : Id, pos : Pos) -> Self {
+        let mut unit = Self::new_kuinuo(id, pos);
         unit.take_sleep();
         unit
     }

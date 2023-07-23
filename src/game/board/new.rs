@@ -7,6 +7,17 @@ use crate::{game::unit::Unit, wyrand::Dice};
 use super::{Board, Phase};
 
 impl Board {
+    pub fn new_team_theme(seed : u64) -> Self {
+        let mut board = Self::new(seed, 8);
+        board.insert_unit(Unit::new_noal(0, 1));
+        board.insert_unit(Unit::new_yelin(1, 3));
+        board.insert_unit(Unit::new_ailisha(2, 2));
+        board.insert_unit(Unit::new_yilisi(3, 0));
+
+        board.insert_unit(Unit::new_kuinuo_sleep(4, 7));
+        board
+    }
+
     pub fn new_team(seed : u64) -> Self {
         let agi1 = 14;
         let dex1 = 14;

@@ -11,12 +11,16 @@ impl Catch {
     pub fn can(&self, actor : &Unit, target : &Unit) -> bool {
         actor.hold_force() > target.struggle_force() && actor.acc_melee_hand() > target.evd()
     }
+
+    fn range(&self, actor : &Unit) -> i32 {
+        actor.move_range() + 1
+    }
 }
 
 impl Skillize for Catch {
     fn get_targets(&self, board : &Board, id : Id) -> Vec<(Id, Dir)> {
-        let mut list: Vec<_> = vec!();
-        for (it, dir) in board.find_adjs(id) {
+        let mut list = vec!();
+        for (it, dir) in board.find_target_with_range(id, self.range(board.get_unit(id))) {
             if self.can(board.get_unit(id), board.get_unit(it)) {
                 list.push((it, dir));
             }
@@ -29,6 +33,9 @@ impl Skillize for Catch {
 
         // 宣言
         *s += &helper::write_announce(target, &dir, &Skill::Catch);
+
+        // 冲刺
+        board.dash_to(id, it, dir);
 
         // 结算
         board.get_unit_mut(id).catch_with(it, dir);

@@ -17,7 +17,7 @@ pub struct Game {
 impl Game {
     pub fn new_team(seed : u64) -> Self {
         Self {
-            board: Board::new_team(seed),
+            board: Board::new_team_theme(seed),
             history : vec![],
         }
     }
