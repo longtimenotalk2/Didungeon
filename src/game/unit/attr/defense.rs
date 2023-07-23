@@ -14,6 +14,13 @@ impl Unit {
         r.ceil().to_integer()
     }
 
+    pub fn evd_back(&self) -> i32 {
+        // 被刺闪避率
+        // 正常闪避率的一半
+        let r = Ratio::from_integer(self.evd()) / 2;
+        r.ceil().to_integer()
+    }
+
     pub fn def_gym(&self) -> i32 {
         // 防御体术攻击
         // 上肢受限则为0
@@ -21,6 +28,13 @@ impl Unit {
             true => self.str(),
             false => 0,
         }
+    }
+
+    pub fn def_gym_back(&self) -> i32 {
+        // 被刺防御体术攻击
+        // 正常防御的一半
+        let r = Ratio::from_integer(self.def_gym()) / 2;
+        r.ceil().to_integer()
     }
 
     pub fn struggle_force(&self) -> i32 {

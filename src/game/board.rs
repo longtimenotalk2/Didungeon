@@ -4,6 +4,7 @@ pub mod new;
 mod show;
 pub mod turn;
 mod moving;
+mod action;
 
 use std::collections::HashMap;
 

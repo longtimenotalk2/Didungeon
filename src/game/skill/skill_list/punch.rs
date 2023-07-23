@@ -24,9 +24,12 @@ impl Punch {
         actor.acc_melee_hand() > 0
     }
 
-    fn hit(&self, actor : &Unit, target : &Unit) -> i32 {
+    fn hit(&self, actor : &Unit, target : &Unit, dir : &Dir) -> i32 {
         let acc = actor.acc_melee_hand();
-        let evd = target.evd();
+        let evd = match target.is_notice(dir) {
+            true => target.evd(),
+            false => target.evd_back(),
+        };
         if evd == 0 {
             return 100;
         }
@@ -75,7 +78,7 @@ impl Skillize for Punch {
         let target = board.get_unit(it);
 
         // 命中判定
-        let hit = self.hit(actor, target);
+        let hit = self.hit(actor, target, dir);
         let (is_hit, hit_dice) = helper::hit_check(hit, board.get_dice());
         helper::write_hit(s, hit, is_hit, hit_dice, "命中率", "命中", "落空");
 
@@ -111,7 +114,7 @@ impl Skillize for Punch {
         let target = board.get_unit(it);
         *s += &helper::write_announce( target, dir, &Skill::Punch);
 
-        let hit = self.hit(actor, target);
+        let hit = self.hit(actor, target, dir);
         let dmg = self.dmg(actor, target);
         let stun = self.stun_rate(actor, target);
 

@@ -8,10 +8,14 @@ impl Catch {
         Self {}
     }
 
-    pub fn can(&self, actor : &Unit, target : &Unit) -> bool {
+    pub fn can(&self, actor : &Unit, target : &Unit, dir : &Dir) -> bool {
         // 不擒拿已被击败的角色
         if target.is_defeated() {return false}
-        actor.hold_force() > target.struggle_force() && actor.acc_melee_hand() > target.evd()
+        let evd = match target.is_notice(dir) {
+            true => target.evd(),
+            false => target.evd_back(),
+        };
+        actor.hold_force() > target.struggle_force() && actor.acc_melee_hand() > evd
     }
 
     fn range(&self, actor : &Unit) -> i32 {
@@ -23,7 +27,7 @@ impl Skillize for Catch {
     fn get_targets(&self, board : &Board, id : Id) -> Vec<(Id, Dir)> {
         let mut list = vec!();
         for (it, dir) in board.find_target_with_range(id, self.range(board.get_unit(id))) {
-            if self.can(board.get_unit(id), board.get_unit(it)) {
+            if self.can(board.get_unit(id), board.get_unit(it), &dir) {
                 list.push((it, dir));
             }
         }
@@ -41,6 +45,11 @@ impl Skillize for Catch {
         board.dash_to(id, it, dir);
 
         // 结算
+
+        // 打断对手擒拿
+        board.cancel_catch(it);
+
+        // 擒拿
         board.get_unit_mut(id).catch_with(it, dir);
         board.get_unit_mut(it).catched_with(id, dir);
         board.get_unit_mut(it).take_fall();

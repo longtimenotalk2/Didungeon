@@ -99,6 +99,11 @@ impl Unit {
     pub fn has_bound(&self) -> bool{
         self.bound.has_bound()
     }
+
+    pub fn is_notice(&self, dir : &Dir) -> bool {
+        if self.fall {return false};
+        self.dir != *dir
+    }
 }
 
 impl Unit {
