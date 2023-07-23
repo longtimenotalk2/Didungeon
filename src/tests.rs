@@ -7,6 +7,23 @@ use colorful::{Color, Colorful};
 use crate::{game::{unit::{Unit, Dir}, board::Board}, common};
 
 #[test]
+fn test_move() {
+    let mut board = Board::new(114514, 8);
+    let id = 0;
+    let pos = 3;
+    board.insert_unit(Unit::new_noal(id, pos));
+    board.insert_unit(Unit::new_any(1, 5, true));
+    board.insert_unit(Unit::new_any(2, 6, false));
+    board.show(None);
+
+    let new_pos = 5;
+    let dir = Dir::Right;
+    board.actor_move_to(id, new_pos, dir);
+    board.show(None);
+
+}
+
+#[test]
 fn test_find_target() {
     let mut board = Board::new(114514, 8);
     let id = 0;
@@ -29,7 +46,7 @@ fn test_find_target() {
     let list = board.find_dest_with_range(0, range);
 
     println!("{} (处于位置 {}) 距离 {} 以内的可移动位置 : ", board.get_unit(0).identity(), pos, range);
-    for it in list {
+    for (it, _) in list {
         print!("{}, ", it) 
     }
 }

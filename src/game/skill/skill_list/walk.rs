@@ -1,7 +1,6 @@
-// use crate::game::{unit::{Unit, Pos, Id}, board::Board};
+// use crate::game::{unit::{Unit, Pos, Id, Dir}, board::Board};
 
 // struct Walk {
-    
 // }
 
 // impl Walk {
@@ -9,12 +8,12 @@
 //         actor.move_range()
 //     }
 
-//     pub fn get_chooses(&self, board : &Board, id : Id) -> Vec<Pos> {
-//         let mut list = vec![];
+//     pub fn get_chooses(&self, board : &Board, id : Id) -> Vec<(Pos, Dir)> {
+//         board.find_dest_with_range(id, self.range(board.get_unit(id)))
+//     }
 
-
-
-//         list
+//     pub fn exe(&self, s : &mut String, board : &mut Board, id : Id, pos : &Pos) {
+        
 //     }
     
 // }

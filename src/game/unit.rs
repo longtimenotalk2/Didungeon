@@ -32,6 +32,13 @@ impl Dir {
             Dir::Right => "↓",
         }
     }
+
+    pub fn anti(&self) -> Dir {
+        match self {
+            Dir::Left => Dir::Right,
+            Dir::Right => Dir::Left,
+        }
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]

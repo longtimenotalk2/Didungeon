@@ -37,6 +37,7 @@ impl Unit {
         let mut unit = Self::new(id, name, name_fix_length, true, false, pos, 16, 12, 14);
         unit.tie_full();
         unit
+
     }
 
     pub fn new_kuinuo(id : Id, pos : Pos) -> Self {

@@ -44,11 +44,11 @@ impl Punch {
 
 impl Skillize for Punch {
     fn get_targets(&self, board : &Board, id : Id) -> Vec<(Id, Dir)> {
-         if self.can(board.get_unit(id)) {
+        if self.can(board.get_unit(id)) {
             board.find_adjs(id)
-         }else{
+        }else{
             vec!()
-         }
+        }
     }
 
     fn exe(&self, s : &mut String, board : &mut Board, id : Id, it : Id, dir : &Dir) {

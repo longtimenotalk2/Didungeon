@@ -1,8 +1,13 @@
 use num_rational::Ratio;
 
-use super::{Unit, Id, Dir, bound::BoundPart};
+use super::{Unit, Id, Dir, bound::BoundPart, Pos};
 
 impl Unit {
+    pub fn move_to(&mut self, pos : Pos, dir : Dir) {
+        self.pos = pos;
+        self.dir = dir;
+    }
+
     pub fn awake(&mut self) -> bool {
         if self.sleep {
             self.sleep = false;
