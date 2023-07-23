@@ -4,9 +4,9 @@ use colorful::{Color, Colorful};
 use super::Unit;
 use super::bound::BoundPart;
 
-const IDENTY: usize = 26;
+const IDENTY: usize = 28;
 
-fn remove0(num : i32, color : Option<Color>) -> String {
+fn remove0_color(num : i32, color : Option<Color>) -> String {
     let a = if num > 0 {
         format!("{:^3}", num)
     }else{
@@ -17,6 +17,15 @@ fn remove0(num : i32, color : Option<Color>) -> String {
     }else{
         a
     }
+}
+
+fn remove0(num : i32) -> String {
+    let a = if num > 0 {
+        format!("{:^3}", num)
+    }else{
+        "   ".to_string()
+    };
+    a
 }
 
 fn spaces(intend : usize) -> String {
@@ -113,13 +122,39 @@ impl Unit {
         
         let mut txt = String::new();
 
+        // Spd
+        txt += &remove0(self.spd());
+        
         // Hurt
-        txt += &remove0(self.inj, Some(Color::Red));
+        txt += &remove0_color(self.inj, Some(Color::Red));
 
         // Basic 
-        txt += &remove0(self.str_adj(), None);
-        txt += &remove0(self.dex_adj(), None); 
-        txt += &remove0(self.agi_adj(), None); 
+        txt += &remove0_color(self.str_adj(), None);
+        txt += &remove0_color(self.dex_adj(), None); 
+        txt += &remove0_color(self.agi_adj(), None); 
+
+        // Offense
+        txt += &remove0(self.acc_melee_hand());
+        txt += &remove0(self.atk_melee_hand());
+        txt += &remove0(self.hold_force());
+        txt += &remove0(self.tie_power());
+
+        // Denense
+        txt += &remove0(self.evd());
+        txt += &remove0(self.def_gym());
+        txt += &remove0(self.struggle_force());
+        txt += &remove0(self.anti_tie_upper());
+        txt += &remove0(self.anti_tie_lower());
+
+        // Hand
+        txt += &remove0(self.hand_str());
+        txt += &remove0(self.hand_dex());
+
+        // Self
+        txt += if self.can_stand() {"ok "} else {"no "};
+        txt += &remove0(self.move_range());
+        txt += &remove0(self.unbound_force_upper());
+        txt += &remove0(self.unbound_force_lower());
         
 
         txt
@@ -164,10 +199,11 @@ impl Unit {
     // }
 
     fn title_1() -> &'static str {
-        "┌──进攻端──┐┌───防御端────┐┌手部┐┌────自身─────┐┌───基础───┐"
+        "┌────基础─────┐┌──进攻端──┐┌───防御端────┐┌手部┐┌───自身───┐"
     }
 
     fn title_2() -> &'static str {
-        "命 攻 压 捆 回 防 挣 ┌反捆┐力 技 速 起 移 ┌脱缚┐力 技 敏 伤 "
+        "速 伤 力 技 敏 命 攻 压 捆 回 防 挣 ┌反捆┐力 技 起 移 ┌脱缚┐"
+        // "命 攻 压 捆 回 防 挣 ┌反捆┐力 技 速 起 移 ┌脱缚┐力 技 敏 伤 "
     }
 }

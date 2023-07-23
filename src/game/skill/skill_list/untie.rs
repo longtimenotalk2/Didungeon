@@ -100,18 +100,16 @@ impl Skillize for Untie {
     }
 
     fn exe(&self, s : &mut String, board : &mut Board, id : Id, it : Id, dir : &Dir) {
-        
-        let target = board.get_unit(it);
-
-        // 宣言
-        *s += &helper::write_announce(target, &dir, &Skill::Untie);
-        *s += "\n";
 
         // 冲刺
         board.dash_to(id, it, dir);
 
         let actor = board.get_unit(id);
         let bound_point = self.bound_point(actor);
+
+        let target_idy = board.get_unit(it).identity();
+
+        writeln!(s, "[解绑] {target_idy} (解绑点数 : {})", bound_point.to_string().color(Color::Yellow)).unwrap();
 
         // 结算
         board.set_to_untie(id, it, bound_point)

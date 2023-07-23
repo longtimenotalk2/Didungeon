@@ -52,5 +52,10 @@ impl Board {
         }
     }
 
+    pub fn take_stun(&mut self, id : Id) {
+        self.get_unit_mut(id).take_stun();
+        self.cancel_catch(id);
+    }
+
     
 }

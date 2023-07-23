@@ -30,10 +30,10 @@ impl Analyse {
         match_seq.push((self.friend_catch_count, other.friend_catch_count, true));
         // 自救
         match_seq.push((self.self_unbound, other.self_unbound, true));
-        // 自己抓取个数，越多越好
-        match_seq.push((self.self_catch, other.self_catch, true));
         // 我方解救个数，越多护额好
         match_seq.push((self.self_rescure, other.self_rescure, true));
+        // 自己抓取个数，越多越好
+        match_seq.push((self.self_catch, other.self_catch, true));
         // 自己输出，越多越好
         match_seq.push((self.self_attack, other.self_attack, true));
         // 我方距离最近敌方非战败角色的总距离，越近越好

@@ -60,7 +60,7 @@ impl Struggle {
                 },
                 false => write!(s, "{}", "失败".to_string().color(Color::Red)).unwrap(),
             }
+            write!(s, "\n").unwrap();
         }
-        write!(s, "\n").unwrap();
     }
 }

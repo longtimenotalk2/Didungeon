@@ -36,14 +36,17 @@ impl Punch {
         helper::to_hit(self.basic_hit + self.hit_rate * (acc - evd))
     }
 
-    fn dmg(&self, actor : &Unit, target : &Unit) -> i32 {
+    fn dmg(&self, actor : &Unit, target : &Unit, dir : &Dir) -> i32 {
         let atk = actor.atk_melee_hand();
-        let def = target.def_gym();
+        let def = match target.is_notice(dir) {
+            true => target.def_gym(),
+            false => target.def_gym_back(),
+        };
         helper::to_dmg(self.basic_dmg + atk - def, 1)
     }
 
-    fn stun_rate(&self, actor : &Unit, target : &Unit) -> i32 {
-        self.dmg(actor, target)
+    fn stun_rate(&self, actor : &Unit, target : &Unit, dir : &Dir) -> i32 {
+        self.dmg(actor, target, dir)
     }
 
     fn range(&self, actor : &Unit) -> i32 {
@@ -87,18 +90,16 @@ impl Skillize for Punch {
             // 受伤
             let actor = board.get_unit(id);
             let target = board.get_unit(it);
-            let dmg = self.dmg(actor, target);
+            let dmg = self.dmg(actor, target, dir);
+            let stun_rate = self.stun_rate(actor, target, dir);
             let inj_old = target.get_inj();
             let inj_new = board.get_unit_mut(it).take_dmg(dmg);
             helper::write_dmg(s, dmg, inj_old, inj_new);
 
             // 击晕
-            let actor = board.get_unit(id);
-            let target = board.get_unit(it);
-            let stun_rate = self.stun_rate(actor, target);
             let (is_stun, stun_dice) = helper::hit_check(stun_rate, board.get_dice());
             if is_stun {
-                board.get_unit_mut(it).take_stun();
+                board.take_stun(it);
             }
             helper::write_hit(s, stun_rate, is_stun, stun_dice, "击晕率", "击晕", "落空");
         }
@@ -115,8 +116,8 @@ impl Skillize for Punch {
         *s += &helper::write_announce( target, dir, &Skill::Punch);
 
         let hit = self.hit(actor, target, dir);
-        let dmg = self.dmg(actor, target);
-        let stun = self.stun_rate(actor, target);
+        let dmg = self.dmg(actor, target, dir);
+        let stun = self.stun_rate(actor, target, dir);
 
         write!(s, " (命中率 : {}, 伤害 : {}, 击晕率 : {})", hit.to_string().color(Color::Yellow), dmg.to_string().color(Color::Yellow), stun.to_string().color(Color::Yellow)).unwrap();
         st
