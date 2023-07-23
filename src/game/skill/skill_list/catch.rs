@@ -58,4 +58,11 @@ impl Skillize for Catch {
         st += " -> 捆绑";
         st
     }
+
+    fn analyse(&self, board : &Board, id : Id, it : Id, dir : &Dir) -> Board {
+        let mut board = board.clone();
+        // 冲刺
+        board.dash_to(id, it, dir);
+        board
+    }
 }

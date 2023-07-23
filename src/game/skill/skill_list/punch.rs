@@ -113,4 +113,13 @@ impl Skillize for Punch {
         write!(s, " (命中率 : {}, 伤害 : {}, 击晕率 : {})", hit.to_string().color(Color::Yellow), dmg.to_string().color(Color::Yellow), stun.to_string().color(Color::Yellow)).unwrap();
         st
     }
+
+    fn analyse(&self, board : &Board, id : Id, it : Id, dir : &Dir) -> Board {
+        let mut board = board.clone();
+        // 冲刺
+        board.dash_to(id, it, dir);
+        board
+    }
+
+    
 }

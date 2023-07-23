@@ -35,7 +35,7 @@ impl Struggle {
         // [挣扎] (0%成功率) 失败
         // (67%成功率 → 🎲 : 89) 失败
 
-        for it in actor.get_catched_with() {
+        for it in actor.get_catched() {
             let actor = board.get_unit(id);
             let target = board.get_unit(it);
             let hit = self.hit(actor, target);

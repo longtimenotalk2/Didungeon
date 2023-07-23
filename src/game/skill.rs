@@ -52,10 +52,15 @@ impl Skill {
     pub fn choice_show(&self, board : &Board, id : Id, it : Id, dir : &Dir) -> String {
         self.create().choice_show(board, id, it, dir)
     }
+
+    pub fn analyse(&self, board : &Board, id : Id, it : Id, dir : &Dir) -> Board {
+        self.create().analyse(board, id, it, dir)
+    }
 }
 
 pub trait Skillize {
     fn get_targets(&self, board : &Board, id : Id) -> Vec<(Id, Dir)>;
     fn exe(&self, s : &mut String, board : &mut Board, id : Id, it : Id, dir : &Dir);
     fn choice_show(&self, board : &Board, id : Id, it : Id, dir : &Dir) -> String;
+    fn analyse(&self, board : &Board, id : Id, it : Id, dir : &Dir) -> Board;
 }

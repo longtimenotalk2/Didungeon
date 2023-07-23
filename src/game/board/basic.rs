@@ -12,6 +12,10 @@ impl Board {
         &self.units[*i]
     }
 
+    pub fn get_all_unit(&self) -> &[Unit] {
+        &self.units
+    }
+
     pub fn get_unit_mut(&mut self, id : Id) -> &mut Unit {
         let i = self.indexs.get(&id).unwrap();
         self.units.get_mut(*i).unwrap()

@@ -47,7 +47,7 @@ impl Board {
 
     pub fn turn_prepare(&mut self, need_show : bool, id : Id) -> Return {
         // 根据当前是否处于擒拿状态，判断是否进入捆绑状态，或者直接进入主要阶段
-        if let Some(it) = self.get_unit(id).get_catch_with() {
+        if let Some(it) = self.get_unit(id).get_catch() {
             let bound_point = Tie::new().bound_point(self.get_unit(id)); 
             self.phase = Phase::Tie { id, it, bound_point};
             // [捆绑] 诺艾尔 (捆绑点数 : 200)

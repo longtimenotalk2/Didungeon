@@ -60,7 +60,7 @@ impl Board {
             }
         }else{
             // AI自动按顺序选择
-            let choose = AI::new().analyse_skill(self, id, &chooses);
+            let choose = AI::new().analyse_skill(self, id, &chooses).unwrap();
             self.response_main(need_show, choose)
         }
     }

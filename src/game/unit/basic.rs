@@ -31,11 +31,11 @@ impl Unit {
         self.you
     }
 
-    pub fn get_catch_with(&self) -> Option<Id> {
+    pub fn get_catch(&self) -> Option<Id> {
         self.catch_left.or(self.catch_right)
     }
 
-    pub fn get_catched_with(&self) -> Vec<Id> {
+    pub fn get_catched(&self) -> Vec<Id> {
         let mut list = vec!();
         if let Some(it) = self.catched_left {
             list.push(it);
@@ -44,7 +44,20 @@ impl Unit {
             list.push(it);
         }
         list
-        
+    }
+
+    pub fn get_catch_with_dir(&self, dir : &Dir) -> Option<Id> {
+        match dir {
+            Dir::Left => self.catch_left,
+            Dir::Right => self.catch_right,
+        }
+    }
+
+    pub fn get_catched_with_dir(&self, dir : &Dir) -> Option<Id> {
+        match dir {
+            Dir::Left => self.catched_left,
+            Dir::Right => self.catched_right,
+        }
     }
 
     pub fn is_catched(&self) -> bool {

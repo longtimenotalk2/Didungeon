@@ -104,4 +104,8 @@ impl Skillize for Unbound {
         st += &helper::write_announce( target, dir, &Skill::Unbound);
         st
     }
+
+    fn analyse(&self, board : &Board, _id : Id, _it : Id, _dir : &Dir) -> Board {
+        board.clone()
+    }
 }

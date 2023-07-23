@@ -10,6 +10,20 @@ impl Board {
             Dir::Right => 1,
         };
 
+        // 被移动到的目标解除catch与catched
+        if let Some(id) = self.get_id_from_pos(pos) {
+            let target = self.get_unit(id);
+            if let Some(it) = target.get_catch_with_dir(&dir) {
+                self.get_unit_mut(id).cancel_catch_with(it);
+                self.get_unit_mut(it).cancel_catched_with(id);
+            }
+            let target = self.get_unit(id);
+            if let Some(it) = target.get_catched_with_dir(&dir) {
+                self.get_unit_mut(id).cancel_catched_with(it);
+                self.get_unit_mut(it).cancel_catch_with(id);
+            }
+        }
+
         // 穿过受惊
         let pos0 = self.get_unit(id).get_pos();
         let mut consider_pos = pos;
