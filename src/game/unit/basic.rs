@@ -84,6 +84,10 @@ impl Unit {
         self.bound.ai_unbound_choice()
     }
 
+    pub fn ai_untie_choice(&self) -> Option<BoundPart> {
+        self.bound.ai_untie_choice()
+    }
+
     pub fn next_force_upper(&self) -> Option<BoundPart> {
         self.bound.next_force_upper()
     }

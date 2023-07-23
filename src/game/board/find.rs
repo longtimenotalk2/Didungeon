@@ -99,6 +99,34 @@ impl Board {
         list
     }
 
+    // 寻找不被敌方阻挡的，范围内的我方角色
+    pub fn find_friend_with_range(&self, id : Id, range : i32) -> Vec<(Id, Dir)> {
+        let mut list = vec!();
+        let pos = self.get_pos(id);
+        let target_is_enemy = self.get_unit(id).get_ally();
+
+        for dir in Dir::all() {
+            for dx in 1..(range+1) {
+                let pos = match dir {
+                    Dir::Left => pos - dx,
+                    Dir::Right => pos + dx,
+                };
+                let it = self.get_id_from_pos(pos);
+                if let Some(it) = it {
+                    let target = self.get_unit(it);
+                    if target.get_ally() == !target_is_enemy {
+                        if target.can_block() {
+                            break;
+                        }
+                    } else {
+                        list.push((it, dir.clone()))
+                    }
+                }
+            }
+        }
+        list
+    }
+
     // 寻找此格距离非战败敌人的最近距离
     pub fn find_dist_of_no_defeated_enemy(&self, id : Id, pos : &Pos) -> Option<i32> {
         let target_is_enemy = self.get_unit(id).get_ally();

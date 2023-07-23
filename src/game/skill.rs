@@ -4,7 +4,7 @@ pub mod helper;
 
 use serde::{Serialize, Deserialize};
 
-use self::skill_list::{punch::Punch, catch::Catch, unbound::Unbound};
+use self::skill_list::{punch::Punch, catch::Catch, unbound::Unbound, untie::Untie};
 
 use super::{board::Board, unit::{Id, Dir}};
 
@@ -12,6 +12,7 @@ use super::{board::Board, unit::{Id, Dir}};
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum Skill {
     Unbound,
+    Untie,
     Catch,
     Punch,
 }
@@ -20,6 +21,7 @@ impl Skill {
     pub fn basic_set() -> Vec<Self> {
         vec!(
             Self::Unbound,
+            Self::Untie,
             Self::Catch, 
             Self::Punch,
         )
@@ -28,6 +30,7 @@ impl Skill {
     pub fn name(&self) -> &'static str {
         match self {
             Skill::Unbound => "⚡挣脱",
+            Skill::Untie => "！解绑",
             Skill::Catch => "✋擒拿",
             Skill::Punch => "🤜挥拳",
         }
@@ -36,6 +39,7 @@ impl Skill {
     fn create(&self) -> Box<dyn Skillize> {
         match self {
             Skill::Unbound => Box::new(Unbound::new()),
+            Skill::Untie => Box::new(Untie::new()),
             Skill::Catch => Box::new(Catch::new()),
             Skill::Punch => Box::new(Punch::new()),
         }

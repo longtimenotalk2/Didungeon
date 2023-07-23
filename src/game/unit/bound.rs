@@ -334,7 +334,30 @@ impl BoundState {
             Some(Thigh)
         }else {
             None
-        }
-            
+        }    
+    }
+
+    pub fn ai_untie_choice(&self) -> Option<BoundPart> {
+        if self.is_bound_joint() {
+            Some(Joint)
+        } else if self.is_bound_hang() {
+            Some(Hang)
+        } else if self.is_bound_wrist() {
+            Some(Wrist)
+        }else if self.is_bound_arm() {
+            Some(Arm)
+        }else if self.is_bound_long() {
+            Some(Long)
+        }else if self.is_bound_neck() {
+            Some(Neck)
+        }else if self.is_bound_ankle() {
+            Some(Ankle)
+        }else if self.is_bound_calve() {
+            Some(Calve)
+        }else if self.is_bound_thigh() {
+            Some(Thigh)
+        }else {
+            None
+        }    
     }
 }

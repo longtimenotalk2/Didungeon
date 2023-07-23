@@ -4,3 +4,4 @@ pub mod tie;
 pub mod struggle;
 pub mod force_unbound;
 pub mod unbound;
+pub mod untie;
