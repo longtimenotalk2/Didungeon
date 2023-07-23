@@ -66,6 +66,13 @@ impl Unit {
         unit
     }
 
+    pub fn new_fish(char : &str, id : Id, pos : Pos, str : i32, dex : i32, agi : i32) -> Self {
+        let color = Color::IndianRed1a;
+        let name = format!("{}{}", "杂鱼".to_string().color(color).to_string(), char.to_string().color(color).to_string());
+        let name_fix_length = name.clone() + "   ";
+        Self::new(id, name, name_fix_length, false, false, pos, str, dex, agi)
+    }
+
     pub fn new_any(id : Id, pos : Pos, ally : bool) -> Self {
         let color = match ally {
             true => Color::Blue,

@@ -9,6 +9,8 @@ impl Catch {
     }
 
     pub fn can(&self, actor : &Unit, target : &Unit) -> bool {
+        // 不擒拿已被击败的角色
+        if target.is_defeated() {return false}
         actor.hold_force() > target.struggle_force() && actor.acc_melee_hand() > target.evd()
     }
 

@@ -14,7 +14,10 @@ impl Board {
         board.insert_unit(Unit::new_ailisha(2, 2));
         board.insert_unit(Unit::new_yilisi(3, 0));
 
-        board.insert_unit(Unit::new_kuinuo(4, 7));
+        board.insert_unit(Unit::new_kuinuo(4, 4));
+        board.insert_unit(Unit::new_fish("A", 5, 5, 13, 12, 11));
+        board.insert_unit(Unit::new_fish("B", 6, 6, 11, 13, 12));
+        board.insert_unit(Unit::new_fish("C", 7, 7, 12, 11, 13));
         board
     }
 
