@@ -1,14 +1,21 @@
 
+use colorful::{Color, Colorful};
+
 use super::Unit;
 use super::bound::BoundPart;
 
 const IDENTY: usize = 26;
 
-fn remove0(num : i32) -> String {
-    if num > 0 {
+fn remove0(num : i32, color : Option<Color>) -> String {
+    let a = if num > 0 {
         format!("{:^3}", num)
     }else{
         "   ".to_string()
+    };
+    if let Some(color) = color {
+        a.color(color).to_string()
+    }else{
+        a
     }
 }
 
@@ -23,10 +30,11 @@ impl Unit {
         self.action();
         self.identity_for_pure_chinese();
         print!(" ");
+        print!("{} ", self.aim());
         self.state();
         print!(" {}", self.bound());
         print!(" ");
-        self.attr();
+        print!("{}", self.attr());
         print!("\n");
     }
 
@@ -65,6 +73,10 @@ impl Unit {
         }
     }
 
+    fn aim(&self) -> String {
+        self.dir.notice().to_string()
+    }
+
     fn state(&self) {
         if self.is_defeated() {
             print!("寄")
@@ -97,42 +109,59 @@ impl Unit {
         self.bound.identity_tightness(part)
     }
 
-    pub fn attr(&self) {
-        let can_stand = if self.can_stand() {"ok "} else {"no "};
+    pub fn attr(&self) -> String{
         
         let mut txt = String::new();
-        // Offense
-        txt += &remove0(self.acc_melee_hand());
-        txt += &remove0(self.atk_melee_hand());
-        txt += &remove0(self.hold_force());
-        txt += &remove0(self.tie_power());
 
-        // Denense
-        txt += &remove0(self.evd());
-        txt += &remove0(self.def_gym());
-        txt += &remove0(self.struggle_force());
-        txt += &remove0(self.anti_tie_upper());
-        txt += &remove0(self.anti_tie_lower());
+        // Hurt
+        txt += &remove0(self.inj, Some(Color::Red));
 
-        // Hand
-        txt += &remove0(self.hand_str());
-        txt += &remove0(self.hand_dex());
-
-        // Self
-        txt += &remove0(self.spd());
-        txt += can_stand;
-        txt += &remove0(self.move_range());
-        txt += &remove0(self.unbound_force_upper());
-        txt += &remove0(self.unbound_force_lower());
+        // Basic 
+        txt += &remove0(self.str_adj(), None);
+        txt += &remove0(self.dex_adj(), None); 
+        txt += &remove0(self.agi_adj(), None); 
         
-        // Basic
-        txt += &remove0(self.str_adj()); 
-        txt += &remove0(self.dex_adj()); 
-        txt += &remove0(self.agi_adj()); 
-        txt += &remove0(self.inj);
 
-        print!("{}", txt);
+        txt
     }
+
+
+    // pub fn attr(&self) {
+    //     let can_stand = if self.can_stand() {"ok "} else {"no "};
+        
+    //     let mut txt = String::new();
+    //     // Offense
+    //     txt += &remove0(self.acc_melee_hand());
+    //     txt += &remove0(self.atk_melee_hand());
+    //     txt += &remove0(self.hold_force());
+    //     txt += &remove0(self.tie_power());
+
+    //     // Denense
+    //     txt += &remove0(self.evd());
+    //     txt += &remove0(self.def_gym());
+    //     txt += &remove0(self.struggle_force());
+    //     txt += &remove0(self.anti_tie_upper());
+    //     txt += &remove0(self.anti_tie_lower());
+
+    //     // Hand
+    //     txt += &remove0(self.hand_str());
+    //     txt += &remove0(self.hand_dex());
+
+    //     // Self
+    //     txt += &remove0(self.spd());
+    //     txt += can_stand;
+    //     txt += &remove0(self.move_range());
+    //     txt += &remove0(self.unbound_force_upper());
+    //     txt += &remove0(self.unbound_force_lower());
+        
+    //     // Basic
+    //     txt += &remove0(self.str_adj()); 
+    //     txt += &remove0(self.dex_adj()); 
+    //     txt += &remove0(self.agi_adj()); 
+    //     txt += &remove0(self.inj);
+
+    //     print!("{}", txt);
+    // }
 
     fn title_1() -> &'static str {
         "┌──进攻端──┐┌───防御端────┐┌手部┐┌────自身─────┐┌───基础───┐"

@@ -18,7 +18,9 @@ impl Punch {
         }
     }
 
-    fn can(&self, actor : &Unit) -> bool {
+    fn can(&self, actor : &Unit, target : &Unit) -> bool {
+        // 不攻击已被击败的角色
+        if target.is_defeated() {return false}
         actor.acc_melee_hand() > 0
     }
 
@@ -48,11 +50,14 @@ impl Punch {
 
 impl Skillize for Punch {
     fn get_targets(&self, board : &Board, id : Id) -> Vec<(Id, Dir)> {
-        if self.can(board.get_unit(id)) {
-            board.find_target_with_range(id, self.range(board.get_unit(id)))
-        }else{
-            vec!()
+        let mut list = vec![];
+        for (it, dir) in board.find_target_with_range(id, self.range(board.get_unit(id))) {
+            if self.can(board.get_unit(id), board.get_unit(it)) {
+                list.push((it, dir));
+            }
         }
+
+        list
     }
 
     fn exe(&self, s : &mut String, board : &mut Board, id : Id, it : Id, dir : &Dir) {

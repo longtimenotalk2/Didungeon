@@ -44,10 +44,10 @@ impl Board {
                 break;
             }
         }
-        self.get_unit_mut(id).move_to(pos, dir);
+        self.get_unit_mut(id).move_to(pos, &dir);
         for id in list_anti_move {
             let pos = self.get_pos(id);
-            self.get_unit_mut(id).move_to(pos + adder, anti_dir.clone())
+            self.get_unit_mut(id).move_to(pos + adder, &dir)
         }
     }
 
@@ -59,6 +59,8 @@ impl Board {
         };
         if dest != self.get_unit(id).get_pos() {
             self.actor_move_to(id, dest, dir.clone())
+        }else{
+            self.get_unit_mut(id).move_to(dest, &dir)
         }
     }
 }

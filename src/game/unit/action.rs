@@ -3,9 +3,9 @@ use num_rational::Ratio;
 use super::{Unit, Id, Dir, bound::BoundPart, Pos};
 
 impl Unit {
-    pub fn move_to(&mut self, pos : Pos, dir : Dir) {
+    pub fn move_to(&mut self, pos : Pos, dir : &Dir) {
         self.pos = pos;
-        self.dir = dir;
+        self.dir = dir.clone();
     }
 
     pub fn shock(&mut self) -> bool {
