@@ -36,4 +36,15 @@ impl Board {
             self.get_unit_mut(id).move_to(pos + adder, anti_dir.clone())
         }
     }
+
+    pub fn dash_to(&mut self, id : Id, it : Id, dir : &Dir) {
+        let pos = self.get_unit(it).get_pos();
+        let dest = pos + match dir {
+            Dir::Left => 1,
+            Dir::Right => -1,
+        };
+        if dest != self.get_unit(id).get_pos() {
+            self.actor_move_to(id, dest, dir.clone())
+        }
+    }
 }

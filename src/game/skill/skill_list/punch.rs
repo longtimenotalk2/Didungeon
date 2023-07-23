@@ -40,12 +40,16 @@ impl Punch {
     fn stun_rate(&self, actor : &Unit, target : &Unit) -> i32 {
         self.dmg(actor, target)
     }
+
+    fn range(&self, actor : &Unit) -> i32 {
+        actor.move_range()
+    }
 }
 
 impl Skillize for Punch {
     fn get_targets(&self, board : &Board, id : Id) -> Vec<(Id, Dir)> {
         if self.can(board.get_unit(id)) {
-            board.find_adjs(id)
+            board.find_target_with_range(id, self.range(board.get_unit(id)))
         }else{
             vec!()
         }
@@ -53,12 +57,17 @@ impl Skillize for Punch {
 
     fn exe(&self, s : &mut String, board : &mut Board, id : Id, it : Id, dir : &Dir) {
 
-        let actor = board.get_unit(id);
         let target = board.get_unit(it);
 
         // 宣言
         *s += &helper::write_announce(target, &dir, &Skill::Punch);
         *s += "\n";
+
+        // 冲刺
+        board.dash_to(id, it, dir);
+
+        let actor = board.get_unit(id);
+        let target = board.get_unit(it);
 
         // 命中判定
         let hit = self.hit(actor, target);

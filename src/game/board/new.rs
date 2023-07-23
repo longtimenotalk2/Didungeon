@@ -24,7 +24,7 @@ impl Board {
         let name2f = "乙      ".to_string().color(color2).to_string();
         
         let unit1 = Unit::new(0, name1, name1f, true, true, 0, str1, dex1, agi1);
-        let unit2 = Unit::new(1, name2, name2f, false, false, 3, str2, dex2, agi2);
+        let unit2 = Unit::new(1, name2, name2f, false, false, 7, str2, dex2, agi2);
     
         let mut board = Self::new(seed, 8);
         board.insert_unit(unit1);
