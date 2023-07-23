@@ -100,6 +100,7 @@ impl Unit {
             fall: false,
             stun: false,
             sleep: false,
+            shock : false,
             inj: 0,
             dir: match ally {
                 true => Dir::Right,

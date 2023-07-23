@@ -1,4 +1,5 @@
 
+use crate::game::unit::Pos;
 use crate::game::unit::bound::BoundPart;
 use crate::game::{skill::Skill, unit::{Id, Dir}};
 
@@ -14,7 +15,8 @@ mod unbound;
 #[derive(Clone, Debug)]
 pub enum ChooseSkill {
     Pass,
-    Skill {skill : Skill, it : Id, dir : Dir,}
+    Skill {skill : Skill, it : Id, dir : Dir,},
+    Move {pos : Pos, dir : Dir,},
 }
 
 #[derive(Clone, Debug)]

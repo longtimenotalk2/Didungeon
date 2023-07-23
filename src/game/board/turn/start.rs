@@ -132,4 +132,12 @@ impl Board {
             None
         }
     }
+
+    pub fn check_awake(&mut self, s : &mut String) {
+        for actor in &mut self.units {
+            if actor.check_awake() {
+                writeln!(s, "{} {}!", actor.identity(), "苏醒".to_string().color(Color::Yellow)).unwrap();
+            }
+        }
+    }
 }

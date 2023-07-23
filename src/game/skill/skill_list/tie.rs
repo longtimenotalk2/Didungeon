@@ -148,6 +148,12 @@ impl Tie {
             },
         }
         write!(s, "消耗点数 : {}\n", cost.to_string().color(Color::Yellow)).unwrap();
+
+        // 目标受精
+        if board.get_unit_mut(it).shock() {
+            writeln!(s, "{} {}!", board.get_unit(it).identity(), "受惊".to_string().color(Color::Yellow)).unwrap();
+        }
+
         bound_point - cost
     }
 
@@ -177,6 +183,12 @@ impl Tie {
             },
         }
         write!(s, "消耗点数 : {}\n", cost.to_string().color(Color::Yellow)).unwrap();
+
+        // 目标受精
+        if board.get_unit_mut(it).shock() {
+            writeln!(s, "{} {}!", board.get_unit(it).identity(), "受惊".to_string().color(Color::Yellow)).unwrap();
+        }
+
         bound_point - cost
     }
 
@@ -204,15 +216,19 @@ impl Tie {
             },
         }
         write!(s, "消耗点数 : {}\n", cost.to_string().color(Color::Yellow)).unwrap();
+
+        // 目标受精
+        if board.get_unit_mut(it).shock() {
+            writeln!(s, "{} {}!", board.get_unit(it).identity(), "受惊".to_string().color(Color::Yellow)).unwrap();
+        }
+
         bound_point - cost
     }
 
     pub fn end(&self, s: &mut String, board : &mut Board, id : Id, it : Id) {
         board.get_unit_mut(id).cancel_catch_with(it);
         board.get_unit_mut(it).cancel_catched_with(id);
-        let is_awake = board.get_unit_mut(it).awake();
-        if is_awake {
-            writeln!(s, "{} {}!", board.get_unit(it).identity(), "惊醒".to_string().color(Color::Yellow)).unwrap();
-        }
+        // 检查苏醒
+        board.check_awake(s);
     }
 }

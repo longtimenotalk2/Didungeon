@@ -70,6 +70,8 @@ impl Unit {
             print!("寄")
         }else if self.is_stun() {
             print!("💫")
+        }else if self.shock {
+            print!("惊")
         }else if self.is_sleep() {
             print!("💤")
         }else if self.is_fall() {

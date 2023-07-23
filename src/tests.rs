@@ -12,11 +12,11 @@ fn test_move() {
     let id = 0;
     let pos = 3;
     board.insert_unit(Unit::new_noal(id, pos));
-    board.insert_unit(Unit::new_any(1, 5, true));
-    board.insert_unit(Unit::new_any(2, 6, false));
+    board.insert_unit(Unit::new_any(1, 4, true));
+    board.insert_unit(Unit::new_any(2, 5, false));
     board.show(None);
 
-    let new_pos = 5;
+    let new_pos = 4;
     let dir = Dir::Right;
     board.actor_move_to(id, new_pos, dir);
     board.show(None);

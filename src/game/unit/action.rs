@@ -8,9 +8,20 @@ impl Unit {
         self.dir = dir;
     }
 
-    pub fn awake(&mut self) -> bool {
+    pub fn shock(&mut self) -> bool {
         if self.sleep {
+            self.sleep = true;
+            self.shock = true;
+            true
+        }else{
+            false
+        }
+    }
+
+    pub fn check_awake(&mut self) -> bool {
+        if self.shock {
             self.sleep = false;
+            self.shock = false;
             true
         }else{
             false
@@ -23,7 +34,7 @@ impl Unit {
 
     pub fn take_dmg(&mut self, dmg : i32) -> i32 {
         self.inj += dmg;
-        self.awake();
+        self.shock();
         self.inj
     }
 

@@ -61,6 +61,7 @@ pub struct Unit {
     fall : bool,
     stun : bool,
     sleep : bool,
+    shock : bool,
     inj : i32,
     dir : Dir,
     action : bool,

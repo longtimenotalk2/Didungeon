@@ -25,6 +25,10 @@ impl Board {
         }
     }
 
+    fn pos_valid(&self, pos : Pos) -> bool {
+        pos >= self.pos_min && pos < (self.pos_min + self.pos_length)
+    }
+
     // 寻找相邻的角色
     pub fn find_adjs(&self, id : Id) -> Vec<(Id, Dir)> {
         let pos = self.get_pos(id);
@@ -49,16 +53,18 @@ impl Board {
                     Dir::Left => pos - dx,
                     Dir::Right => pos + dx,
                 };
-                let it = self.get_id_from_pos(pos);
-                if let Some(it) = it {
-                    let target = self.get_unit(it);
-                    if target.get_ally() == !target_is_enemy && target.can_block() {
-                        break;
+                if self.pos_valid(pos) {
+                    let it = self.get_id_from_pos(pos);
+                    if let Some(it) = it {
+                        let target = self.get_unit(it);
+                        if target.get_ally() == !target_is_enemy && target.can_block() {
+                            break;
+                        }else{
+                            list.push((pos, dir.clone()));
+                        }
                     }else{
                         list.push((pos, dir.clone()));
                     }
-                }else{
-                    list.push((pos, dir.clone()));
                 }
             }
         }

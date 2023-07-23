@@ -54,7 +54,8 @@ impl Board {
 
     pub fn new_stage_1(seed : u64) -> Self {
         let mut board = Self::new(seed, 5);
-        board.insert_unit(Unit::new_noal_bound(0, 0));
+        // board.insert_unit(Unit::new_noal_bound(0, 0));
+        board.insert_unit(Unit::new_noal(0, 0));
         board.insert_unit(Unit::new_kuinuo(1, 2));
         board.insert_unit(Unit::new_yelin(2, 4));
         board
