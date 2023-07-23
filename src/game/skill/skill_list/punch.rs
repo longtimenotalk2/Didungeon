@@ -42,7 +42,7 @@ impl Punch {
     }
 
     fn range(&self, actor : &Unit) -> i32 {
-        actor.move_range()
+        actor.move_range() + 1
     }
 }
 

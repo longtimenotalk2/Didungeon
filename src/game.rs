@@ -7,6 +7,7 @@ use self::board::Board;
 pub mod unit;
 pub mod board;
 pub mod skill;
+pub mod ai;
 
 pub struct Game {
     board : Board,
