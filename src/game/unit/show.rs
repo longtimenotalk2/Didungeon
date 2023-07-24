@@ -41,14 +41,14 @@ impl Unit {
         print!(" ");
         print!("{} ", self.aim());
         print!("{} ", self.state());
-        print!(" {}", self.bound());
+        print!("{}", self.bound());
         print!(" ");
         print!("{}", self.attr());
         print!("\n");
     }
 
     pub fn identity_wo_attr(&self) -> String {
-        let s = format!("{}{} {} {} {}", self.action(), self.identity_for_pure_chinese(), self.aim(), self.state(), self.bound());
+        let s = format!("{}{} {} {}{}", self.action(), self.identity_for_pure_chinese(), self.aim(), self.state(), self.bound());
         s
     }
 
@@ -58,7 +58,12 @@ impl Unit {
         if is_actor {
             s += &remove0_color(self.spd(), Some(Color::Yellow));
         } else {
-            s += &remove0_color(self.spd(), Some(Color::Grey0));
+            if self.action {
+                s += &remove0_color(self.spd(), Some(Color::Grey0));
+            }else{
+                s += &remove0(0);
+            }
+            
         }
         // Hurt
         s += &remove0_color(self.inj, Some(Color::Red));
@@ -115,24 +120,25 @@ impl Unit {
         self.dir.notice().to_string()
     }
 
-    fn state(&self) -> &str {
-        if self.is_defeated() {
-            "寄"
+    fn state(&self) -> String {
+        let a = if self.is_defeated() {
+            "🏳️ "
         }else if self.is_stun() {
-            "💫"
+            "💫 "
         }else if self.shock {
-            "惊"
+            "惊 "
         }else if self.is_sleep() {
-            "💤"
+            "💤 "
         }else if self.is_fall() {
-            "倒‍"
+            "🧎"
         }else if let Some(_) = self.catch_left {
-            "👆"
+            "👆 "
         }else if let Some(_) = self.catch_right {
-            "👇"
+            "👇 "
         }else {
-            "  "
-        }
+            "   "
+        };
+        format!("{}{}", a, "".to_string().color(Color::White).to_string())
     }
 
     fn bound(&self) -> String {

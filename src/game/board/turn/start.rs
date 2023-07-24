@@ -78,8 +78,8 @@ impl Board {
             // 最终输出Cache
             println!("{}", self.string_cache);
             // 结果图
-            self.show(None);
-            println!();
+            // self.show(None);
+            // println!();
         }
         
 
