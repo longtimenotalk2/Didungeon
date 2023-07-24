@@ -40,13 +40,13 @@ impl Struggle {
             let target = board.get_unit(it);
             let hit = self.hit(actor, target);
             let is_hit = if hit == 100 {
-                write!(s, "[挣扎] (100%成功率) ").unwrap();
+                write!(s, "[挣扎] 对{} (100%成功率) ", target.identity()).unwrap();
                 true
             }else if hit == 0 {
-                write!(s, "[挣扎] (0%成功率) ").unwrap();
+                write!(s, "[挣扎] 对{} (0%成功率) ", target.identity()).unwrap();
                 false
             }else {
-                write!(s, "[挣扎] ").unwrap();
+                write!(s, "[挣扎] 对{} ", target.identity()).unwrap();
                 let (is_hit, hit_dice) = helper::hit_check(hit, board.get_dice());
                 helper::write_hit_small(s, hit, is_hit, hit_dice.unwrap_or(0));
                 write!(s, " ").unwrap();

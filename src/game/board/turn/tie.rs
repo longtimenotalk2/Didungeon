@@ -56,10 +56,6 @@ impl Board {
 
         // 分支，如果是玩家，返回行动，否则自动选择行动执行
         if actor.is_human() {
-            
-            println!();
-            self.show(Some(id));
-            println!();
             println!("{}", show);
             println!("{}", "请选择 : ".to_string().color(Color::Yellow));
 
@@ -116,7 +112,7 @@ impl Board {
                 self.phase = Phase::Main { id };
             }
             self.string_cache += &str;
-            self.continue_turn(need_show)
+            self.continue_turn(need_show, false)
         }else{
             unreachable!();
         }

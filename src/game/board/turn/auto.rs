@@ -36,6 +36,6 @@ impl Board {
         self.phase = Phase::Main {id};
         self.string_cache += &str;
 
-        self.continue_turn(need_show)
+        self.continue_turn(need_show, false)
     }
 }

@@ -94,7 +94,7 @@ impl Skillize for Unbound {
     fn exe(&self, s : &mut String, board : &mut Board, id : Id, _it : Id, _dir : &Dir) {
         let actor = board.get_unit(id);
         let bound_point = self.bound_point(actor);
-        writeln!(s, "[脱缚] (脱缚点数 : {})", bound_point.to_string().color(Color::Yellow)).unwrap();
+        writeln!(s, "[脱缚] {}, (脱缚点数 : {})", actor.bound_identity(None, true),  bound_point.to_string().color(Color::Yellow)).unwrap();
         board.set_to_unbound(id, bound_point);
     }
     

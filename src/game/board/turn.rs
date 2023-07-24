@@ -87,7 +87,7 @@ impl Return {
 }
 
 impl Board {
-    pub fn continue_turn(&mut self, need_show : bool) -> Return {
+    pub fn continue_turn(&mut self, need_show : bool, is_load : bool) -> Return {
         if need_show {
             print!("{}", self.string_cache);
         }
@@ -98,7 +98,7 @@ impl Board {
             Phase::Prepare { id } => self.turn_prepare(need_show, id),
             Phase::Tie { id, it, bound_point } => self.turn_tie(need_show, id, it, bound_point),
             Phase::Auto { id } => self.turn_auto(need_show, id),
-            Phase::Main { id } => self.turn_main(need_show, id),
+            Phase::Main { id } => self.turn_main(need_show, id, is_load),
             Phase::Unbound { id, bound_point } => self.turn_unbound(need_show, id, bound_point),
             Phase::Untie { id, it, bound_point } => self.turn_untie(need_show, id, it, bound_point),
             Phase::End {id} => self.turn_end(need_show, id),

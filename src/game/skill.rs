@@ -29,8 +29,8 @@ impl Skill {
 
     pub fn name(&self) -> &'static str {
         match self {
-            Skill::Unbound => "⚡挣脱",
-            Skill::Untie => "！解绑",
+            Skill::Unbound => "⚡脱缚",
+            Skill::Untie => "👐解绑",
             Skill::Catch => "✋擒拿",
             Skill::Punch => "🤜挥拳",
         }

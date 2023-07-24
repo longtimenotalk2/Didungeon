@@ -16,7 +16,7 @@ impl Board {
         let sh = &mut show;
 
         // 生成选择
-        writeln!(sh, "解绑的选择 (剩余捆绑点 = {}) : \n", bound_point.to_string().color(Color::Yellow)).unwrap();
+        writeln!(sh, "\n脱缚的选择 (剩余捆绑点 = {}) : \n", bound_point.to_string().color(Color::Yellow)).unwrap();
 
         let mut choose = vec!(ChooseUnbound::Pass);
         writeln!(sh, "[{:^3}] : {}", 0, "放弃解绑").unwrap();
@@ -36,9 +36,6 @@ impl Board {
 
          // 分支，如果是玩家，返回行动，否则自动选择行动执行
          if actor.is_human() {
-            println!();
-            self.show(Some(id));
-            println!();
             println!("{}", show);
             println!("{}", "请选择 : ".to_string().color(Color::Yellow));
 
@@ -77,7 +74,7 @@ impl Board {
             
             if remain > 0 {
                 self.phase = Phase::Unbound { id, bound_point : remain };
-                self.continue_turn(need_show)
+                self.continue_turn(need_show, false)
             }else{
                 // 自动起身
                 if self.get_unit(id).is_fall() {
@@ -89,7 +86,7 @@ impl Board {
 
                 self.phase = Phase::End { id };
 
-                self.continue_turn(need_show)
+                self.continue_turn(need_show, false)
             }
             
             

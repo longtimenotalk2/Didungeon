@@ -38,9 +38,6 @@ impl Board {
          // 分支，如果是玩家，返回行动，否则自动选择行动执行
          let actor = self.get_unit(id);
          if actor.is_human() {
-            println!();
-            self.show(Some(id));
-            println!();
             println!("{}", show);
             println!("{}", "请选择 : ".to_string().color(Color::Yellow));
 
@@ -79,11 +76,11 @@ impl Board {
             
             if remain > 0 {
                 self.phase = Phase::Untie { id, it, bound_point : remain };
-                self.continue_turn(need_show)
+                self.continue_turn(need_show, false)
             }else{
                 self.phase = Phase::End { id };
 
-                self.continue_turn(need_show)
+                self.continue_turn(need_show, false)
             }
         }else{
             unimplemented!()

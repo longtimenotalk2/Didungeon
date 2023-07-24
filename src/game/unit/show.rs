@@ -4,7 +4,7 @@ use colorful::{Color, Colorful};
 use super::Unit;
 use super::bound::BoundPart;
 
-const IDENTY: usize = 28;
+const IDENTY: usize = 29;
 
 fn remove0_color(num : i32, color : Option<Color>) -> String {
     let a = if num > 0 {
@@ -36,15 +36,44 @@ impl Unit {
     pub fn show(&self, is_act : bool) {
         Self::is_act(is_act);
         print!(" ");
-        self.action();
-        self.identity_for_pure_chinese();
+        print!("{}", self.action());
+        print!("{}", self.identity_for_pure_chinese());
         print!(" ");
         print!("{} ", self.aim());
-        self.state();
+        print!("{} ", self.state());
         print!(" {}", self.bound());
         print!(" ");
         print!("{}", self.attr());
         print!("\n");
+    }
+
+    pub fn identity_wo_attr(&self) -> String {
+        let s = format!("{}{} {} {} {}", self.action(), self.identity_for_pure_chinese(), self.aim(), self.state(), self.bound());
+        s
+    }
+
+    pub fn identity_basic_attr(&self, is_actor : bool) -> String {
+        let mut s = String::new();
+        // Spd
+        if is_actor {
+            s += &remove0_color(self.spd(), Some(Color::Yellow));
+        } else {
+            s += &remove0_color(self.spd(), Some(Color::Grey0));
+        }
+        // Hurt
+        s += &remove0_color(self.inj, Some(Color::Red));
+        // Basic 
+        if is_actor {
+            s += &remove0_color(self.str_adj(), None);
+            s += &remove0_color(self.dex_adj(), None); 
+            s += &remove0_color(self.agi_adj(), None); 
+        }else{
+            s += &remove0_color(self.str_adj(), Some(Color::Grey0));
+            s += &remove0_color(self.dex_adj(), Some(Color::Grey0)); 
+            s += &remove0_color(self.agi_adj(), Some(Color::Grey0)); 
+        }
+        
+        s
     }
 
     pub fn show_title1() {
@@ -70,15 +99,15 @@ impl Unit {
         }
     }
 
-    fn identity_for_pure_chinese(&self) {
-        print!("{}", self.name_fix_length)
+    fn identity_for_pure_chinese(&self) -> &str {
+        &self.name_fix_length
     }
 
-    fn action(&self) {
+    fn action(&self) -> &str {
         if self.action {
-            print!("|");
+            "|"
         }else{
-            print!(" ");
+            " "
         }
     }
 
@@ -86,23 +115,23 @@ impl Unit {
         self.dir.notice().to_string()
     }
 
-    fn state(&self) {
+    fn state(&self) -> &str {
         if self.is_defeated() {
-            print!("寄")
+            "寄"
         }else if self.is_stun() {
-            print!("💫")
+            "💫"
         }else if self.shock {
-            print!("惊")
+            "惊"
         }else if self.is_sleep() {
-            print!("💤")
+            "💤"
         }else if self.is_fall() {
-            print!("倒‍")
+            "倒‍"
         }else if let Some(_) = self.catch_left {
-            print!("👆")
+            "👆"
         }else if let Some(_) = self.catch_right {
-            print!("👇")
+            "👇"
         }else {
-            print!("  ")
+            "  "
         }
     }
 

@@ -9,8 +9,7 @@ impl Unit {
     }
 
     pub fn shock(&mut self) -> bool {
-        if self.sleep {
-            self.sleep = true;
+        if self.sleep && !self.shock {
             self.shock = true;
             true
         }else{

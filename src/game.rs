@@ -47,7 +47,7 @@ impl Game {
     pub fn main_auto(&mut self) -> Option<bool> {
         let mut count = 0;
         while self.board.get_turn() < 100 {
-            let result = self.board.continue_turn(false);
+            let result = self.board.continue_turn(false, false);
 
             // 判断胜负
             let winner = result.winner();
@@ -65,7 +65,7 @@ impl Game {
     }
 
     pub fn main_loop(&mut self) -> Option<bool> {
-        let mut result = self.board.continue_turn(true);
+        let mut result = self.board.continue_turn(true, false);
 
         loop  {
             // 判断胜负
@@ -88,14 +88,14 @@ impl Game {
                     "load" => {
                         self.load();
                         self.history = vec!();
-                        result = self.board.continue_turn(true);
+                        result = self.board.continue_turn(true, true);
                         continue;
                     },
                     "undo" => {
                         while let Some((b, is_choose)) = self.history.pop() {
                             if is_choose {
                                 self.board = b;
-                                result = self.board.continue_turn(true);
+                                result = self.board.continue_turn(true, true);
                                 break;
                             }
                         }
@@ -105,7 +105,7 @@ impl Game {
                         if let Some((b, _)) = self.history.pop() 
                         {
                             self.board = b;
-                            result = self.board.continue_turn(true);
+                            result = self.board.continue_turn(true, true);
                         }else{
                             println!("初始状态，撤销失败");
                         }
@@ -138,7 +138,7 @@ impl Game {
                 None => {
                     self.history.push((self.board.clone(), false));
                     self.board.set_to_start();
-                    result = self.board.continue_turn(true);
+                    result = self.board.continue_turn(true, false);
                 },
             }
         }

@@ -42,7 +42,7 @@ impl Board {
         self.phase = Phase::Prepare {id};
 
         self.string_cache += &str;
-        self.continue_turn(need_show)
+        self.continue_turn(need_show, false)
     }
 
     pub fn turn_prepare(&mut self, need_show : bool, id : Id) -> Return {
@@ -50,14 +50,15 @@ impl Board {
         if let Some(it) = self.get_unit(id).get_catch() {
             let bound_point = Tie::new().bound_point(self.get_unit(id)); 
             self.phase = Phase::Tie { id, it, bound_point};
-            // [捆绑] 诺艾尔 (捆绑点数 : 200)
+            // [捆绑] 诺艾尔 [...] (捆绑点数 : 200)
             let target_idy = self.get_unit(it).identity();
+            let bound_idy = self.get_unit(it).bound_identity(None, true);
             let s = &mut self.string_cache;
-            writeln!(s, "[捆绑] {target_idy} (捆绑点数 : {})", bound_point.to_string().color(Color::Yellow)).unwrap();
-            self.continue_turn(need_show)
+            writeln!(s, "[捆绑] {target_idy} {bound_idy} (捆绑点数 : {})", bound_point.to_string().color(Color::Yellow)).unwrap();
+            self.continue_turn(need_show, false)
         } else {
             self.phase = Phase::Auto { id };
-            self.continue_turn(need_show)
+            self.continue_turn(need_show, false)
         }
     }
 

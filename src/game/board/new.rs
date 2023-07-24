@@ -71,15 +71,15 @@ impl Board {
 
         // No. 0
 
-        // board.insert_unit(Unit::new_noal_bound(0, 0));
+        board.insert_unit(Unit::new_noal_bound(0, 0));
         // board.insert_unit(Unit::new_noal(0, 0));
-        board.insert_unit(Unit::new_ailisha(0, 0));
+        // board.insert_unit(Unit::new_ailisha(0, 0));
 
         // No.1
         board.insert_unit(Unit::new_kuinuo_sleep(1, 4));
 
         // No.2
-        board.insert_unit(Unit::new_yelin_tie(2, 3));
+        board.insert_unit(Unit::new_yelin_tie(2, 2));
 
         board
     }

@@ -147,4 +147,15 @@ impl Board {
         }
         None
     }
+
+    // 判断指定敌方是否在我方视野中，如果是，则其是否背后
+    pub fn find_if_target_insight_return_if_notice(&self, id : Id, it : Id, range : i32) -> Option<bool> {
+        let list = self.find_target_with_range(id, range);
+        for (it_, dir) in list {
+            if it_ == it {
+                return Some(self.get_unit(it).is_notice(&dir))
+            }
+        }
+        None
+    }
 }

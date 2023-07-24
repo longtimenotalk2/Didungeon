@@ -9,10 +9,24 @@ use super::{Choose, Return};
 use std::fmt::Write;
 
 impl Board {
-    pub fn turn_main(&mut self, need_show : bool, id : Id) -> Return {
+    pub fn turn_main(&mut self, need_show : bool, id : Id, is_load : bool) -> Return {
+
+        // 在缓存里存入当前场景，但要避免二次写入
+        if !is_load {
+            self.string_cache += "\n";
+            self.string_cache  += &self.txt_main_phase(id);
+            self.string_cache += "\n";
+        }
+        
+        // 刷新print
+        if need_show {
+            print!("{}", self.string_cache);
+        }
 
         let mut show = String::new();
         let sh = &mut show;
+
+
         // 生成选择
 
         let actor = self.get_unit(id);
@@ -41,14 +55,15 @@ impl Board {
                 chooses.push(ChooseSkill::Move { pos, dir});
             }
         }
+
+        
         
 
         // 分支，如果是玩家，返回行动，否则自动选择行动执行
 
+        let actor = self.get_unit(id);
+
         if actor.is_human() {
-            println!();
-            self.show(Some(id));
-            println!();
             println!("{}", show);
             println!("{}", "请选择 : ".to_string().color(Color::Yellow));
 
@@ -90,7 +105,7 @@ impl Board {
             
             self.string_cache += &str;
 
-            self.continue_turn(need_show)
+            self.continue_turn(need_show, false)
         }else{
             unreachable!();
         }
