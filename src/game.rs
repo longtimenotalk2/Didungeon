@@ -2,7 +2,7 @@ use std::io;
 
 use crate::common;
 
-use self::board::Board;
+use self::board::{Board, turn::CtrlPara};
 
 pub mod unit;
 pub mod board;
@@ -47,7 +47,9 @@ impl Game {
     pub fn main_auto(&mut self) -> Option<bool> {
         let mut count = 0;
         while self.board.get_turn() < 100 {
-            let result = self.board.continue_turn(false, false);
+            let mut para = CtrlPara::new();
+            para.need_show = false;
+            let result = self.board.continue_turn(para);
 
             // 判断胜负
             let winner = result.winner();
@@ -65,7 +67,7 @@ impl Game {
     }
 
     pub fn main_loop(&mut self) -> Option<bool> {
-        let mut result = self.board.continue_turn(true, false);
+        let mut result = self.board.continue_turn(CtrlPara::new());
 
         loop  {
             // 判断胜负
@@ -79,6 +81,8 @@ impl Game {
             let strs: Vec<&str> = input.split_whitespace().collect();
 
             if strs.len() > 0 {
+                let mut load_para = CtrlPara::new();
+                load_para.is_load = true;
                 match strs[0] {
                     "save" => {
                         self.save();
@@ -88,14 +92,14 @@ impl Game {
                     "load" => {
                         self.load();
                         self.history = vec!();
-                        result = self.board.continue_turn(true, true);
+                        result = self.board.continue_turn(load_para);
                         continue;
                     },
                     "undo" => {
                         while let Some((b, is_choose)) = self.history.pop() {
                             if is_choose {
                                 self.board = b;
-                                result = self.board.continue_turn(true, true);
+                                result = self.board.continue_turn(load_para);
                                 break;
                             }
                         }
@@ -105,7 +109,7 @@ impl Game {
                         if let Some((b, _)) = self.history.pop() 
                         {
                             self.board = b;
-                            result = self.board.continue_turn(true, true);
+                            result = self.board.continue_turn(load_para);
                         }else{
                             println!("初始状态，撤销失败");
                         }
@@ -118,7 +122,11 @@ impl Game {
             match result.get_choose() {
                 Some(chooses) => {
                     if strs.len() == 0 {
-                        println!("请输入选项对应的数字！");
+                        println!("执行默认选项");
+                        let mut para_auto = CtrlPara::new();
+                        para_auto.force_auto = true;
+                        para_auto.is_load = true;
+                        result = self.board.continue_turn(para_auto);
                     }else{
                         let i = strs[0];
                         match i.parse::<usize>() {
@@ -129,7 +137,7 @@ impl Game {
                                     println!("数值越界！")
                                 }else {
                                     self.history.push((self.board.clone(), true));
-                                    result = self.board.response_choose(true, chooses[i].clone());
+                                    result = self.board.response_choose(CtrlPara::new(), chooses[i].clone());
                                 }
                             }, 
                         }
@@ -138,7 +146,7 @@ impl Game {
                 None => {
                     self.history.push((self.board.clone(), false));
                     self.board.set_to_start();
-                    result = self.board.continue_turn(true, false);
+                    result = self.board.continue_turn(CtrlPara::new());
                 },
             }
         }

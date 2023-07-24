@@ -4,22 +4,22 @@ use colorful::{Color, Colorful};
 
 use crate::game::{unit::Id, board::{Phase, Board, turn::ChooseSkill}, ai::AI};
 
-use super::{Choose, Return};
+use super::{Choose, Return, CtrlPara};
 
 use std::fmt::Write;
 
 impl Board {
-    pub fn turn_main(&mut self, need_show : bool, id : Id, is_load : bool) -> Return {
+    pub fn turn_main(&mut self, para : CtrlPara, id : Id) -> Return {
 
         // 在缓存里存入当前场景，但要避免二次写入
-        if !is_load {
+        if !para.is_load {
             self.string_cache += "\n";
             self.string_cache  += &self.txt_main_phase(id);
             self.string_cache += "\n";
         }
         
         // 刷新print
-        if need_show {
+        if para.need_show {
             print!("{}", self.string_cache);
         }
 
@@ -56,31 +56,28 @@ impl Board {
             }
         }
 
-        
-        
-
         // 分支，如果是玩家，返回行动，否则自动选择行动执行
 
         let actor = self.get_unit(id);
 
-        if actor.is_human() {
+        if actor.get_ally() && !para.force_auto {
             println!("{}", show);
             println!("{}", "请选择 : ".to_string().color(Color::Yellow));
 
             // 只有一个选项时自动选择
             if chooses.len() == 1 {
-                self.response_choose(need_show, Choose::Skill(chooses[0].clone()))
+                self.response_choose(para, Choose::Skill(chooses[0].clone()))
             }else{
                 Return::new_with_choose(chooses.into_iter().map(|a| Choose::Skill(a)).collect())
             }
         }else{
             // AI自动按顺序选择
             let choose = AI::new().analyse_skill(self, id, &chooses).unwrap();
-            self.response_main(need_show, choose)
+            self.response_main(para, choose)
         }
     }
 
-    pub fn response_main(&mut self, need_show : bool, choose : ChooseSkill) -> Return {
+    pub fn response_main(&mut self, para : CtrlPara, choose : ChooseSkill) -> Return {
         let mut str = String::new();
         let s = &mut str;
         if let Phase::Main {id} = self.phase {
@@ -105,7 +102,7 @@ impl Board {
             
             self.string_cache += &str;
 
-            self.continue_turn(need_show, false)
+            self.continue_turn(para)
         }else{
             unreachable!();
         }

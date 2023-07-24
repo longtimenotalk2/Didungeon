@@ -2,7 +2,7 @@ use colorful::{Color, Colorful};
 
 use crate::game::{unit::Id, board::{Phase, Board, turn::ChooseUnbound}, skill::skill_list::unbound::Unbound};
 
-use super::{Choose, Return};
+use super::{Choose, Return, CtrlPara};
 
 use std::fmt::Write;
 
@@ -11,7 +11,7 @@ impl Board {
         self.phase = Phase::Unbound { id, bound_point};
     }
 
-    pub fn turn_unbound(&mut self, need_show : bool, id : Id, bound_point : i32) -> Return {
+    pub fn turn_unbound(&mut self, para : CtrlPara, id : Id, bound_point : i32) -> Return {
         let mut show = String::new();
         let sh = &mut show;
 
@@ -35,13 +35,13 @@ impl Board {
         }
 
          // 分支，如果是玩家，返回行动，否则自动选择行动执行
-         if actor.is_human() {
+         if actor.is_human() && !para.force_auto{
             println!("{}", show);
             println!("{}", "请选择 : ".to_string().color(Color::Yellow));
 
             // 只有一个选项时自动选择
             if choose.len() == 1 {
-                self.response_choose(need_show, Choose::Unbound(choose[0].clone()))
+                self.response_choose(para, Choose::Unbound(choose[0].clone()))
             }else{
                 Return::new_with_choose(choose.into_iter().map(|a| Choose::Unbound(a)).collect())
             }
@@ -50,11 +50,11 @@ impl Board {
                 Some(bound) => ChooseUnbound::Unbound(bound),
                 None => ChooseUnbound::Pass,
             };
-            self.response_unbound(need_show, choose)
+            self.response_unbound(para, choose)
         }
     }
 
-    pub fn response_unbound(&mut self, need_show : bool,  choose : ChooseUnbound) -> Return {
+    pub fn response_unbound(&mut self, para : CtrlPara,  choose : ChooseUnbound) -> Return {
         let mut str = String::new();
         let s = &mut str;
 
@@ -74,7 +74,7 @@ impl Board {
             
             if remain > 0 {
                 self.phase = Phase::Unbound { id, bound_point : remain };
-                self.continue_turn(need_show, false)
+                self.continue_turn(para)
             }else{
                 // 自动起身
                 if self.get_unit(id).is_fall() {
@@ -86,7 +86,7 @@ impl Board {
 
                 self.phase = Phase::End { id };
 
-                self.continue_turn(need_show, false)
+                self.continue_turn(para)
             }
             
             

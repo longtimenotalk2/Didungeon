@@ -2,12 +2,12 @@ use colorful::{Color, Colorful};
 
 use crate::game::{unit::Id, board::{Phase, Board, turn::ChooseTie}, skill::skill_list::tie::{Tie, TieWay}};
 
-use super::{Choose, Return};
+use super::{Choose, Return, CtrlPara};
 
 use std::fmt::Write;
 
 impl Board {
-    pub fn turn_tie(&mut self, need_show : bool, id : Id, it : Id, bound_point : i32) -> Return {
+    pub fn turn_tie(&mut self, para : CtrlPara, id : Id, it : Id, bound_point : i32) -> Return {
 
         let mut show = String::new();
         let sh = &mut show;
@@ -55,13 +55,13 @@ impl Board {
         }
 
         // 分支，如果是玩家，返回行动，否则自动选择行动执行
-        if actor.is_human() {
+        if actor.is_human() && !para.force_auto{
             println!("{}", show);
             println!("{}", "请选择 : ".to_string().color(Color::Yellow));
 
             // 只有一个选项时自动选择
             if choose.len() == 1 {
-                self.response_choose(need_show, Choose::Tie(choose[0].clone()))
+                self.response_choose(para, Choose::Tie(choose[0].clone()))
             }else{
                 Return::new_with_choose(choose.into_iter().map(|a| Choose::Tie(a)).collect())
             }
@@ -69,7 +69,7 @@ impl Board {
             // 优先加固（除非到解绑阶段）
             if let Some(chic) = choose.get(1) {
                 if let ChooseTie::Tight(_) = chic {
-                    return self.response_tie(need_show, chic.clone());
+                    return self.response_tie(para, chic.clone());
                 }
             }
             
@@ -80,11 +80,11 @@ impl Board {
                 },
                 None => ChooseTie::Pass,
             };
-            self.response_tie(need_show, choose)
+            self.response_tie(para, choose)
         }
     }
 
-    pub fn response_tie(&mut self, need_show : bool, choose : ChooseTie) -> Return {
+    pub fn response_tie(&mut self, para : CtrlPara, choose : ChooseTie) -> Return {
         let mut str = String::new();
         let s = &mut str;
         if let Phase::Tie { id, it, bound_point } = self.phase {
@@ -112,7 +112,7 @@ impl Board {
                 self.phase = Phase::Main { id };
             }
             self.string_cache += &str;
-            self.continue_turn(need_show, false)
+            self.continue_turn(para)
         }else{
             unreachable!();
         }

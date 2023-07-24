@@ -2,7 +2,7 @@ use colorful::{Color, Colorful};
 
 use crate::game::{board::{Board, Phase, turn::Choose}, unit::Id, skill::skill_list::untie::Untie};
 
-use super::{Return, ChooseUntie};
+use super::{Return, ChooseUntie, CtrlPara};
 
 use std::fmt::Write;
 
@@ -11,7 +11,7 @@ impl Board {
         self.phase = Phase::Untie { id, it, bound_point};
     }
 
-    pub fn turn_untie(&mut self, need_show : bool, id : Id, it : Id, bound_point : i32) -> Return {
+    pub fn turn_untie(&mut self, para : CtrlPara, id : Id, it : Id, bound_point : i32) -> Return {
         let mut show = String::new();
         let sh = &mut show;
 
@@ -37,13 +37,13 @@ impl Board {
 
          // 分支，如果是玩家，返回行动，否则自动选择行动执行
          let actor = self.get_unit(id);
-         if actor.is_human() {
+         if actor.is_human() && !para.force_auto{
             println!("{}", show);
             println!("{}", "请选择 : ".to_string().color(Color::Yellow));
 
             // 只有一个选项时自动选择
             if choose.len() == 1 {
-                self.response_choose(need_show, Choose::Untie(choose[0].clone()))
+                self.response_choose(para, Choose::Untie(choose[0].clone()))
             }else{
                 Return::new_with_choose(choose.into_iter().map(|a| Choose::Untie(a)).collect())
             }
@@ -52,11 +52,11 @@ impl Board {
                 Some(bound) => ChooseUntie::Untie(bound),
                 None => ChooseUntie::Pass,
             };
-            self.response_untie(need_show, choose)
+            self.response_untie(para, choose)
         }
     }
 
-    pub fn response_untie(&mut self, need_show : bool,  choose : ChooseUntie) -> Return {
+    pub fn response_untie(&mut self, para : CtrlPara,  choose : ChooseUntie) -> Return {
         let mut str = String::new();
         let s = &mut str;
 
@@ -76,11 +76,11 @@ impl Board {
             
             if remain > 0 {
                 self.phase = Phase::Untie { id, it, bound_point : remain };
-                self.continue_turn(need_show, false)
+                self.continue_turn(para)
             }else{
                 self.phase = Phase::End { id };
 
-                self.continue_turn(need_show, false)
+                self.continue_turn(para)
             }
         }else{
             unimplemented!()

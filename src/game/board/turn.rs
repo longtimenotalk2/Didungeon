@@ -55,6 +55,19 @@ pub struct Return {
     winner : Option<bool>,
 }
 
+pub struct CtrlPara {
+    pub need_show : bool,
+    pub is_load : bool,
+    pub force_auto : bool,
+}
+
+impl CtrlPara {
+    pub fn new() -> Self {
+        Self { need_show: true, is_load: false, force_auto: false }
+    }
+}
+
+
 impl Return {
     fn new() -> Self {
         Self {
@@ -87,34 +100,34 @@ impl Return {
 }
 
 impl Board {
-    pub fn continue_turn(&mut self, need_show : bool, is_load : bool) -> Return {
-        if need_show {
+    pub fn continue_turn(&mut self, para : CtrlPara) -> Return {
+        if para.need_show {
             print!("{}", self.string_cache);
         }
         
 
         match self.phase {
-            Phase::Start => self.turn_start(need_show),
-            Phase::Prepare { id } => self.turn_prepare(need_show, id),
-            Phase::Tie { id, it, bound_point } => self.turn_tie(need_show, id, it, bound_point),
-            Phase::Auto { id } => self.turn_auto(need_show, id),
-            Phase::Main { id } => self.turn_main(need_show, id, is_load),
-            Phase::Unbound { id, bound_point } => self.turn_unbound(need_show, id, bound_point),
-            Phase::Untie { id, it, bound_point } => self.turn_untie(need_show, id, it, bound_point),
-            Phase::End {id} => self.turn_end(need_show, id),
+            Phase::Start => self.turn_start(para),
+            Phase::Prepare { id } => self.turn_prepare(para, id),
+            Phase::Tie { id, it, bound_point } => self.turn_tie(para, id, it, bound_point),
+            Phase::Auto { id } => self.turn_auto(para, id),
+            Phase::Main { id } => self.turn_main(para, id),
+            Phase::Unbound { id, bound_point } => self.turn_unbound(para, id, bound_point),
+            Phase::Untie { id, it, bound_point } => self.turn_untie(para, id, it, bound_point),
+            Phase::End {id} => self.turn_end(para, id),
         }
     }
 
-    pub fn response_choose(&mut self, need_show : bool, choose : Choose) -> Return {
-        if need_show {
+    pub fn response_choose(&mut self, para : CtrlPara, choose : Choose) -> Return {
+        if para.need_show {
             print!("{}", self.string_cache);
         }
 
         match choose {
-            Choose::Skill(skl) => self.response_main(need_show, skl),
-            Choose::Tie(tie) => self.response_tie(need_show, tie),
-            Choose::Unbound(ubd) => self.response_unbound(need_show, ubd),
-            Choose::Untie(ubd) => self.response_untie(need_show, ubd),
+            Choose::Skill(skl) => self.response_main(para, skl),
+            Choose::Tie(tie) => self.response_tie(para, tie),
+            Choose::Unbound(ubd) => self.response_unbound(para, ubd),
+            Choose::Untie(ubd) => self.response_untie(para, ubd),
         }
     }
 

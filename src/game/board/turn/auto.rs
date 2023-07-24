@@ -1,11 +1,11 @@
 use crate::game::{board::{Board, Phase}, unit::Id, skill::skill_list::{struggle::Struggle, force_unbound::ForceUnbound}};
 
-use super::Return;
+use super::{Return, CtrlPara};
 
 use std::fmt::Write;
 
 impl Board {
-    pub fn turn_auto(&mut self, need_show : bool, id : Id) -> Return {
+    pub fn turn_auto(&mut self, para : CtrlPara, id : Id) -> Return {
         let mut str = String::new();
         let s = &mut str;
 
@@ -36,6 +36,6 @@ impl Board {
         self.phase = Phase::Main {id};
         self.string_cache += &str;
 
-        self.continue_turn(need_show, false)
+        self.continue_turn(para)
     }
 }
