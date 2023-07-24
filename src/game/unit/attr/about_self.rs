@@ -10,6 +10,13 @@ impl Unit {
         r.ceil().to_integer()
     }
 
+    pub fn spd_after_wait(&self) -> i32 {
+        match self.wait {
+            true => -self.spd(),
+            false => self.spd(),
+        }
+    }
+
     pub fn can_stand(&self) -> bool {
         // 必须上肢下肢有一边完全自由才行，可以100%起身
         // 否则只能杂技起身，暂时不考虑

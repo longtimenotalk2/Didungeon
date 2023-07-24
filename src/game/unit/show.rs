@@ -7,7 +7,7 @@ use super::bound::BoundPart;
 const IDENTY: usize = 29;
 
 fn remove0_color(num : i32, color : Option<Color>) -> String {
-    let a = if num > 0 {
+    let a = if num != 0 {
         format!("{:^3}", num)
     }else{
         "   ".to_string()
@@ -20,7 +20,7 @@ fn remove0_color(num : i32, color : Option<Color>) -> String {
 }
 
 fn remove0(num : i32) -> String {
-    let a = if num > 0 {
+    let a = if num != 0 {
         format!("{:^3}", num)
     }else{
         "   ".to_string()
@@ -52,18 +52,31 @@ impl Unit {
         s
     }
 
-    pub fn identity_basic_attr(&self, is_actor : bool) -> String {
+    pub fn identity_basic_attr(&self, is_actor : bool, is_next : bool) -> String {
         let mut s = String::new();
         // Spd
         if is_actor {
-            s += &remove0_color(self.spd(), Some(Color::Yellow));
+            s += &remove0(self.spd());
         } else {
             if self.action {
-                s += &remove0_color(self.spd(), Some(Color::Grey0));
+                if is_next {
+                    s += &remove0_color(self.spd(), Some(Color::Yellow))
+                }else{
+                    match self.wait {
+                        true => s += &remove0_color(self.spd(), Some(Color::Green)),
+                        false => s += &remove0_color(self.spd(), Some(Color::Red)),
+                    }
+                }
+                
             }else{
-                s += &remove0(0);
+                s += &remove0_color(self.spd(), Some(Color::Grey0));
             }
-            
+        }
+        // Mov
+        if is_actor {
+            s += &remove0_color(self.move_range(), None);
+        }else{
+            s += &remove0_color(self.move_range(), Some(Color::Grey0));
         }
         // Hurt
         s += &remove0_color(self.inj, Some(Color::Red));

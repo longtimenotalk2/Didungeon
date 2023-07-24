@@ -109,7 +109,7 @@ impl Board {
                 self.phase = Phase::Tie { id, it, bound_point : remain };
             }else{
                 Tie::new().end(s, self, id, it);
-                self.phase = Phase::Main { id };
+                self.phase = Phase::Main { id , can_wait: true };
             }
             self.string_cache += &str;
             self.continue_turn(para)

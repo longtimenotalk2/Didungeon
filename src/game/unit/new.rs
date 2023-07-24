@@ -131,6 +131,7 @@ impl Unit {
                 false => Dir::Left,
             },
             action: true,
+            wait : false,
             catch_left: None,
             catch_right: None,
             catched_left: None,

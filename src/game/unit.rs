@@ -65,6 +65,7 @@ pub struct Unit {
     inj : i32,
     dir : Dir,
     action : bool,
+    wait : bool,
 
     catch_left : Option<Id>,
     catch_right : Option<Id>,

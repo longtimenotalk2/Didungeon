@@ -9,7 +9,7 @@ use super::{Choose, Return, CtrlPara};
 use std::fmt::Write;
 
 impl Board {
-    pub fn turn_main(&mut self, para : CtrlPara, id : Id) -> Return {
+    pub fn turn_main(&mut self, para : CtrlPara, id : Id, can_wait : bool) -> Return {
 
         // 在缓存里存入当前场景，但要避免二次写入
         if !para.is_load {
@@ -34,8 +34,14 @@ impl Board {
 
         writeln!(sh, "当前可选择的指令：").unwrap();
 
-        let mut chooses = vec!(ChooseSkill::Pass);
-        writeln!(sh, "  [{:^3}] : {}", 0, "跳过回合").unwrap();
+        let mut chooses = if can_wait && !actor.is_wait() {
+            writeln!(sh, "  [{:^3}] : {}", 0, "等待").unwrap();
+            vec!(ChooseSkill::Wait)
+        }else{
+            writeln!(sh, "  [{:^3}] : {}", 0, "跳过回合").unwrap();
+            vec!(ChooseSkill::Pass)
+        };
+
         let mut count = 1;
         // 技能选项
         for skill in skills {
@@ -80,13 +86,18 @@ impl Board {
     pub fn response_main(&mut self, para : CtrlPara, choose : ChooseSkill) -> Return {
         let mut str = String::new();
         let s = &mut str;
-        if let Phase::Main {id} = self.phase {
+        if let Phase::Main {id, can_wait : _} = self.phase {
             match choose {
                 ChooseSkill::Pass => {
                     writeln!(s, "跳过回合").unwrap();
                     writeln!(s).unwrap();
                     self.set_to_end(id);
                 },
+                ChooseSkill::Wait => {
+                    writeln!(s, "等待").unwrap();
+                    writeln!(s).unwrap();
+                    self.set_to_wait(id);
+                }
                 ChooseSkill::Skill { skill, it, dir } => {
                     skill.exe(s, self, id, it, &dir);
                 },

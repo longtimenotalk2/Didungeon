@@ -8,7 +8,7 @@ impl Board {
         for unit in &self.units {
             if unit.is_action() {
                 let id = unit.get_id();
-                let spd = unit.spd();
+                let spd = unit.spd_after_wait();
                 match next {
                     Some((_, s)) => {
                         if spd > s {
@@ -16,6 +16,30 @@ impl Board {
                         }
                     },
                     None => {next = Some((id, spd));},
+                }
+            }
+        }
+        match next {
+            Some((id, _)) => Some(id),
+            None => None,
+        }
+    }
+
+    pub fn find_next_actor_except(&self, it : Id) -> Option<Id> {
+        let mut next : Option<(Id, i32)> = None;
+        for unit in &self.units {
+            if unit.is_action() {
+                let id = unit.get_id();
+                if it != id {
+                    let spd = unit.spd_after_wait();
+                    match next {
+                        Some((_, s)) => {
+                            if spd > s {
+                                next = Some((id, spd));
+                            }
+                        },
+                        None => {next = Some((id, spd));},
+                    }
                 }
             }
         }

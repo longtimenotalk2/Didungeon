@@ -16,6 +16,7 @@ mod untie;
 #[derive(Clone, Debug)]
 pub enum ChooseSkill {
     Pass,
+    Wait,
     Skill {skill : Skill, it : Id, dir : Dir,},
     Move {pos : Pos, dir : Dir,},
 }
@@ -111,9 +112,10 @@ impl Board {
             Phase::Prepare { id } => self.turn_prepare(para, id),
             Phase::Tie { id, it, bound_point } => self.turn_tie(para, id, it, bound_point),
             Phase::Auto { id } => self.turn_auto(para, id),
-            Phase::Main { id } => self.turn_main(para, id),
+            Phase::Main { id, can_wait } => self.turn_main(para, id, can_wait),
             Phase::Unbound { id, bound_point } => self.turn_unbound(para, id, bound_point),
             Phase::Untie { id, it, bound_point } => self.turn_untie(para, id, it, bound_point),
+            Phase::Wait { id } => self.turn_wait(para, id),
             Phase::End {id} => self.turn_end(para, id),
         }
     }

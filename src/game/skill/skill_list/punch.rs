@@ -12,7 +12,7 @@ pub struct Punch {
 impl Punch {
     pub fn new() -> Self {
         Self {
-            basic_hit: 75,
+            basic_hit: 50,
             hit_rate: 5,
             basic_dmg: 10,
         }

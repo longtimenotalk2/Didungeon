@@ -49,9 +49,9 @@ impl Board {
         // 标题
         let repeat = 28;
         txt += &" ".repeat(repeat);
-        txt += "速 受 力 灵 敏 命 攻 压\n";
+        txt += "速 移 受 力 灵 敏 命 攻 压\n";
         txt += &" ".repeat(repeat);
-        txt += "度 伤 量 巧 捷 回 防 挣\n";
+        txt += "度 动 伤 量 巧 捷 回 防 挣\n";
         // 先清点当前行动者状态
         let actor = self.get_unit(id);
         let acc = actor.acc_melee_hand();
@@ -60,17 +60,19 @@ impl Board {
         let range = actor.move_range() + 1;
 
         let id_actor = id;
+
+        // 下一个该行动的角色
+        let next_id = self.find_next_actor_except(id_actor);
         
         for pos in self.pos_min .. (self.pos_min + self.pos_length) {
             if let Some(id) = self.get_id_from_pos(pos) {
                 let unit = self.get_unit(id);
                 let mut s = String::new();
                 if id == id_actor{
-                    
                     s += "> ";
                     s += &unit.identity_wo_attr();
                     s += " ";
-                    s += &unit.identity_basic_attr(true);
+                    s += &unit.identity_basic_attr(true, false);
 
                     s += &show_main_phase_attr(true, vec![
                         (acc, acc),
@@ -82,7 +84,11 @@ impl Board {
                     s += "  ";
                     s += &unit.identity_wo_attr();
                     s += " ";
-                    s += &unit.identity_basic_attr(false);
+                    if next_id.is_some_and(|a| a == id) {
+                        s += &unit.identity_basic_attr(false, true);
+                    }else{
+                        s += &unit.identity_basic_attr(false, false);
+                    }
 
                     // 判断是否为敌方以及是否notice
                     if let Some(is_notice) = self.find_if_target_insight_return_if_notice(id_actor, id, range) {

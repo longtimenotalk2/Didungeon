@@ -64,6 +64,10 @@ impl Unit {
         self.catched_left.is_some() || self.catched_right.is_some()
     }
 
+    pub fn is_wait(&self) -> bool {
+        self.wait
+    }
+
     pub fn can_tie_list(&self) -> Vec<BoundPart> {
         self.bound.can_tie_list()
     }

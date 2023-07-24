@@ -104,6 +104,7 @@ impl AI {
         for (i, skl) in chooses.iter().enumerate() {
             let analyse = match skl {
                 ChooseSkill::Pass => Analyse::get_from_board_and_skill(board, is_ally, None),
+                ChooseSkill::Wait => Analyse::get_from_board_and_skill(board, is_ally, None),
                 ChooseSkill::Skill { skill, it, dir } => Analyse::get_from_board_and_skill(&skill.analyse(board, id, *it, dir), is_ally, Some(skill)),
                 ChooseSkill::Move { pos, dir } => {
                     let mut board = board.clone();

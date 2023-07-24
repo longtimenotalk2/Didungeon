@@ -62,6 +62,38 @@ impl Board {
         }
     }
 
+    pub fn set_to_wait(&mut self, id : Id) {
+        self.phase = Phase::Wait { id }
+    }
+
+    pub fn turn_wait(&mut self, para : CtrlPara, id : Id) -> Return {
+        // 等待，进入下回合并按任意键继续
+        self.get_unit_mut(id).wait();
+        if para.need_show {
+            // 最终输出Cache
+            println!("{}", self.string_cache);
+        }
+
+        // 判断胜负
+        if let Some(a) = self.is_ally_win() {
+            if para.need_show {
+                match a {
+                    true => println!("胜利"),
+                    false => println!("失败"),
+                }
+            }
+            
+            Return::new_with_winner(a)
+        }else{
+            // 结束
+            if para.need_show {
+                println!("按任意键继续……");
+            }
+            
+            Return::new()
+        }
+    }
+
     pub fn set_to_end(&mut self, id : Id) {
         self.phase = Phase::End {id};
     }
@@ -77,9 +109,6 @@ impl Board {
         if para.need_show {
             // 最终输出Cache
             println!("{}", self.string_cache);
-            // 结果图
-            // self.show(None);
-            // println!();
         }
         
 

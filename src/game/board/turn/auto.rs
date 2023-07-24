@@ -15,14 +15,19 @@ impl Board {
             write!(s, "从眩晕中恢复\n").unwrap();
         }
 
+        // cant_wait
+        let mut can_wait = true;
+
         // 自动挣扎
         if self.get_unit(id).is_catched() {
             Struggle::new().exe(s, self, id);
+            can_wait = false;   
         }
 
         // 自动挣脱
         if self.get_unit(id).has_bound() {
-            ForceUnbound::new().exe(s, self, id)
+            ForceUnbound::new().exe(s, self, id);
+            can_wait = false;   
         }
 
         // 自动起身
@@ -31,9 +36,10 @@ impl Board {
             if self.get_unit_mut(id).check_to_stand() {
                 write!(s, "[起身]\n").unwrap();
             } 
+            can_wait = false;   
         }
 
-        self.phase = Phase::Main {id};
+        self.phase = Phase::Main {id, can_wait};
         self.string_cache += &str;
 
         self.continue_turn(para)

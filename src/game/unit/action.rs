@@ -53,6 +53,10 @@ impl Unit {
         self.fall = true;
     }
 
+    pub fn wait(&mut self) {
+        self.wait = true;
+    }
+
     pub fn catch_with(&mut self, id : Id, dir : &Dir) {
         match dir {
             Dir::Left => self.catch_left = Some(id),
@@ -105,6 +109,7 @@ impl Unit {
 
     pub fn end_action(&mut self) {
         self.action = false;
+        self.wait = false;
     }
 
     pub fn end_turn(&mut self) {

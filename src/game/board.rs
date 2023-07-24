@@ -20,9 +20,10 @@ enum Phase {
     Prepare {id : Id},
     Tie {id : Id, it : Id, bound_point : i32},
     Auto {id : Id},
-    Main {id : Id}, 
+    Main {id : Id, can_wait : bool}, 
     Unbound {id : Id, bound_point : i32},
     Untie {id : Id, it : Id, bound_point : i32},
+    Wait {id : Id},
     End {id : Id},
 }
 
