@@ -134,6 +134,7 @@ impl Unit {
     }
 
     fn state(&self) -> String {
+        // 发布版
         let a = if self.is_defeated() {
             "🏳️ "
         }else if self.is_stun() {
@@ -143,7 +144,7 @@ impl Unit {
         }else if self.is_sleep() {
             "💤 "
         }else if self.is_fall() {
-            "🧎"
+            "🧎 "
         }else if let Some(_) = self.catch_left {
             "👆 "
         }else if let Some(_) = self.catch_right {
@@ -151,7 +152,27 @@ impl Unit {
         }else {
             "   "
         };
-        format!("{}{}", a, "".to_string().color(Color::White).to_string())
+        a.to_string()
+
+        // 自用
+        // let a = if self.is_defeated() {
+        //     "🏳️ "
+        // }else if self.is_stun() {
+        //     "💫 "
+        // }else if self.shock {
+        //     "惊 "
+        // }else if self.is_sleep() {
+        //     "💤 "
+        // }else if self.is_fall() {
+        //     "🧎"
+        // }else if let Some(_) = self.catch_left {
+        //     "👆 "
+        // }else if let Some(_) = self.catch_right {
+        //     "👇 "
+        // }else {
+        //     "   "
+        // };
+        // format!("{}{}", a, "".to_string().color(Color::White).to_string())
     }
 
     fn bound(&self) -> String {
