@@ -243,7 +243,7 @@ impl Game {
                             Err(_) => println!("请输入一个自然数！"),
                             Ok(i) => {
                                 let num = chooses.len();
-                                if i > num {
+                                if i >= num {
                                     println!("数值越界！")
                                 }else {
                                     self.history.push((self.board.clone(), true));
