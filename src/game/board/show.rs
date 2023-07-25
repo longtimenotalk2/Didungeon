@@ -62,7 +62,7 @@ impl Board {
         let id_actor = id;
 
         // 下一个该行动的角色
-        let next_id = self.find_next_actor_except(id_actor);
+        let next_id = self.find_next_actor_except(id_actor).or_else(|| self.find_most_spd());
         
         for pos in self.pos_min .. (self.pos_min + self.pos_length) {
             if let Some(id) = self.get_id_from_pos(pos) {

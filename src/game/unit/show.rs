@@ -58,18 +58,17 @@ impl Unit {
         if is_actor {
             s += &remove0(self.spd());
         } else {
-            if self.action {
-                if is_next {
-                    s += &remove0_color(self.spd(), Some(Color::Yellow))
-                }else{
+            if is_next {
+                s += &remove0_color(self.spd(), Some(Color::Yellow))
+            }else{
+                if self.action {
                     match self.wait {
                         true => s += &remove0_color(self.spd(), Some(Color::Green)),
                         false => s += &remove0_color(self.spd(), Some(Color::Red)),
                     }
+                }else{
+                    s += &remove0_color(self.spd(), Some(Color::Grey0));
                 }
-                
-            }else{
-                s += &remove0_color(self.spd(), Some(Color::Grey0));
             }
         }
         // Mov

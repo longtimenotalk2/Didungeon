@@ -49,6 +49,26 @@ impl Board {
         }
     }
 
+    pub fn find_most_spd(&self) -> Option<Id> {
+        let mut next : Option<(Id, i32)> = None;
+        for unit in &self.units {
+            let id = unit.get_id();
+            let spd = unit.spd();
+            match next {
+                Some((_, s)) => {
+                    if spd > s {
+                        next = Some((id, spd));
+                    }
+                },
+                None => {next = Some((id, spd));},
+            }
+        }
+        match next {
+            Some((id, _)) => Some(id),
+            None => None,
+        }
+    }
+
     fn pos_valid(&self, pos : Pos) -> bool {
         pos >= self.pos_min && pos < (self.pos_min + self.pos_length)
     }
