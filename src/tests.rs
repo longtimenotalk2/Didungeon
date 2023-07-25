@@ -5,7 +5,26 @@ use std::fmt::Write;
 
 use colorful::{Color, Colorful};
 
-use crate::{game::{unit::{Unit, Dir}, board::Board}, common};
+use crate::{game::{unit::{Unit, Dir}, board::Board, Game}, common};
+
+#[test]
+fn test_4v4() {
+    let mut win = 0;
+    let mut draw = 0;
+    let mut lose = 0;
+
+    for seed in 0..1000 {
+        let mut game = Game::new_team(seed);
+        // let mut game = Game::new();
+        let result = game.main_auto();
+        match result {
+            Some(true) => win += 1,
+            Some(false) => lose += 1,
+            None => draw += 1,
+        }
+    }
+    println!("结果 : {} / {} / {}", win.to_string().color(Color::Green), draw.to_string().color(Color::Grey0), lose.to_string().color(Color::Red));
+}
 
 #[test]
 fn test_move() {

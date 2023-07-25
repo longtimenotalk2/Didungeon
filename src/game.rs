@@ -156,16 +156,23 @@ impl Game {
     pub fn main_auto(&mut self) -> Option<bool> {
         let mut para: CtrlPara = CtrlPara::new();
         let mut count = 0;
+        let mut result = self.board.continue_turn(&mut para);
         while self.board.get_turn() < 100 {
-            let result = self.board.continue_turn(&mut para);
-
+        
             // 判断胜负
             let winner = result.winner;
             if winner.is_some() {
                 return winner
             }
 
-            self.board.set_to_start();
+            match result.choose {
+                Some((_, default_choose)) => {         
+                    result = self.board.response_choose(&mut para, default_choose);
+                },
+                None => {
+                    result = self.board.continue_turn(&mut para);
+                },
+            }
             count += 1;
             if count > 1000 {
                 panic!("Too many loop!")
