@@ -1,4 +1,5 @@
 pub mod solo;
+pub mod egui;
 
 use std::fmt::Write;
 
