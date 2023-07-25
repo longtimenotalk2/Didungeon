@@ -15,7 +15,7 @@ use crate::wyrand::Dice;
 use super::unit::{Unit, Id};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-enum Phase {
+pub enum Phase {
     Start,
     Prepare {id : Id},
     Tie {id : Id, it : Id, bound_point : i32},
@@ -35,8 +35,7 @@ pub struct Board {
     pos_min : i32,
     pos_length : i32,
     turn : i32,
-    phase : Phase,
-    string_cache : String,
+    pub phase : Phase,
     acted_ids : Vec<Id>,
 }
 

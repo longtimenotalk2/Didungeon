@@ -1,4 +1,6 @@
 
+use serde::{Deserialize, Serialize};
+
 use crate::game::unit::Pos;
 use crate::game::unit::bound::BoundPart;
 use crate::game::{skill::Skill, unit::{Id, Dir}};
@@ -13,7 +15,7 @@ mod tie;
 mod unbound;
 mod untie;
 
-#[derive(Clone, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum ChooseSkill {
     Pass,
     Wait,
@@ -21,19 +23,19 @@ pub enum ChooseSkill {
     Move {pos : Pos, dir : Dir,},
 }
 
-#[derive(Clone, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum ChooseUnbound {
     Pass,
     Unbound(BoundPart),
 }
 
-#[derive(Clone, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum ChooseUntie {
     Pass,
     Untie(BoundPart),
 }
 
-#[derive(Clone, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum ChooseTie {
     Pass,
     Tight(BoundPart),
@@ -41,7 +43,7 @@ pub enum ChooseTie {
     Untie(BoundPart),
 }
 
-#[derive(Clone, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum Choose {
     Skill(ChooseSkill),
     Tie(ChooseTie),
@@ -50,22 +52,45 @@ pub enum Choose {
 }
 
 
-#[derive(Clone, Debug)]
-pub struct Return {
-    choose : Option<Vec<Choose>>,
-    winner : Option<bool>,
-}
+
 
 pub struct CtrlPara {
-    pub need_show : bool,
-    pub is_load : bool,
     pub force_auto : bool,
+    pub printer : Option<Printer>,
 }
 
 impl CtrlPara {
     pub fn new() -> Self {
-        Self { need_show: true, is_load: false, force_auto: false }
+        Self { 
+            force_auto: false,
+            printer: None,
+        }
     }
+
+    pub fn new_with_printer() -> Self {
+        Self { 
+            force_auto: false,
+            printer: Some(Printer::new()),
+        }
+    }
+
+    pub fn show_cache(&self) {
+        if let Some(p) = &self.printer {
+            println!("{}", p.cache);
+        }
+    }
+
+    pub fn show_temp(&self) {
+        if let Some(p) = &self.printer {
+            println!("{}", p.temp);
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct Return {
+    pub choose : Option<(Vec<Choose>, Choose)>,
+    pub winner : Option<bool>,
 }
 
 
@@ -77,9 +102,9 @@ impl Return {
         }
     }
 
-    fn new_with_choose(choose : Vec<Choose>) -> Self {
+    fn new_with_choose_and_default(choose : Vec<Choose>, default : Choose) -> Self {
         Self {
-            choose : Some(choose),
+            choose : Some((choose, default)),
             winner: None,
         }
     }
@@ -90,23 +115,33 @@ impl Return {
             winner: Some(is_ally_win),
         }
     }
+}
 
-    pub fn winner(&self) -> Option<bool> {
-        self.winner.clone()
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct Printer {
+    cache : String,
+    temp : String,
+}
+
+impl Printer {
+    pub fn new() -> Self {
+        Self {
+            cache: String::new(),
+            temp: String::new(),
+        }
     }
 
-    pub fn get_choose(&self) -> Option<&Vec<Choose>> {
-        self.choose.as_ref()
+    pub fn show_cache(&self) {
+        println!("{}", self.cache)
+    }
+
+    pub fn show_temp(&self) {
+        println!("{}", self.temp)
     }
 }
 
 impl Board {
-    pub fn continue_turn(&mut self, para : CtrlPara) -> Return {
-        if para.need_show {
-            print!("{}", self.string_cache);
-        }
-        
-
+    pub fn continue_turn(&mut self, para : &mut CtrlPara) -> Return {        
         match self.phase {
             Phase::Start => self.turn_start(para),
             Phase::Prepare { id } => self.turn_prepare(para, id),
@@ -120,11 +155,7 @@ impl Board {
         }
     }
 
-    pub fn response_choose(&mut self, para : CtrlPara, choose : Choose) -> Return {
-        if para.need_show {
-            print!("{}", self.string_cache);
-        }
-
+    pub fn response_choose(&mut self, para : &mut CtrlPara, choose : Choose) -> Return {
         match choose {
             Choose::Skill(skl) => self.response_main(para, skl),
             Choose::Tie(tie) => self.response_tie(para, tie),

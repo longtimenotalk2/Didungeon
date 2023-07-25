@@ -7,7 +7,7 @@ use super::{Choose, Return, CtrlPara};
 use std::fmt::Write;
 
 impl Board {
-    pub fn turn_tie(&mut self, para : CtrlPara, id : Id, it : Id, bound_point : i32) -> Return {
+    pub fn turn_tie(&mut self, para : &mut CtrlPara, id : Id, it : Id, bound_point : i32) -> Return {
 
         let mut show = String::new();
         let sh = &mut show;
@@ -54,37 +54,47 @@ impl Board {
             count += 1;
         }
 
+        // 默认选择
+        // 优先加固（除非到解绑阶段）
+
+        let ai_choose = if let Some(chic) = choose.get(1) {
+            if let ChooseTie::Tight(_) = chic {
+                chic.clone()
+            }else{
+                match target.ai_tie_choice() {
+                    Some((bound, is_tie)) => match is_tie {
+                        true => ChooseTie::Tie(bound),
+                        false => ChooseTie::Untie(bound),
+                    },
+                    None => ChooseTie::Pass,
+                }
+            }
+        }else{
+            choose[0].clone()
+        };
+
         // 分支，如果是玩家，返回行动，否则自动选择行动执行
         if actor.is_human() && !para.force_auto{
-            println!("{}", show);
-            println!("{}", "请选择 : ".to_string().color(Color::Yellow));
+            writeln!(sh, "{}", "请选择 : ".to_string().color(Color::Yellow)).unwrap();
+            if let Some(printer) = para.printer.as_mut() {
+                printer.temp = show;
+            }
 
             // 只有一个选项时自动选择
             if choose.len() == 1 {
                 self.response_choose(para, Choose::Tie(choose[0].clone()))
             }else{
-                Return::new_with_choose(choose.into_iter().map(|a| Choose::Tie(a)).collect())
+                Return::new_with_choose_and_default(
+                    choose.into_iter().map(|a| Choose::Tie(a)).collect(),
+                    Choose::Tie(ai_choose),
+                )
             }
         }else{
-            // 优先加固（除非到解绑阶段）
-            if let Some(chic) = choose.get(1) {
-                if let ChooseTie::Tight(_) = chic {
-                    return self.response_tie(para, chic.clone());
-                }
-            }
-            
-            let choose = match target.ai_tie_choice() {
-                Some((bound, is_tie)) => match is_tie {
-                    true => ChooseTie::Tie(bound),
-                    false => ChooseTie::Untie(bound),
-                },
-                None => ChooseTie::Pass,
-            };
-            self.response_tie(para, choose)
+            self.response_tie(para, ai_choose)
         }
     }
 
-    pub fn response_tie(&mut self, para : CtrlPara, choose : ChooseTie) -> Return {
+    pub fn response_tie(&mut self, para : &mut CtrlPara, choose : ChooseTie) -> Return {
         let mut str = String::new();
         let s = &mut str;
         if let Phase::Tie { id, it, bound_point } = self.phase {
@@ -111,7 +121,9 @@ impl Board {
                 Tie::new().end(s, self, id, it);
                 self.phase = Phase::Main { id , can_wait: true };
             }
-            self.string_cache += &str;
+            if let Some(printer) = para.printer.as_mut() {
+                printer.cache += &str;
+            }
             self.continue_turn(para)
         }else{
             unreachable!();

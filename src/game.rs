@@ -1,8 +1,10 @@
 use std::io;
 
-use crate::common;
+use serde::{Serialize, Deserialize};
 
-use self::board::{Board, turn::CtrlPara};
+use crate::common::{self, CLEAR};
+
+use self::board::{Board, turn::{CtrlPara, Choose, Printer}};
 
 pub mod unit;
 pub mod board;
@@ -109,9 +111,16 @@ const HELP_BOUND : &str = "捆绑说明
 
 ";
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
+struct Save {
+    board : Board,
+    choose : Option<(Vec<Choose>, Choose)>,
+    printer : Option<Printer>,
+}
+
 pub struct Game {
     board : Board,
-    history : Vec<(Board, bool)>,
+    history : Vec<(Save, bool)>,
 }
 
 impl Game {
@@ -145,14 +154,13 @@ impl Game {
     }
 
     pub fn main_auto(&mut self) -> Option<bool> {
+        let mut para: CtrlPara = CtrlPara::new();
         let mut count = 0;
         while self.board.get_turn() < 100 {
-            let mut para = CtrlPara::new();
-            para.need_show = false;
-            let result = self.board.continue_turn(para);
+            let result = self.board.continue_turn(&mut para);
 
             // 判断胜负
-            let winner = result.winner();
+            let winner = result.winner;
             if winner.is_some() {
                 return winner
             }
@@ -167,49 +175,73 @@ impl Game {
     }
 
     pub fn main_loop(&mut self) -> Option<bool> {
-        let mut result = self.board.continue_turn(CtrlPara::new());
+        let mut para: CtrlPara = CtrlPara::new_with_printer();
+        let mut result = self.board.continue_turn(&mut para);
 
+        // 清屏并显示
+        println!("{}", CLEAR);
+        para.show_cache();
+        para.show_temp();
+    
         loop  {
+            // dbg!(&self.board.phase);
+
             // 判断胜负
-            let winner = result.winner();
+            let winner = result.winner;
             if winner.is_some() {
                 return winner
             }
 
             let mut input = String::new();
             io::stdin().read_line(&mut input).expect("Failed to read line");
-            let strs: Vec<&str> = input.split_whitespace().collect();
+            let mut strs: Vec<&str> = input.split_whitespace().collect();
 
             if strs.len() > 0 {
-                let mut load_para = CtrlPara::new();
-                load_para.is_load = true;
                 match strs[0] {
                     "save" => {
-                        self.save();
+                        self.save(result.choose.clone(), para.printer.clone());
                         println!("保存成功！");
                         continue;
                     },
                     "load" => {
-                        self.load();
-                        self.history = vec!();
-                        result = self.board.continue_turn(load_para);
+                        let (choose, printer) = self.load();
+                        para.printer = printer;
+                        result.choose = choose;
+                        // 清屏并显示
+                        println!("{}", CLEAR);
+                        para.show_cache();
+                        para.show_temp();
                         continue;
                     },
                     "undo" => {
-                        while let Some((b, is_choose)) = self.history.pop() {
+                        let mut is_break = false;
+                        while let Some((save, is_choose)) = self.history.pop() {
                             if is_choose {
-                                self.board = b;
-                                result = self.board.continue_turn(load_para);
+                                let (choose, printer) = self.reset(save);
+                                para.printer = printer;
+                                result.choose = choose;
+                                is_break = true;
+                                // 清屏并显示
+                                println!("{}", CLEAR);
+                                para.show_cache();
+                                para.show_temp();
                                 break;
                             }
+                        }
+                        if is_break == false {
+                            println!("第一个选择，无法重做");
                         }
                         continue;
                     }
                     "back" => {
-                        if let Some((b, _)) = self.history.pop() 
-                        {
-                            self.board = b;
-                            result = self.board.continue_turn(load_para);
+                        if let Some((save, _)) = self.history.pop() {
+                            let (choose, printer) = self.reset(save);
+                            para.printer = printer;
+                            result.choose = choose;
+                            // 清屏并显示
+                            println!("{}", CLEAR);
+                            para.show_cache();
+                            para.show_temp();
                         }else{
                             println!("初始状态，撤销失败");
                         }
@@ -229,56 +261,103 @@ impl Game {
                 }
             }
 
-            match result.get_choose() {
-                Some(chooses) => {
-                    if strs.len() == 0 {
-                        println!("执行默认选项");
-                        let mut para_auto = CtrlPara::new();
-                        para_auto.force_auto = true;
-                        para_auto.is_load = true;
-                        result = self.board.continue_turn(para_auto);
-                    }else{
+            // 重输
+            if let Some((choose_list, _)) = &result.choose {
+                if strs.len() > 0 {
+                    loop {
                         let i = strs[0];
                         match i.parse::<usize>() {
-                            Err(_) => println!("请输入一个自然数！"),
+                            Err(_) => {
+                                println!("请输入一个自然数！");
+                                input = String::new();
+                                io::stdin().read_line(&mut input).expect("Failed to read line");
+                                strs = input.split_whitespace().collect();
+                            },
                             Ok(i) => {
-                                let num = chooses.len();
+                                let num = choose_list.len();
                                 if i >= num {
-                                    println!("数值越界！")
-                                }else {
-                                    self.history.push((self.board.clone(), true));
-                                    result = self.board.response_choose(CtrlPara::new(), chooses[i].clone());
+                                    println!("数值越界！");
+                                    input = String::new();
+                                    io::stdin().read_line(&mut input).expect("Failed to read line");
+                                    strs = input.split_whitespace().collect();
+                                }else{
+                                    break;
                                 }
                             }, 
                         }
                     }
+                }
+            }
+
+            let save = Save {board : self.board.clone(), choose : result.choose.clone(), printer : para.printer.clone()};
+            
+            match result.choose {
+                Some((choose_list, default_choose)) => {
+                    self.history.push((save, true));
+                    if strs.len() > 0 {
+                        let i = strs[0];
+                        let i = i.parse::<usize>().unwrap();
+                        result = self.board.response_choose(&mut para, choose_list[i].clone());
+                    }else{
+                        result = self.board.response_choose(&mut para, default_choose);
+                    }
                 },
                 None => {
-                    self.history.push((self.board.clone(), false));
-                    self.board.set_to_start();
-                    result = self.board.continue_turn(CtrlPara::new());
+                    self.history.push((save, false));
+                    result = self.board.continue_turn(&mut para);
                 },
             }
+
+            // 清屏并显示
+            println!("{}", CLEAR);
+            para.show_cache();
+            para.show_temp();
         }
     }
 }
 
+
+// chooses : Option<(Vec<Choose>, Choose)>,
+//     printer : Option<Printer>,
+
+
 impl Game {
-    fn save(&self) {
+    fn save(&self, choose : Option<(Vec<Choose>, Choose)>, printer : Option<Printer>) {
+        let data = Save {
+            board: self.board.clone(),
+            choose,
+            printer,
+        };
+
         let save_path = "assets/saves/save_0.ddg";
-        let serialized = serde_json::to_string(&self.board).unwrap();
+        let serialized = serde_json::to_string(&data).unwrap();
         
         if let Err(any) = common::save_file(save_path, serialized) {
             println!("{}", any);
         }
     }
 
-    fn load(&mut self) {
+    fn load(&mut self) -> (Option<(Vec<Choose>, Choose)>, Option<Printer>) {
         let save_path = "assets/saves/save_0.ddg";
         
         match common::load_file(save_path) {
-            Ok(s) => self.board = serde_json::from_str(&s).expect("Board struct changed! can not load!"),
-            Err(any) => println!("{}", any),
+            Ok(s) => {
+                let data = serde_json::from_str(&s).expect("Board struct changed! can not load!");
+                let Save { board, choose, printer } = data;
+                self.board = board;
+                self.history = vec!();
+                (choose, printer)
+            },
+            Err(any) => {
+                println!("{}", any);
+                (None, None)
+            },
         }
+    }
+
+    fn reset(&mut self, save : Save) -> (Option<(Vec<Choose>, Choose)>, Option<Printer>)  {
+        let Save { board, choose, printer } = save;
+        self.board = board;
+        (choose, printer)
     }
 }

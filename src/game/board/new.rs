@@ -93,7 +93,6 @@ impl Board {
             pos_length: length,
             turn : 1,
             phase : Phase::Start,
-            string_cache: String::new(),
             acted_ids: vec![],
         }
     }

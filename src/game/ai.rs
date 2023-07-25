@@ -98,7 +98,7 @@ impl AI {
         Self {}
     }
 
-    pub fn analyse_skill(&self, board : &Board, id : Id, chooses : &[ChooseSkill]) -> Option<ChooseSkill> {
+    pub fn analyse_skill(&self, board : &Board, id : Id, chooses : &[ChooseSkill]) -> Option<usize> {
         let is_ally = board.get_unit(id).get_ally();
         let mut select : Option<(usize, Analyse)> = None;
         for (i, skl) in chooses.iter().enumerate() {
@@ -112,8 +112,6 @@ impl AI {
                     Analyse::get_from_board_and_skill(&board, is_ally, None)
                 }
             };
-            // dbg!(&skl);
-            // dbg!(&analyse);
             match &select {
                 Some((_, anl)) => {
                     if analyse.is_better_then(anl) {
@@ -122,9 +120,8 @@ impl AI {
                 },
                 None => select = Some((i, analyse)),
             }
-            // dbg!(&select);
         }
 
-        select.map(|(i, _)| chooses[i].clone())
+        select.map(|(i, _)| i)
     }
 }

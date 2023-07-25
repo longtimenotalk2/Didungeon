@@ -13,7 +13,7 @@ use self::BoundPart::Calve as Calve;
 use self::BoundPart::Ankle as Ankle;
 use self::BoundPart::Long as Long;
 
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum BoundPart {
     Neck,
     Arm,

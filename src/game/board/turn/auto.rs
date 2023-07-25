@@ -5,7 +5,7 @@ use super::{Return, CtrlPara};
 use std::fmt::Write;
 
 impl Board {
-    pub fn turn_auto(&mut self, para : CtrlPara, id : Id) -> Return {
+    pub fn turn_auto(&mut self, para : &mut CtrlPara, id : Id) -> Return {
         let mut str = String::new();
         let s = &mut str;
 
@@ -40,7 +40,10 @@ impl Board {
         }
 
         self.phase = Phase::Main {id, can_wait};
-        self.string_cache += &str;
+
+        if let Some(printer) = para.printer.as_mut() {
+            printer.cache += &str;
+        }
 
         self.continue_turn(para)
     }

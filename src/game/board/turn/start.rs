@@ -1,6 +1,6 @@
 use colorful::{Color, Colorful};
 
-use crate::{game::{board::{Board, Phase}, unit::Id, skill::skill_list::tie::Tie}, common::CLEAR};
+use crate::game::{board::{Board, Phase}, unit::Id, skill::skill_list::tie::Tie};
 
 use super::{Return, CtrlPara};
 use std::fmt::Write;
@@ -10,7 +10,7 @@ impl Board {
         self.phase = Phase::Start;
     }
 
-    pub fn turn_start(&mut self, para : CtrlPara) -> Return {
+    pub fn turn_start(&mut self, para : &mut CtrlPara) -> Return {
 
         // 找当前可动的速度最快的角色行动，如没有则进入下一回合
         let mut ido: Option<u32> = self.find_next_actor();
@@ -21,7 +21,11 @@ impl Board {
         }
 
         // 清除 Cache
-        self.string_cache = CLEAR.to_string();
+        if let Some(printer) = para.printer.as_mut() {
+            printer.cache = String::new();
+        }
+
+
         let mut str = String::new();
         let s = &mut str;
         // 当前回合信息
@@ -41,11 +45,13 @@ impl Board {
         //进入准备阶段
         self.phase = Phase::Prepare {id};
 
-        self.string_cache += &str;
+        if let Some(printer) = para.printer.as_mut() {
+            printer.cache += &str;
+        }
         self.continue_turn(para)
     }
 
-    pub fn turn_prepare(&mut self, para : CtrlPara, id : Id) -> Return {
+    pub fn turn_prepare(&mut self, para : &mut CtrlPara, id : Id) -> Return {
         // 根据当前是否处于擒拿状态，判断是否进入捆绑状态，或者直接进入主要阶段
         if let Some(it) = self.get_unit(id).get_catch() {
             let bound_point = Tie::new().bound_point(self.get_unit(id)); 
@@ -53,8 +59,10 @@ impl Board {
             // [捆绑] 诺艾尔 [...] (捆绑点数 : 200)
             let target_idy = self.get_unit(it).identity();
             let bound_idy = self.get_unit(it).bound_identity(None, true);
-            let s = &mut self.string_cache;
-            writeln!(s, "[捆绑] {target_idy} {bound_idy} (捆绑点数 : {})", bound_point.to_string().color(Color::Yellow)).unwrap();
+            if let Some(printer) = para.printer.as_mut() {
+                writeln!(printer.cache, "[捆绑] {target_idy} {bound_idy} (捆绑点数 : {})", bound_point.to_string().color(Color::Yellow)).unwrap();
+            }
+            
             self.continue_turn(para)
         } else {
             self.phase = Phase::Auto { id };
@@ -66,30 +74,27 @@ impl Board {
         self.phase = Phase::Wait { id }
     }
 
-    pub fn turn_wait(&mut self, para : CtrlPara, id : Id) -> Return {
+    pub fn turn_wait(&mut self, para : &mut CtrlPara, id : Id) -> Return {
         // 等待，进入下回合并按任意键继续
         self.get_unit_mut(id).wait();
-        if para.need_show {
-            // 最终输出Cache
-            println!("{}", self.string_cache);
-        }
 
         // 判断胜负
         if let Some(a) = self.is_ally_win() {
-            if para.need_show {
-                match a {
-                    true => println!("胜利"),
-                    false => println!("失败"),
-                }
+            
+            if let Some(printer) = para.printer.as_mut() {
+                printer.cache += match a {
+                    true => "胜利\n",
+                    false => "失败\n",
+                };
             }
             
             Return::new_with_winner(a)
         }else{
             // 结束
-            if para.need_show {
-                println!("按任意键继续……");
+            if let Some(printer) = para.printer.as_mut() {
+                printer.cache += "按任意键继续……";
             }
-            
+            self.set_to_start();
             Return::new()
         }
     }
@@ -98,7 +103,7 @@ impl Board {
         self.phase = Phase::End {id};
     }
 
-    pub fn turn_end(&mut self, para : CtrlPara, id : Id) -> Return {
+    pub fn turn_end(&mut self, para : &mut CtrlPara, id : Id) -> Return {
 
         // 回合结束，进入下回合并按任意键继续
         self.get_unit_mut(id).end_action();
@@ -106,32 +111,25 @@ impl Board {
             self.acted_ids.push(id);
         }
 
-        if para.need_show {
-            // 最终输出Cache
-            println!("{}", self.string_cache);
-        }
-        
-
         // 判断胜负
         if let Some(a) = self.is_ally_win() {
-            if para.need_show {
-                match a {
-                    true => println!("胜利"),
-                    false => println!("失败"),
-                }
+            if let Some(printer) = para.printer.as_mut() {
+                printer.cache += match a {
+                    true => "胜利\n",
+                    false => "失败\n",
+                };
             }
             
             Return::new_with_winner(a)
         }else{
             // 结束
-            if para.need_show {
-                println!("按任意键继续……");
+            if let Some(printer) = para.printer.as_mut() {
+                printer.cache += "按任意键继续……";
             }
             
+            self.set_to_start();
             Return::new()
         }
-    
-        
     }
 }
 

@@ -11,14 +11,14 @@ impl Board {
         self.phase = Phase::Unbound { id, bound_point};
     }
 
-    pub fn turn_unbound(&mut self, para : CtrlPara, id : Id, bound_point : i32) -> Return {
+    pub fn turn_unbound(&mut self, para : &mut CtrlPara, id : Id, bound_point : i32) -> Return {
         let mut show = String::new();
         let sh = &mut show;
 
         // 生成选择
         writeln!(sh, "\n脱缚的选择 (剩余捆绑点 = {}) : \n", bound_point.to_string().color(Color::Yellow)).unwrap();
 
-        let mut choose = vec!(ChooseUnbound::Pass);
+        let mut chooses = vec!(ChooseUnbound::Pass);
         writeln!(sh, "[{:^3}] : {}", 0, "放弃解绑").unwrap();
         let mut count = 1;
 
@@ -30,31 +30,38 @@ impl Board {
                 Ok(cost) => writeln!(sh, " (消耗捆绑点 : {})", cost.to_string().color(Color::Yellow)).unwrap(),
                 Err(hit) => writeln!(sh, " (消耗全部捆绑点，成功率 : {}%)", hit.to_string().color(Color::Yellow)).unwrap(),
             }
-            choose.push(ChooseUnbound::Unbound(bound));
+            chooses.push(ChooseUnbound::Unbound(bound));
             count += 1;
         }
 
-         // 分支，如果是玩家，返回行动，否则自动选择行动执行
-         if actor.is_human() && !para.force_auto{
-            println!("{}", show);
-            println!("{}", "请选择 : ".to_string().color(Color::Yellow));
+        // 默认选择
+        let choose = match actor.ai_unbound_choice() {
+            Some(bound) => ChooseUnbound::Unbound(bound),
+            None => ChooseUnbound::Pass,
+        };
+
+        // 分支，如果是玩家，返回行动，否则自动选择行动执行
+        if actor.is_human() && !para.force_auto{
+            writeln!(sh, "{}", "请选择 : ".to_string().color(Color::Yellow)).unwrap();
+            if let Some(printer) = para.printer.as_mut() {
+                printer.temp = show;
+            }
 
             // 只有一个选项时自动选择
-            if choose.len() == 1 {
-                self.response_choose(para, Choose::Unbound(choose[0].clone()))
+            if chooses.len() == 1 {
+                self.response_choose(para, Choose::Unbound(chooses[0].clone()))
             }else{
-                Return::new_with_choose(choose.into_iter().map(|a| Choose::Unbound(a)).collect())
+                Return::new_with_choose_and_default(
+                    chooses.into_iter().map(|a| Choose::Unbound(a)).collect(),
+                    Choose::Unbound(choose),
+                )
             }
         }else{
-            let choose = match actor.ai_unbound_choice() {
-                Some(bound) => ChooseUnbound::Unbound(bound),
-                None => ChooseUnbound::Pass,
-            };
             self.response_unbound(para, choose)
         }
     }
 
-    pub fn response_unbound(&mut self, para : CtrlPara,  choose : ChooseUnbound) -> Return {
+    pub fn response_unbound(&mut self, para : &mut CtrlPara,  choose : ChooseUnbound) -> Return {
         let mut str = String::new();
         let s = &mut str;
 
@@ -70,7 +77,9 @@ impl Board {
                 },
             };
 
-            self.string_cache += &str;
+            if let Some(printer) = para.printer.as_mut() {
+                printer.cache += &str;
+            }
             
             if remain > 0 {
                 self.phase = Phase::Unbound { id, bound_point : remain };
@@ -80,7 +89,10 @@ impl Board {
                 if self.get_unit(id).is_fall() {
                     // [起身]
                     if self.get_unit_mut(id).check_to_stand() {
-                        write!(&mut self.string_cache, "[起身]\n").unwrap();
+                        if let Some(printer) = para.printer.as_mut() {
+                            write!(printer.cache, "[起身]\n").unwrap()
+                        }
+                        ;
                     } 
                 }
 
