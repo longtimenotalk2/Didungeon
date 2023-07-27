@@ -3,6 +3,10 @@ use crate::game::skill::Skill;
 use super::{Unit, Id, Dir, Pos, bound::BoundPart};
 
 impl Unit {
+    pub fn get_name(&self) -> &str {
+        &self.name
+    }
+
     pub fn get_id(&self) -> Id {
         self.id
     }
